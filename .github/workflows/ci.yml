@@ -1,0 +1,27 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+      - name: Install server dependencies
+        run: npm install
+        working-directory: server
+      - name: Check server syntax
+        run: for f in server.js config/*.js middleware/*.js models/*.js routes/*.js utils/*.js; do node --check "$f"; done
+        working-directory: server
+      - name: Validate seed data
+        run: node -e "['questions','plan-template','references'].forEach(n => JSON.parse(require('fs').readFileSync('seed/'+n+'.json','utf8')))"
+        working-directory: server
+      - name: Install and build client
+        run: npm install && npm run build
+        working-directory: client

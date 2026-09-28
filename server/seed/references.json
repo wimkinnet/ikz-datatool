@@ -1,0 +1,610 @@
+[
+ {
+  "list": "status",
+  "key": "monitoren",
+  "label": "Monitoren, tegen drempelwaarde",
+  "order": 0
+ },
+ {
+  "list": "status",
+  "key": "ok",
+  "label": "Ok, boven drempelwaarde",
+  "order": 1
+ },
+ {
+  "list": "status",
+  "key": "actie",
+  "label": "actie ondernemen, onder drempelwaarde",
+  "order": 2
+ },
+ {
+  "list": "rok",
+  "key": "BL1",
+  "label": "BL1",
+  "order": 0
+ },
+ {
+  "list": "rok",
+  "key": "BL2",
+  "label": "BL2",
+  "order": 1
+ },
+ {
+  "list": "rok",
+  "key": "BL3",
+  "label": "BL3",
+  "order": 2
+ },
+ {
+  "list": "rok",
+  "key": "BL4",
+  "label": "BL4",
+  "order": 3
+ },
+ {
+  "list": "rok",
+  "key": "BL5",
+  "label": "BL5",
+  "order": 4
+ },
+ {
+  "list": "rok",
+  "key": "BL6",
+  "label": "BL6",
+  "order": 5
+ },
+ {
+  "list": "rok",
+  "key": "BL7",
+  "label": "BL7",
+  "order": 6
+ },
+ {
+  "list": "rok",
+  "key": "BL8",
+  "label": "BL8",
+  "order": 7
+ },
+ {
+  "list": "rok",
+  "key": "BL9",
+  "label": "BL9",
+  "order": 8
+ },
+ {
+  "list": "rok",
+  "key": "BL10",
+  "label": "BL10",
+  "order": 9
+ },
+ {
+  "list": "rok",
+  "key": "BL11",
+  "label": "BL11",
+  "order": 10
+ },
+ {
+  "list": "rok",
+  "key": "BL12",
+  "label": "BL12",
+  "order": 11
+ },
+ {
+  "list": "rok",
+  "key": "R1",
+  "label": "R1",
+  "order": 12
+ },
+ {
+  "list": "rok",
+  "key": "R2",
+  "label": "R2",
+  "order": 13
+ },
+ {
+  "list": "rok",
+  "key": "R3",
+  "label": "R3",
+  "order": 14
+ },
+ {
+  "list": "rok",
+  "key": "R4",
+  "label": "R4",
+  "order": 15
+ },
+ {
+  "list": "rok",
+  "key": "R5",
+  "label": "R5",
+  "order": 16
+ },
+ {
+  "list": "rok",
+  "key": "R6",
+  "label": "R6",
+  "order": 17
+ },
+ {
+  "list": "rok",
+  "key": "D1",
+  "label": "D1",
+  "order": 18
+ },
+ {
+  "list": "rok",
+  "key": "D2",
+  "label": "D2",
+  "order": 19
+ },
+ {
+  "list": "rok",
+  "key": "D3",
+  "label": "D3",
+  "order": 20
+ },
+ {
+  "list": "rok",
+  "key": "D4",
+  "label": "D4",
+  "order": 21
+ },
+ {
+  "list": "rok",
+  "key": "B1",
+  "label": "B1",
+  "order": 22
+ },
+ {
+  "list": "rok",
+  "key": "B2",
+  "label": "B2",
+  "order": 23
+ },
+ {
+  "list": "rok",
+  "key": "B3",
+  "label": "B3",
+  "order": 24
+ },
+ {
+  "list": "rok",
+  "key": "B4",
+  "label": "B4",
+  "order": 25
+ },
+ {
+  "list": "rok",
+  "key": "V1",
+  "label": "V1",
+  "order": 26
+ },
+ {
+  "list": "rok",
+  "key": "V2",
+  "label": "V2",
+  "order": 27
+ },
+ {
+  "list": "rok",
+  "key": "V3",
+  "label": "V3",
+  "order": 28
+ },
+ {
+  "list": "rok",
+  "key": "V4",
+  "label": "V4",
+  "order": 29
+ },
+ {
+  "list": "rok",
+  "key": "O1",
+  "label": "O1",
+  "order": 30
+ },
+ {
+  "list": "rok",
+  "key": "O2",
+  "label": "O2",
+  "order": 31
+ },
+ {
+  "list": "rok",
+  "key": "O3",
+  "label": "O3",
+  "order": 32
+ },
+ {
+  "list": "rok",
+  "key": "O4",
+  "label": "O4",
+  "order": 33
+ },
+ {
+  "list": "rok",
+  "key": "K1",
+  "label": "K1",
+  "order": 34
+ },
+ {
+  "list": "rok",
+  "key": "K2",
+  "label": "K2",
+  "order": 35
+ },
+ {
+  "list": "rok",
+  "key": "K3",
+  "label": "K3",
+  "order": 36
+ },
+ {
+  "list": "doorlichtingsdomein",
+  "key": "Startgesprek",
+  "label": "Startgesprek",
+  "order": 0
+ },
+ {
+  "list": "doorlichtingsdomein",
+  "key": "Welbevinden en begeleiding",
+  "label": "Welbevinden en begeleiding",
+  "order": 1
+ },
+ {
+  "list": "doorlichtingsdomein",
+  "key": "Vroegtijdige schoolverlaters",
+  "label": "Vroegtijdige schoolverlaters",
+  "order": 2
+ },
+ {
+  "list": "doorlichtingsdomein",
+  "key": "Systematische evaluatie van de kwaliteit",
+  "label": "Systematische evaluatie van de kwaliteit",
+  "order": 3
+ },
+ {
+  "list": "doorlichtingsdomein",
+  "key": "Feedbackprocessen",
+  "label": "Feedbackprocessen",
+  "order": 4
+ },
+ {
+  "list": "doorlichtingsdomein",
+  "key": "Leerresultaten en leereffecten",
+  "label": "Leerresultaten en leereffecten",
+  "order": 5
+ },
+ {
+  "list": "doorlichtingsdomein",
+  "key": "Kwetsbaarheid OKI & Evaluatie",
+  "label": "Kwetsbaarheid OKI & Evaluatie",
+  "order": 6
+ },
+ {
+  "list": "doorlichtingsdomein",
+  "key": "Onderwijsleerpraktijken",
+  "label": "Onderwijsleerpraktijken",
+  "order": 7
+ },
+ {
+  "list": "doorlichtingsdomein",
+  "key": "Cijfergegevens verhoogde zorg",
+  "label": "Cijfergegevens verhoogde zorg",
+  "order": 8
+ },
+ {
+  "list": "schaal",
+  "key": "Ontwikkelingsschaal P",
+  "label": "Ontwikkelingsschaal P",
+  "order": 0
+ },
+ {
+  "list": "schaal",
+  "key": "Ontwikkelingsschaal R",
+  "label": "Ontwikkelingsschaal R",
+  "order": 1
+ },
+ {
+  "list": "schaal",
+  "key": "Ontwikkelingsschaal BP",
+  "label": "Ontwikkelingsschaal BP",
+  "order": 2
+ },
+ {
+  "list": "schaal",
+  "key": "Ontwikkelingsschaal O",
+  "label": "Ontwikkelingsschaal O",
+  "order": 3
+ },
+ {
+  "list": "schaal",
+  "key": "Ontwikkelingsschaal K",
+  "label": "Ontwikkelingsschaal K",
+  "order": 4
+ },
+ {
+  "list": "onderdeel",
+  "key": "Ontwikkelingsschaal P|Personeelsbeleid",
+  "label": "Personeelsbeleid",
+  "parent": "Ontwikkelingsschaal P",
+  "order": 0
+ },
+ {
+  "list": "onderdeel",
+  "key": "Ontwikkelingsschaal P|Professionalisering",
+  "label": "Professionalisering",
+  "parent": "Ontwikkelingsschaal P",
+  "order": 1
+ },
+ {
+  "list": "onderdeel",
+  "key": "Ontwikkelingsschaal P|Aanvangsbegeleiding",
+  "label": "Aanvangsbegeleiding",
+  "parent": "Ontwikkelingsschaal P",
+  "order": 2
+ },
+ {
+  "list": "onderdeel",
+  "key": "Ontwikkelingsschaal R|Rapportering",
+  "label": "Rapportering",
+  "parent": "Ontwikkelingsschaal R",
+  "order": 0
+ },
+ {
+  "list": "onderdeel",
+  "key": "Ontwikkelingsschaal R|Studiebekrachtiging",
+  "label": "Studiebekrachtiging",
+  "parent": "Ontwikkelingsschaal R",
+  "order": 1
+ },
+ {
+  "list": "onderdeel",
+  "key": "Ontwikkelingsschaal R|Oriëntering",
+  "label": "Oriëntering",
+  "parent": "Ontwikkelingsschaal R",
+  "order": 2
+ },
+ {
+  "list": "onderdeel",
+  "key": "Ontwikkelingsschaal BP|Begeleiding volgens het zorgcontinuüm",
+  "label": "Begeleiding volgens het zorgcontinuüm",
+  "parent": "Ontwikkelingsschaal BP",
+  "order": 0
+ },
+ {
+  "list": "onderdeel",
+  "key": "Ontwikkelingsschaal BP|Positieve en inclusieve sfeer",
+  "label": "Positieve en inclusieve sfeer",
+  "parent": "Ontwikkelingsschaal BP",
+  "order": 1
+ },
+ {
+  "list": "onderdeel",
+  "key": "Ontwikkelingsschaal BP|Ondersteuing van de teamleden",
+  "label": "Ondersteuing van de teamleden",
+  "parent": "Ontwikkelingsschaal BP",
+  "order": 2
+ },
+ {
+  "list": "onderdeel",
+  "key": "Ontwikkelingsschaal BP|Interne samenwerking",
+  "label": "Interne samenwerking",
+  "parent": "Ontwikkelingsschaal BP",
+  "order": 3
+ },
+ {
+  "list": "onderdeel",
+  "key": "Ontwikkelingsschaal BP|Externe samenwerking",
+  "label": "Externe samenwerking",
+  "parent": "Ontwikkelingsschaal BP",
+  "order": 4
+ },
+ {
+  "list": "onderdeel",
+  "key": "Ontwikkelingsschaal O|Afstemming op het gevalideerd doelenkader",
+  "label": "Afstemming op het gevalideerd doelenkader",
+  "parent": "Ontwikkelingsschaal O",
+  "order": 0
+ },
+ {
+  "list": "onderdeel",
+  "key": "Ontwikkelingsschaal O|Onderwijs en begeleiding op maat",
+  "label": "Onderwijs en begeleiding op maat",
+  "parent": "Ontwikkelingsschaal O",
+  "order": 1
+ },
+ {
+  "list": "onderdeel",
+  "key": "Ontwikkelingsschaal O|Leef- en leerklimaat",
+  "label": "Leef- en leerklimaat",
+  "parent": "Ontwikkelingsschaal O",
+  "order": 2
+ },
+ {
+  "list": "onderdeel",
+  "key": "Ontwikkelingsschaal O|Leer- en ontwikkelingsgerichte didactische aanpak",
+  "label": "Leer- en ontwikkelingsgerichte didactische aanpak",
+  "parent": "Ontwikkelingsschaal O",
+  "order": 3
+ },
+ {
+  "list": "onderdeel",
+  "key": "Ontwikkelingsschaal O|Effectieve feedback",
+  "label": "Effectieve feedback",
+  "parent": "Ontwikkelingsschaal O",
+  "order": 4
+ },
+ {
+  "list": "onderdeel",
+  "key": "Ontwikkelingsschaal O|Materiële leef- en leeromgeving",
+  "label": "Materiële leef- en leeromgeving",
+  "parent": "Ontwikkelingsschaal O",
+  "order": 5
+ },
+ {
+  "list": "onderdeel",
+  "key": "Ontwikkelingsschaal O|Leerlingenevaluatie",
+  "label": "Leerlingenevaluatie",
+  "parent": "Ontwikkelingsschaal O",
+  "order": 6
+ },
+ {
+  "list": "onderdeel",
+  "key": "Ontwikkelingsschaal O|Leereffecten",
+  "label": "Leereffecten",
+  "parent": "Ontwikkelingsschaal O",
+  "order": 7
+ },
+ {
+  "list": "onderdeel",
+  "key": "Ontwikkelingsschaal O|Duaal leren",
+  "label": "Duaal leren",
+  "parent": "Ontwikkelingsschaal O",
+  "order": 8
+ },
+ {
+  "list": "onderdeel",
+  "key": "Ontwikkelingsschaal K|Visie en strategisch beleid",
+  "label": "Visie en strategisch beleid",
+  "parent": "Ontwikkelingsschaal K",
+  "order": 0
+ },
+ {
+  "list": "onderdeel",
+  "key": "Ontwikkelingsschaal K|Organisatiebeleid",
+  "label": "Organisatiebeleid",
+  "parent": "Ontwikkelingsschaal K",
+  "order": 1
+ },
+ {
+  "list": "onderdeel",
+  "key": "Ontwikkelingsschaal K|Onderwijskundig beleid",
+  "label": "Onderwijskundig beleid",
+  "parent": "Ontwikkelingsschaal K",
+  "order": 2
+ },
+ {
+  "list": "onderdeel",
+  "key": "Ontwikkelingsschaal K|Cyclische evaluatie van de kwaliteit",
+  "label": "Cyclische evaluatie van de kwaliteit",
+  "parent": "Ontwikkelingsschaal K",
+  "order": 3
+ },
+ {
+  "list": "onderdeel",
+  "key": "Ontwikkelingsschaal K|Betrouwbare evaluatie van de kwaliteit",
+  "label": "Betrouwbare evaluatie van de kwaliteit",
+  "parent": "Ontwikkelingsschaal K",
+  "order": 4
+ },
+ {
+  "list": "onderdeel",
+  "key": "Ontwikkelingsschaal K|Borgen en bijsturen",
+  "label": "Borgen en bijsturen",
+  "parent": "Ontwikkelingsschaal K",
+  "order": 5
+ },
+ {
+  "list": "inschaling",
+  "key": "beneden de verwachting",
+  "label": "beneden de verwachting",
+  "order": 0
+ },
+ {
+  "list": "inschaling",
+  "key": "benadert de verwachting",
+  "label": "benadert de verwachting",
+  "order": 1
+ },
+ {
+  "list": "inschaling",
+  "key": "volgens de verwachting",
+  "label": "volgens de verwachting",
+  "order": 2
+ },
+ {
+  "list": "inschaling",
+  "key": "overtreft de verwachting",
+  "label": "overtreft de verwachting",
+  "order": 3
+ },
+ {
+  "list": "maand",
+  "key": "september",
+  "label": "September",
+  "order": 0
+ },
+ {
+  "list": "maand",
+  "key": "oktober",
+  "label": "Oktober",
+  "order": 1
+ },
+ {
+  "list": "maand",
+  "key": "november",
+  "label": "November",
+  "order": 2
+ },
+ {
+  "list": "maand",
+  "key": "december",
+  "label": "December",
+  "order": 3
+ },
+ {
+  "list": "maand",
+  "key": "januari",
+  "label": "Januari",
+  "order": 4
+ },
+ {
+  "list": "maand",
+  "key": "februari",
+  "label": "Februari",
+  "order": 5
+ },
+ {
+  "list": "maand",
+  "key": "maart",
+  "label": "Maart",
+  "order": 6
+ },
+ {
+  "list": "maand",
+  "key": "april",
+  "label": "April",
+  "order": 7
+ },
+ {
+  "list": "maand",
+  "key": "mei",
+  "label": "Mei",
+  "order": 8
+ },
+ {
+  "list": "maand",
+  "key": "juni",
+  "label": "Juni",
+  "order": 9
+ },
+ {
+  "list": "maand",
+  "key": "juli",
+  "label": "Juli",
+  "order": 10
+ },
+ {
+  "list": "maand",
+  "key": "augustus",
+  "label": "Augustus",
+  "order": 11
+ },
+ {
+  "list": "rok",
+  "key": "O5",
+  "label": "O5",
+  "order": 37
+ }
+]

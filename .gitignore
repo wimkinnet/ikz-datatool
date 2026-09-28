@@ -1,0 +1,8 @@
+node_modules/
+.env
+.DS_Store
+server/uploads/
+client/dist/
+*.log
+# keep client data out of the repo
+tools/*.xlsx
