@@ -27,10 +27,9 @@ export function AppProvider({ children }) {
     else setReady(false);
   }, [user, load]);
 
-  // Clients are pinned to their own school; staff pick one (falling back to the first they can access)
+  // Everyone picks one of the schools they can access (falling back to the first)
   const schoolId = useMemo(() => {
     if (!user) return '';
-    if (user.role === 'client') return user.school || '';
     if (schools.some((s) => s._id === storedSchool)) return storedSchool;
     return schools[0]?._id || '';
   }, [user, schools, storedSchool]);

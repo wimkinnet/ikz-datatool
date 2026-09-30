@@ -31,7 +31,7 @@ router.post('/', upload.single('file'), async (req, res) => {
   const discard = () => { if (req.file) fs.unlink(req.file.path, () => {}); };
   try {
     if (!req.file) return res.status(400).json({ message: 'Er is geen bestand meegestuurd.' });
-    const schoolId = req.user.role === 'client' ? String(req.user.school) : req.body.school;
+    const schoolId = req.body.school;
     if (!canAccessSchool(req.user, schoolId)) { discard(); return res.status(403).json({ message: 'Je hebt geen toegang tot deze school.' }); }
     const schoolYear = req.body.schoolYear || '';
     if (schoolYear && !SCHOOL_YEAR_RE.test(schoolYear)) { discard(); return res.status(400).json({ message: 'Ongeldig schooljaar.' }); }

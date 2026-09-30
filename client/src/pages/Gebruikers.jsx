@@ -7,7 +7,7 @@ import { useConfirm } from '../components/Confirm';
 import { ErrorBanner } from '../components/Bits';
 import { ROLE_LABELS } from '../utils/constants';
 
-const EMPTY = { name: '', email: '', password: '', phone: '', role: 'client', school: '', schools: [], active: true };
+const EMPTY = { name: '', email: '', password: '', phone: '', role: 'client', schools: [], active: true };
 
 export default function Gebruikers() {
   const { user: me } = useAuth();
@@ -29,14 +29,15 @@ export default function Gebruikers() {
   async function save(e) {
     e.preventDefault();
     setBusy(true); setError('');
+    if (edit.role === 'client' && !edit.schools.length) { setBusy(false); setError('Vink minstens één school aan.'); return; }
     try {
       if (edit.id) {
         const body = { name: edit.name, phone: edit.phone, active: edit.active };
         if (edit.password) body.password = edit.password;
-        if (isAdmin) Object.assign(body, { role: edit.role, school: edit.school || null, schools: edit.schools });
+        if (isAdmin) Object.assign(body, { role: edit.role, schools: edit.schools });
         await api.put(`/users/${edit.id}`, body);
       } else {
-        await api.post('/users', { ...edit, school: edit.role === 'client' ? edit.school : undefined });
+        await api.post('/users', edit);
       }
       setEdit(null); load();
     } catch (err) { setError(errMsg(err, 'Opslaan mislukt.')); }
@@ -63,7 +64,7 @@ export default function Gebruikers() {
           <h1>Gebruikers</h1>
           <p>{isAdmin ? 'Beheer admins, consultants en schoolaccounts.' : 'Nodig gebruikers van je scholen uit voor het klantenportaal.'}</p>
         </div>
-        <button className="btn btn-primary" onClick={() => { setError(''); setEdit({ ...EMPTY, school: schools[0]?._id || '' }); }}>+ Nieuwe gebruiker</button>
+        <button className="btn btn-primary" onClick={() => { setError(''); setEdit({ ...EMPTY, schools: schools.length === 1 ? [schools[0]._id] : [] }); }}>+ Nieuwe gebruiker</button>
       </div>
       <ErrorBanner message={error && !edit ? error : ''} />
       <div className="table-wrap">
@@ -75,7 +76,7 @@ export default function Gebruikers() {
                 <td>{u.name}</td>
                 <td>{u.email}</td>
                 <td><span className="role-tag">{ROLE_LABELS[u.role]}</span></td>
-                <td>{u.role === 'client' ? schoolName(u.school) : u.role === 'consultant' ? (u.schools.map(schoolName).join(', ') || 'Geen') : 'Alle'}</td>
+                <td>{u.role === 'admin' ? 'Alle' : (u.schools.map(schoolName).join(', ') || 'Geen')}</td>
                 <td>{u.active ? <span className="badge status-active">Actief</span> : <span className="badge status-inactive">Gedeactiveerd</span>}</td>
                 <td style={{ textAlign: 'right' }}><button className="btn btn-sm" onClick={() => { setError(''); setEdit({ ...EMPTY, ...u, password: '' }); }}>Bewerken</button></td>
               </tr>
@@ -104,22 +105,14 @@ export default function Gebruikers() {
               </div>
               <div className="field"><label>Telefoon</label><input value={edit.phone || ''} onChange={set('phone')} /></div>
             </div>
-            {edit.role === 'client' && (
-              <div className="field"><label>School</label>
-                <select required value={edit.school || ''} onChange={set('school')}>
-                  <option value="">Kies een school…</option>
-                  {schools.map((s) => <option key={s._id} value={s._id}>{s.name}</option>)}
-                </select>
-                <div className="hint">Dit account ziet enkel de gegevens van deze school.</div>
-              </div>
-            )}
-            {edit.role === 'consultant' && (
-              <div className="field"><label>Toegewezen scholen</label>
+            {edit.role !== 'admin' && (
+              <div className="field"><label>{edit.role === 'client' ? 'Scholen' : 'Toegewezen scholen'}</label>
                 {schools.map((s) => (
                   <label className="checkbox-row" key={s._id} style={{ marginBottom: 4 }}>
-                    <input type="checkbox" checked={edit.schools.includes(s._id)} onChange={() => toggleSchool(s._id)} /> {s.name}
+                    <input type="checkbox" checked={edit.schools.includes(s._id)} disabled={!isAdmin && !!edit.id} onChange={() => toggleSchool(s._id)} /> {s.name}
                   </label>
                 ))}
+                {edit.role === 'client' && <div className="hint">Dit account ziet enkel de gegevens van de aangevinkte scholen.</div>}
               </div>
             )}
             {edit.id && (

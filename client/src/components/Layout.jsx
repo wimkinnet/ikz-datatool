@@ -56,7 +56,7 @@ export default function Layout() {
       <main className="main">
         <div className="topbar">
           <div className="who">
-            {isStaff ? (
+            {isStaff || schools.length > 1 ? (
               schools.length ? (
                 <select value={schoolId} onChange={(e) => setSchoolId(e.target.value)} aria-label="School">
                   {schools.map((s) => <option key={s._id} value={s._id}>{s.name}</option>)}

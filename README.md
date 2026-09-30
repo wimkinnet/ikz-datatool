@@ -20,7 +20,7 @@ Stack: React (Vite) · Node/Express · MongoDB (Atlas) · Render. UI language: D
 |---|---|
 | **admin** | Everything: schools, all users, questionnaire template, default year plan, dropdown lists |
 | **consultant** | Works in the schools assigned to them: answers, advice, year plan (incl. structure), documents; invites school users |
-| **client** (school) | Sees only their own school. Fills in the questionnaire, updates status / inschaling / actions, uploads files, reads consultant advice |
+| **client** (school) | Sees only the school(s) linked to their account (one or more; they switch between them top right). Fills in the questionnaire, updates status / inschaling / actions, uploads files, reads consultant advice |
 
 Per school there is one switch (*Scholen → Bewerken*): may school users also add/remove plan tasks and change
 thresholds? Default **no** — the consultant owns the structure of the plan.

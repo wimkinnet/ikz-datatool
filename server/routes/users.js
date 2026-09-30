@@ -3,21 +3,30 @@ const router = express.Router();
 const User = require('../models/User');
 const School = require('../models/School');
 const { protect, requireRole, requireStaff } = require('../middleware/auth');
-const { canAccessSchool } = require('../middleware/access');
+const { schoolIdsOf, canAccessSchool } = require('../middleware/access');
 const pick = require('../utils/pick');
 
 router.use(protect, requireStaff);
 
-// A consultant may only see/manage school users (role=client) of their own schools.
+// A consultant may only manage school users (role=client) whose schools are all among their own schools.
 function canManage(actor, target) {
   if (actor.role === 'admin') return true;
-  return target.role === 'client' && canAccessSchool(actor, target.school);
+  const ids = schoolIdsOf(target);
+  return target.role === 'client' && ids.length > 0 && ids.every((id) => canAccessSchool(actor, id));
+}
+
+// School list sent by the client form (accepts the old single `school` field too)
+function requestedSchools(body) {
+  const list = Array.isArray(body.schools) ? body.schools : body.school ? [body.school] : [];
+  return [...new Set(list.map(String))];
 }
 
 // GET /api/users
 router.get('/', async (req, res) => {
   try {
-    const filter = req.user.role === 'admin' ? {} : { role: 'client', school: { $in: req.user.schools } };
+    // Consultants see the school users that share at least one of their schools
+    const mine = schoolIdsOf(req.user);
+    const filter = req.user.role === 'admin' ? {} : { role: 'client', $or: [{ schools: { $in: mine } }, { school: { $in: mine } }] };
     const users = await User.find(filter).sort({ role: 1, name: 1 });
     res.json(users.map((u) => u.toSafeObject()));
   } catch (err) {
@@ -29,7 +38,7 @@ router.get('/', async (req, res) => {
 router.post('/', async (req, res) => {
   try {
     const { name, email, password, phone } = req.body || {};
-    let { role, school, schools } = req.body || {};
+    let { role, schools } = req.body || {};
     if (!name || !email || !password) return res.status(400).json({ message: 'Naam, e-mailadres en wachtwoord zijn verplicht.' });
     if (password.length < 8) return res.status(400).json({ message: 'Het wachtwoord moet minstens 8 tekens hebben.' });
 
@@ -37,20 +46,20 @@ router.post('/', async (req, res) => {
     if (!['admin', 'consultant', 'client'].includes(role)) role = 'client';
 
     if (role === 'client') {
-      if (!school || !canAccessSchool(req.user, school) || !(await School.exists({ _id: school }))) {
-        return res.status(400).json({ message: 'Kies een school (waartoe je toegang hebt) voor dit schoolaccount.' });
+      schools = requestedSchools(req.body);
+      const invalid = !schools.length || schools.some((id) => !canAccessSchool(req.user, id));
+      if (invalid || (await School.countDocuments({ _id: { $in: schools } })) !== schools.length) {
+        return res.status(400).json({ message: 'Kies minstens één school (waartoe je toegang hebt) voor dit schoolaccount.' });
       }
+    } else if (role === 'admin') {
       schools = [];
-    } else {
-      school = null;
-      if (role === 'admin') schools = [];
     }
 
     if (await User.findOne({ email: String(email).toLowerCase().trim() })) {
       return res.status(409).json({ message: 'Er bestaat al een gebruiker met dit e-mailadres.' });
     }
 
-    const user = await User.create({ name, email, password, phone, role, school, schools: schools || [] });
+    const user = await User.create({ name, email, password, phone, role, school: null, schools: schools || [] });
     res.status(201).json(user.toSafeObject());
   } catch (err) {
     res.status(400).json({ message: 'Kon gebruiker niet aanmaken.', error: err.message });
@@ -65,10 +74,14 @@ router.put('/:id', async (req, res) => {
     if (!canManage(req.user, user)) return res.status(403).json({ message: 'Je mag deze gebruiker niet beheren.' });
 
     const fields = pick(req.body, ['name', 'phone', 'active']);
-    if (req.user.role === 'admin') Object.assign(fields, pick(req.body, ['role', 'school', 'schools']));
+    if (req.user.role === 'admin' && ('schools' in req.body || 'school' in req.body)) {
+      const role = req.body.role || user.role;
+      fields.schools = role === 'admin' ? [] : requestedSchools(req.body);
+      fields.school = null; // everyone uses the schools list now
+      if (role === 'client' && !fields.schools.length) return res.status(400).json({ message: 'Kies minstens één school voor dit schoolaccount.' });
+    }
+    if (req.user.role === 'admin' && req.body.role) fields.role = req.body.role;
     if (fields.role === 'admin') { fields.school = null; fields.schools = []; }
-    if (fields.role === 'consultant') fields.school = null;
-    if (fields.role === 'client') fields.schools = [];
     if (String(user._id) === String(req.user._id) && fields.active === false) {
       return res.status(400).json({ message: 'Je kan jezelf niet deactiveren.' });
     }

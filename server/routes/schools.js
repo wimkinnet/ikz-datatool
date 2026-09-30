@@ -9,7 +9,7 @@ const PlanItem = require('../models/PlanItem');
 const Document = require('../models/Document');
 const { UPLOAD_ROOT } = require('../middleware/upload');
 const { protect, requireRole, requireStaff } = require('../middleware/auth');
-const { canAccessSchool } = require('../middleware/access');
+const { schoolIdsOf, canAccessSchool } = require('../middleware/access');
 const pick = require('../utils/pick');
 
 router.use(protect);
@@ -19,9 +19,7 @@ const FIELDS = ['name', 'type', 'institutionNumber', 'city', 'contactName', 'con
 // GET /api/schools  - only the schools the user may access
 router.get('/', async (req, res) => {
   try {
-    let filter = {};
-    if (req.user.role === 'client') filter = { _id: req.user.school };
-    if (req.user.role === 'consultant') filter = { _id: { $in: req.user.schools } };
+    const filter = req.user.role === 'admin' ? {} : { _id: { $in: schoolIdsOf(req.user) } };
     const schools = await School.find(filter).sort({ name: 1 });
     res.json(schools);
   } catch (err) {
@@ -58,20 +56,23 @@ router.put('/:id', requireStaff, async (req, res) => {
   }
 });
 
-// DELETE /api/schools/:id  (admin) - removes the school with all its answers, plan, documents and school accounts
+// DELETE /api/schools/:id  (admin) - removes the school with all its answers, plan and documents,
+// plus the school accounts that were linked to this school only
 router.delete('/:id', requireRole('admin'), async (req, res) => {
   try {
     if (!canAccessSchool(req.user, req.params.id)) return res.status(400).json({ message: 'Ongeldige school.' });
     const school = await School.findById(req.params.id);
     if (!school) return res.status(404).json({ message: 'School niet gevonden.' });
     const id = school._id;
+    const linkedClients = await User.find({ role: 'client', $or: [{ school: id }, { schools: id }] }).select('_id');
     await Promise.all([
       Answer.deleteMany({ school: id }),
       PlanItem.deleteMany({ school: id }),
       Document.deleteMany({ school: id }),
-      User.deleteMany({ role: 'client', school: id }),
       User.updateMany({ schools: id }, { $pull: { schools: id } }),
+      User.updateMany({ school: id }, { $set: { school: null } }),
     ]);
+    await User.deleteMany({ _id: { $in: linkedClients.map((u) => u._id) }, school: null, schools: { $size: 0 } });
     fs.rm(path.join(UPLOAD_ROOT, String(id)), { recursive: true, force: true }, () => {});
     await school.deleteOne();
     res.json({ message: 'School verwijderd.' });

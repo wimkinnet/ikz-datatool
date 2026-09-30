@@ -10,7 +10,7 @@ if (!fs.existsSync(UPLOAD_ROOT)) fs.mkdirSync(UPLOAD_ROOT, { recursive: true });
 // Which school folder a file goes into is decided here from the logged-in user / validated ObjectId,
 // never from a raw client-supplied path. (Access to that school is re-checked in the route.)
 function schoolFolderFor(req) {
-  const raw = req.user.role === 'client' ? String(req.user.school || '') : String((req.body && req.body.school) || '');
+  const raw = String((req.body && req.body.school) || '');
   return mongoose.isValidObjectId(raw) ? raw : null;
 }
 

@@ -32,7 +32,7 @@ export default function Scholen() {
   async function remove() {
     const ok = await confirm({
       title: 'School verwijderen?',
-      message: `"${edit.name}" wordt definitief verwijderd, samen met alle antwoorden, het jaarplan, alle documenten en de schoolaccounts van deze school.\n\nDit kan niet ongedaan worden gemaakt. Wil je de school enkel verbergen, zet ze dan op inactief.`,
+      message: `"${edit.name}" wordt definitief verwijderd, samen met alle antwoorden, het jaarplan, alle documenten. Schoolaccounts die enkel aan deze school gekoppeld zijn, worden ook verwijderd.\n\nDit kan niet ongedaan worden gemaakt. Wil je de school enkel verbergen, zet ze dan op inactief.`,
       confirmLabel: 'School verwijderen',
     });
     if (!ok) return;

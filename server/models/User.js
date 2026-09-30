@@ -8,8 +8,8 @@ const userSchema = new mongoose.Schema(
     password: { type: String, required: true, minlength: 8 },
     // admin: everything. consultant: assigned schools. client: exactly one school (client portal).
     role: { type: String, enum: ['admin', 'consultant', 'client'], default: 'client' },
-    school: { type: mongoose.Schema.Types.ObjectId, ref: 'School', default: null }, // role=client
-    schools: [{ type: mongoose.Schema.Types.ObjectId, ref: 'School' }], // role=consultant
+    school: { type: mongoose.Schema.Types.ObjectId, ref: 'School', default: null }, // legacy: single school of older school accounts
+    schools: [{ type: mongoose.Schema.Types.ObjectId, ref: 'School' }], // role=consultant or client: the schools they may access
     active: { type: Boolean, default: true },
     phone: { type: String, trim: true },
   },
@@ -32,8 +32,8 @@ userSchema.methods.toSafeObject = function () {
     name: this.name,
     email: this.email,
     role: this.role,
-    school: this.school,
-    schools: this.schools,
+    // older school accounts only have `school`; expose everything as one list
+    schools: this.role === 'client' && this.school && !this.schools.some((s) => String(s) === String(this.school)) ? [this.school, ...this.schools] : this.schools,
     active: this.active,
     phone: this.phone,
     createdAt: this.createdAt,

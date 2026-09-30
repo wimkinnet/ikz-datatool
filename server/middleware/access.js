@@ -1,25 +1,30 @@
 const mongoose = require('mongoose');
 const School = require('../models/School');
 
+// Schools a non-admin user is linked to (as strings).
+// Consultants and school users both use user.schools; older school accounts may still have the single user.school.
+function schoolIdsOf(user) {
+  const ids = (user.schools || []).map(String);
+  if (user.role === 'client' && user.school && !ids.includes(String(user.school))) ids.unshift(String(user.school));
+  return ids;
+}
+
 // Central place that decides which school a user may touch.
-//  admin      -> every school
-//  consultant -> only schools listed in user.schools
-//  client     -> only user.school (the request's ?school= value is ignored for them)
+//  admin               -> every school
+//  consultant / client -> only the schools they are linked to
 function canAccessSchool(user, schoolId) {
   if (!schoolId) return false;
   const id = String(schoolId);
   if (!mongoose.isValidObjectId(id)) return false;
   if (user.role === 'admin') return true;
-  if (user.role === 'client') return !!user.school && String(user.school) === id;
-  if (user.role === 'consultant') return (user.schools || []).some((s) => String(s) === id);
-  return false;
+  return schoolIdsOf(user).includes(id);
 }
 
 // Resolves req.schoolId from ?school= / body.school and enforces access.
 async function schoolScope(req, res, next) {
   try {
     let id = (req.query && req.query.school) || (req.body && req.body.school);
-    if (req.user.role === 'client') id = req.user.school;
+    if (!id && req.user.role === 'client') id = schoolIdsOf(req.user)[0]; // school user with a single school
     if (!id) return res.status(400).json({ message: 'Geen school opgegeven.' });
     if (!canAccessSchool(req.user, id)) {
       return res.status(403).json({ message: 'Je hebt geen toegang tot deze school.' });
@@ -34,4 +39,4 @@ async function schoolScope(req, res, next) {
   }
 }
 
-module.exports = { canAccessSchool, schoolScope };
+module.exports = { schoolIdsOf, canAccessSchool, schoolScope };
