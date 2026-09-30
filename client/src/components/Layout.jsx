@@ -2,6 +2,7 @@ import { NavLink, Outlet, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { useApp } from '../context/AppContext';
 import { yearOptions } from '../utils/constants';
+import { SchoolSwitcher } from './SchoolPicker';
 
 const link = ({ isActive }) => 'nav-link' + (isActive ? ' active' : '');
 
@@ -58,9 +59,7 @@ export default function Layout() {
           <div className="who">
             {isStaff || schools.length > 1 ? (
               schools.length ? (
-                <select value={schoolId} onChange={(e) => setSchoolId(e.target.value)} aria-label="School">
-                  {schools.map((s) => <option key={s._id} value={s._id}>{s.name}</option>)}
-                </select>
+                <SchoolSwitcher schools={schools} value={schoolId} onChange={setSchoolId} />
               ) : (
                 <span className="muted">Geen scholen toegewezen</span>
               )

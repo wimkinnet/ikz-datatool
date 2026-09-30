@@ -4,6 +4,7 @@ import { useApp } from '../context/AppContext';
 import { useAuth } from '../context/AuthContext';
 import Modal from '../components/Modal';
 import { useConfirm } from '../components/Confirm';
+import { SchoolMultiSelect } from '../components/SchoolPicker';
 import { ErrorBanner } from '../components/Bits';
 import { ROLE_LABELS } from '../utils/constants';
 
@@ -24,7 +25,6 @@ export default function Gebruikers() {
 
   const schoolName = (id) => schools.find((s) => s._id === id)?.name || '—';
   const set = (k) => (e) => setEdit({ ...edit, [k]: e.target.value });
-  const toggleSchool = (id) => setEdit({ ...edit, schools: edit.schools.includes(id) ? edit.schools.filter((x) => x !== id) : [...edit.schools, id] });
 
   async function save(e) {
     e.preventDefault();
@@ -107,11 +107,7 @@ export default function Gebruikers() {
             </div>
             {edit.role !== 'admin' && (
               <div className="field"><label>{edit.role === 'client' ? 'Scholen' : 'Toegewezen scholen'}</label>
-                {schools.map((s) => (
-                  <label className="checkbox-row" key={s._id} style={{ marginBottom: 4 }}>
-                    <input type="checkbox" checked={edit.schools.includes(s._id)} disabled={!isAdmin && !!edit.id} onChange={() => toggleSchool(s._id)} /> {s.name}
-                  </label>
-                ))}
+                <SchoolMultiSelect schools={schools} value={edit.schools} onChange={(ids) => setEdit({ ...edit, schools: ids })} disabled={!isAdmin && !!edit.id} />
                 {edit.role === 'client' && <div className="hint">Dit account ziet enkel de gegevens van de aangevinkte scholen.</div>}
               </div>
             )}
