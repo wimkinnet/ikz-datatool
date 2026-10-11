@@ -883,3 +883,19 @@ select.status-select.none {
 
 .rok-picker .checkbox-row { margin: 0; padding: 3px 0; font-size: 13px; }
 .rok-domain { margin: 8px 0 2px; font-size: 11.5px; text-transform: uppercase; letter-spacing: 0.04em; }
+
+/* SO Kwaliteitsbeeld: collapsible domain -> expectation -> indicator rows */
+.tree-head { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+.tree-head .spacer { flex: 1; }
+.tree-toggle { display: inline-flex; align-items: center; gap: 6px; background: none; border: 0; padding: 0; color: inherit; font: inherit; cursor: pointer; text-align: left; }
+.chev { display: inline-block; width: 12px; transition: transform 0.15s; }
+.chev.open { transform: rotate(90deg); }
+.domain-row .tree-all { background: transparent; color: #fff; border-color: rgba(255, 255, 255, 0.4); }
+.domain-row .tree-all:hover { border-color: #fff; }
+.exp-desc-btn { margin-left: 18px; font-size: 12px; }
+.tally { display: inline-flex; align-items: center; gap: 5px; font-size: 12px; font-weight: 400; opacity: 0.85; }
+.tally-dot { display: inline-block; min-width: 20px; padding: 0 6px; border-radius: 100px; text-align: center; font-weight: 600; font-size: 11.5px; }
+.tally-dot.ok { background: var(--st-ok-bg); color: var(--st-ok); }
+.tally-dot.monitoren { background: var(--st-monitoren-bg); color: var(--st-monitoren); }
+.tally-dot.actie { background: var(--st-actie-bg); color: var(--st-actie); }
+.tally-dot.none { background: var(--paper); color: var(--ink-soft); border: 1px dashed var(--border); }

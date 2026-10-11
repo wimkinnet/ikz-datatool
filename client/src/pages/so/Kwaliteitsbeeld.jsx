@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { useApp } from '../../context/AppContext';
 import { NoSchool, ErrorBanner } from '../../components/Bits';
 import { useSo } from '../../so/useSo';
@@ -14,7 +14,10 @@ export default function Kwaliteitsbeeld() {
   const [fMonth, setFMonth] = useState('');
   const [fRating, setFRating] = useState('');
   const [q, setQ] = useState('');
-  const [open, setOpen] = useState({}); // expectation code -> description visible
+  const [desc, setDesc] = useState({}); // expectation code -> description visible
+  // Collapsible tree: black domain rows -> expectation rows (R1, K2, …) -> indicator rows
+  const [openDomains, setOpenDomains] = useState(() => new Set());
+  const [openExps, setOpenExps] = useState(() => new Set());
   const [edit, setEdit] = useState(null);
 
   const rokByCode = useMemo(() => Object.fromEntries(rok.map((r) => [r.code, r])), [rok]);
@@ -52,8 +55,32 @@ export default function Kwaliteitsbeeld() {
     return out;
   }, [rok, linked, matches]);
 
-  if (!schoolId) return <NoSchool />;
   const filtering = fSource || fMonth || fRating !== '' || q;
+
+  const toggle = (setter, key) => setter((prev) => {
+    const next = new Set(prev);
+    if (next.has(key)) next.delete(key); else next.add(key);
+    return next;
+  });
+  function expandAll(list = domains) {
+    setOpenDomains((prev) => new Set([...prev, ...list.map((d) => d.domain)]));
+    setOpenExps((prev) => new Set([...prev, ...list.flatMap((d) => d.items.map((i) => i.exp.code))]));
+  }
+  function collapseAll(list = domains) {
+    const names = new Set(list.map((d) => d.domain));
+    const codes = new Set(list.flatMap((d) => d.items.map((i) => i.exp.code)));
+    setOpenDomains((prev) => new Set([...prev].filter((x) => !names.has(x))));
+    setOpenExps((prev) => new Set([...prev].filter((x) => !codes.has(x))));
+  }
+  const allOpen = (list) => list.every((d) => openDomains.has(d.domain) && d.items.every((i) => openExps.has(i.exp.code)));
+
+  // A new filter opens everything that still matches, so the results are visible straight away
+  useEffect(() => {
+    if (filtering) expandAll();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [fSource, fMonth, fRating, q]);
+
+  if (!schoolId) return <NoSchool />;
 
   return (
     <div>
@@ -94,6 +121,10 @@ export default function Kwaliteitsbeeld() {
         </select>
         <input className="input-inline" placeholder="Zoeken…" value={q} onChange={(e) => setQ(e.target.value)} />
         {filtering && <button className="btn btn-sm" onClick={() => { setFSource(''); setFMonth(''); setFRating(''); setQ(''); }}>Filters wissen</button>}
+        <span className="spacer" />
+        {domains.length > 0 && (allOpen(domains)
+          ? <button className="btn btn-sm" onClick={() => collapseAll()}>Alles inklappen</button>
+          : <button className="btn btn-sm" onClick={() => expandAll()}>Alles uitklappen</button>)}
       </div>
 
       <div className="table-wrap" style={{ overflowX: 'auto' }}>
@@ -106,7 +137,10 @@ export default function Kwaliteitsbeeld() {
             </thead>
             <tbody>
               {domains.map((d) => (
-                <DomainRows key={d.domain} d={d} open={open} setOpen={setOpen} onEdit={setEdit} save={save} />
+                <DomainRows key={d.domain} d={d} isOpen={openDomains.has(d.domain)} openExps={openExps}
+                  toggleDomain={() => toggle(setOpenDomains, d.domain)} toggleExp={(code) => toggle(setOpenExps, code)}
+                  allOpen={allOpen([d])} expandAll={() => expandAll([d])} collapseAll={() => collapseAll([d])}
+                  desc={desc} toggleDesc={(code) => setDesc((o) => ({ ...o, [code]: !o[code] }))} onEdit={setEdit} save={save} />
               ))}
             </tbody>
           </table>
@@ -118,29 +152,58 @@ export default function Kwaliteitsbeeld() {
   );
 }
 
-function DomainRows({ d, open, setOpen, onEdit, save }) {
+// Small per-rating tally shown on collapsed rows (an indicator linked twice in one domain counts once)
+function Tally({ inds }) {
+  const unique = [...new Map(inds.map((r) => [r.key, r])).values()];
+  const n = (v) => unique.filter((r) => r.inschaling === v).length;
+  return (
+    <span className="tally">
+      <span>{unique.length} indicator{unique.length === 1 ? '' : 'en'}</span>
+      {INSCHALING_SO.map((i) => n(i.value) > 0 && <span key={i.value} className={`tally-dot ${i.cls}`} title={i.label}>{n(i.value)}</span>)}
+      {n(null) > 0 && <span className="tally-dot none" title="Nog niet ingeschaald">{n(null)}</span>}
+    </span>
+  );
+}
+
+function DomainRows({ d, isOpen, openExps, toggleDomain, toggleExp, allOpen, expandAll, collapseAll, desc, toggleDesc, onEdit, save }) {
   return (
     <>
-      <tr className="month-row domain-row"><td colSpan={6}>{d.domain}</td></tr>
-      {d.items.map(({ exp, inds }) => (
-        <ExpectationRows key={exp.code} exp={exp} inds={inds} open={!!open[exp.code]}
-          toggle={() => setOpen((o) => ({ ...o, [exp.code]: !o[exp.code] }))} onEdit={onEdit} save={save} />
+      <tr className="month-row domain-row">
+        <td colSpan={6}>
+          <div className="tree-head">
+            <button className="tree-toggle" onClick={toggleDomain} aria-expanded={isOpen}>
+              <span className={`chev ${isOpen ? 'open' : ''}`}>▸</span> {d.domain}
+            </button>
+            <Tally inds={d.items.flatMap((i) => i.inds)} />
+            <span className="spacer" />
+            <button className="btn btn-sm tree-all" onClick={allOpen ? collapseAll : expandAll}>{allOpen ? 'Alles inklappen' : 'Alles uitklappen'}</button>
+          </div>
+        </td>
+      </tr>
+      {isOpen && d.items.map(({ exp, inds }) => (
+        <ExpectationRows key={exp.code} exp={exp} inds={inds} isOpen={openExps.has(exp.code)} toggle={() => toggleExp(exp.code)}
+          showDesc={!!desc[exp.code]} toggleDesc={() => toggleDesc(exp.code)} onEdit={onEdit} save={save} />
       ))}
     </>
   );
 }
 
-function ExpectationRows({ exp, inds, open, toggle, onEdit, save }) {
+function ExpectationRows({ exp, inds, isOpen, toggle, showDesc, toggleDesc, onEdit, save }) {
   return (
     <>
       <tr className="exp-row">
         <td colSpan={6}>
-          <span className="tag">{exp.code}</span> <strong>{exp.title}</strong>{' '}
-          {exp.description && <button className="link-btn" onClick={toggle}>{open ? 'verberg toelichting' : 'toelichting'}</button>}
-          {open && <p className="muted exp-desc">{exp.description}</p>}
+          <div className="tree-head">
+            <button className="tree-toggle" onClick={toggle} aria-expanded={isOpen}>
+              <span className={`chev ${isOpen ? 'open' : ''}`}>▸</span> <span className="tag">{exp.code}</span> <strong>{exp.title}</strong>
+            </button>
+            <Tally inds={inds} />
+          </div>
+          {exp.description && <button className="link-btn exp-desc-btn" onClick={toggleDesc}>{showDesc ? 'verberg toelichting' : 'toelichting'}</button>}
+          {showDesc && <p className="muted exp-desc">{exp.description}</p>}
         </td>
       </tr>
-      {inds.map((r) => (
+      {isOpen && inds.map((r) => (
         <tr key={r.key}>
           <td><span className="muted">{soSourceLabel(r.source)}</span><div>{r.bron}</div></td>
           <td><button className="link-btn strong" onClick={() => onEdit(r)}>{r.text}</button></td>
@@ -153,4 +216,3 @@ function ExpectationRows({ exp, inds, open, toggle, onEdit, save }) {
     </>
   );
 }
-
