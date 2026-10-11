@@ -3,7 +3,9 @@ const router = express.Router();
 const PlanItem = require('../models/PlanItem');
 const School = require('../models/School');
 const { protect, requireStaff } = require('../middleware/auth');
-const { canAccessSchool, schoolScope } = require('../middleware/access');
+const { canAccessSchool, schoolScope, requireSchoolType } = require('../middleware/access');
+
+const requireSO = requireSchoolType('SO'); // the year plan is SO-only for now
 const { PLAN_MONTHS, STATUSES, SCHOOL_YEAR_RE } = require('../utils/constants');
 const { loadPlan } = require('../utils/plan');
 const pick = require('../utils/pick');
@@ -22,7 +24,7 @@ function planScope(req, res, next) {
     req.isTemplate = true;
     return next();
   }
-  return schoolScope(req, res, next);
+  return schoolScope(req, res, () => requireSO(req, res, next));
 }
 
 async function canEditStructure(user, schoolId) {
@@ -115,7 +117,7 @@ router.delete('/:id', async (req, res) => {
 });
 
 // POST /api/plan/apply-template  { school, schoolYear, replace? }  - copy the default plan into a school year
-router.post('/apply-template', requireStaff, schoolScope, async (req, res) => {
+router.post('/apply-template', requireStaff, schoolScope, requireSO, async (req, res) => {
   try {
     const { schoolYear, replace } = req.body;
     if (!SCHOOL_YEAR_RE.test(schoolYear || '')) return res.status(400).json({ message: 'Ongeldig schooljaar.' });

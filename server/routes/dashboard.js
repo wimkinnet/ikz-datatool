@@ -1,12 +1,12 @@
 const express = require('express');
 const router = express.Router();
 const { protect } = require('../middleware/auth');
-const { schoolScope } = require('../middleware/access');
+const { schoolScope, requireSchoolType } = require('../middleware/access');
 const { PLAN_MONTHS, SCHOOL_YEAR_RE } = require('../utils/constants');
 const { loadPlan } = require('../utils/plan');
 const { computeProgress } = require('../utils/progress');
 
-router.use(protect, schoolScope);
+router.use(protect, schoolScope, requireSchoolType('SO')); // questionnaire and dashboard are SO-only for now
 
 const tally = (arr) => {
   const m = new Map();

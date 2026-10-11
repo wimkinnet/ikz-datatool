@@ -1,7 +1,14 @@
 # IKZ Datatool
 
-Web app for interne kwaliteitszorg (IKZ) in basisscholen, built from the Excel workbook
-*Dataoverzicht peilmomenten*. Consultants and schools work in the same tool:
+Web app for interne kwaliteitszorg (IKZ), built from the Excel workbook *Dataoverzicht peilmomenten*.
+
+**BO / SO.** At the highest level the tool is split into *basisonderwijs* (BO) and *secundair onderwijs* (SO).
+Every school is exactly one of the two (chosen when the school is created). A user can be linked to schools of
+both types and then switches with the BO/SO toggle at the top of the sidebar; admins always see both.
+Everything below is the **SO** context. The BO context is still to be built: for now BO only has Scholen,
+Gebruikers and Documenten, and the SO-only pages show a placeholder (the server also refuses SO data for BO schools).
+
+Consultants and schools work in the same tool:
 
 - **Vragenlijst** — the monthly "peilmoment" questionnaire, three school years side by side, with
   comments, consultant advice and file attachments per answer.

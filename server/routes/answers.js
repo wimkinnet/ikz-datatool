@@ -6,12 +6,12 @@ const Question = require('../models/Question');
 const Document = require('../models/Document');
 const ReferenceItem = require('../models/ReferenceItem');
 const { protect } = require('../middleware/auth');
-const { schoolScope } = require('../middleware/access');
+const { schoolScope, requireSchoolType } = require('../middleware/access');
 const { SCHOOL_YEAR_RE } = require('../utils/constants');
 const { numericValue } = require('../utils/answerValues');
 const { computeProgress } = require('../utils/progress');
 
-router.use(protect, schoolScope);
+router.use(protect, schoolScope, requireSchoolType('SO')); // questionnaire and dashboard are SO-only for now
 
 async function coerceValue(question, raw) {
   if (raw === '' || raw === null || raw === undefined) return null;

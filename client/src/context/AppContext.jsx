@@ -1,23 +1,26 @@
 import { createContext, useContext, useState, useEffect, useCallback, useMemo } from 'react';
 import api from '../api/axios';
 import { useAuth } from './AuthContext';
-import { currentSchoolYear } from '../utils/constants';
+import { currentSchoolYear, SECTORS } from '../utils/constants';
 
 const AppContext = createContext(null);
 
-// Holds what almost every screen needs: the schools the user may see, the active school + school year,
-// and the dropdown lists (formerly the "Verwijzigen" tab).
+// Holds what almost every screen needs: the active sector (BO/SO), the schools the user may see in it,
+// the active school + school year, and the dropdown lists (formerly the "Verwijzigen" tab).
 export function AppProvider({ children }) {
   const { user } = useAuth();
-  const [schools, setSchools] = useState([]);
+  const [allSchools, setAllSchools] = useState([]);
   const [refs, setRefs] = useState({});
-  const [storedSchool, setStoredSchool] = useState(localStorage.getItem('schoolId') || '');
+  const [storedSector, setStoredSector] = useState(localStorage.getItem('sector') || '');
+  const [storedSchool, setStoredSchool] = useState(() => {
+    try { return JSON.parse(localStorage.getItem('schoolBySector')) || {}; } catch { return {}; }
+  });
   const [year, setYearState] = useState(localStorage.getItem('year') || currentSchoolYear());
   const [ready, setReady] = useState(false);
 
   const load = useCallback(async () => {
     const [s, r] = await Promise.all([api.get('/schools'), api.get('/references')]);
-    setSchools(s.data);
+    setAllSchools(s.data);
     setRefs(r.data);
     setReady(true);
   }, []);
@@ -27,18 +30,32 @@ export function AppProvider({ children }) {
     else setReady(false);
   }, [user, load]);
 
-  // Everyone picks one of the schools they can access (falling back to the first)
+  // Admins work in both sectors; everyone else in the sectors of the schools they are linked to
+  const sectors = useMemo(() => {
+    if (!user) return [];
+    if (user.role === 'admin') return SECTORS.map((s) => s.key);
+    return SECTORS.map((s) => s.key).filter((key) => allSchools.some((s) => s.type === key));
+  }, [user, allSchools]);
+  const sector = sectors.includes(storedSector) ? storedSector : sectors.includes('SO') ? 'SO' : sectors[0] || '';
+  const setSector = (key) => {
+    localStorage.setItem('sector', key);
+    setStoredSector(key);
+  };
+
+  // The schools of the active sector; the active school is remembered per sector (falling back to the first)
+  const schools = useMemo(() => allSchools.filter((s) => s.type === sector), [allSchools, sector]);
   const schoolId = useMemo(() => {
     if (!user) return '';
-    if (schools.some((s) => s._id === storedSchool)) return storedSchool;
+    if (schools.some((s) => s._id === storedSchool[sector])) return storedSchool[sector];
     return schools[0]?._id || '';
-  }, [user, schools, storedSchool]);
+  }, [user, schools, storedSchool, sector]);
 
   const school = schools.find((s) => s._id === schoolId) || null;
 
   const setSchoolId = (id) => {
-    localStorage.setItem('schoolId', id);
-    setStoredSchool(id);
+    const next = { ...storedSchool, [sector]: id };
+    localStorage.setItem('schoolBySector', JSON.stringify(next));
+    setStoredSchool(next);
   };
   const setYear = (y) => {
     localStorage.setItem('year', y);
@@ -51,7 +68,7 @@ export function AppProvider({ children }) {
 
   return (
     <AppContext.Provider
-      value={{ schools, school, schoolId, setSchoolId, year, setYear, refs, refList, refLabel, ready, reload: load, canEditPlanStructure }}
+      value={{ sector, setSector, sectors, allSchools, schools, school, schoolId, setSchoolId, year, setYear, refs, refList, refLabel, ready, reload: load, canEditPlanStructure }}
     >
       {children}
     </AppContext.Provider>

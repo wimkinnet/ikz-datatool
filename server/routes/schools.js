@@ -11,6 +11,7 @@ const { UPLOAD_ROOT } = require('../middleware/upload');
 const { protect, requireRole, requireStaff } = require('../middleware/auth');
 const { schoolIdsOf, canAccessSchool } = require('../middleware/access');
 const pick = require('../utils/pick');
+const { SECTORS } = require('../utils/constants');
 
 router.use(protect);
 
@@ -37,6 +38,7 @@ router.get('/:id', async (req, res) => {
 // POST /api/schools  (admin)
 router.post('/', requireRole('admin'), async (req, res) => {
   try {
+    if (!SECTORS.includes(req.body.type)) return res.status(400).json({ message: 'Kies of dit een school voor basisonderwijs (BO) of secundair onderwijs (SO) is.' });
     const school = await School.create(pick(req.body, FIELDS));
     res.status(201).json(school);
   } catch (err) {
@@ -48,7 +50,18 @@ router.post('/', requireRole('admin'), async (req, res) => {
 router.put('/:id', requireStaff, async (req, res) => {
   try {
     if (!canAccessSchool(req.user, req.params.id)) return res.status(403).json({ message: 'Je hebt geen toegang tot deze school.' });
-    const school = await School.findByIdAndUpdate(req.params.id, pick(req.body, FIELDS), { new: true, runValidators: true });
+    const fields = pick(req.body, FIELDS);
+    // Only an admin can change BO/SO, and only while the school has no SO data yet
+    if (fields.type !== undefined) {
+      const current = await School.findById(req.params.id).select('type');
+      if (current && fields.type !== current.type) {
+        if (req.user.role !== 'admin') return res.status(403).json({ message: 'Enkel een admin kan het onderwijsniveau van een school wijzigen.' });
+        if ((await Answer.exists({ school: req.params.id })) || (await PlanItem.exists({ school: req.params.id }))) {
+          return res.status(409).json({ message: 'Deze school heeft al antwoorden of een jaarplan. Het onderwijsniveau kan niet meer gewijzigd worden.' });
+        }
+      }
+    }
+    const school = await School.findByIdAndUpdate(req.params.id, fields, { new: true, runValidators: true });
     if (!school) return res.status(404).json({ message: 'School niet gevonden.' });
     res.json(school);
   } catch (err) {

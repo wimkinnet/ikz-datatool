@@ -12,7 +12,7 @@ const EMPTY = { name: '', email: '', password: '', phone: '', role: 'client', sc
 
 export default function Gebruikers() {
   const { user: me } = useAuth();
-  const { schools } = useApp();
+  const { allSchools: schools } = useApp(); // users can be linked to schools of both BO and SO
   const [users, setUsers] = useState([]);
   const [edit, setEdit] = useState(null);
   const [error, setError] = useState('');

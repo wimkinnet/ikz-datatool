@@ -1,14 +1,15 @@
 import { NavLink, Outlet, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { useApp } from '../context/AppContext';
-import { yearOptions } from '../utils/constants';
+import { yearOptions, SECTORS } from '../utils/constants';
 import { SchoolSwitcher } from './SchoolPicker';
 
 const link = ({ isActive }) => 'nav-link' + (isActive ? ' active' : '');
 
 export default function Layout() {
   const { user, logout } = useAuth();
-  const { schools, school, schoolId, setSchoolId, year, setYear, ready } = useApp();
+  const { sector, setSector, sectors, schools, school, schoolId, setSchoolId, year, setYear, ready } = useApp();
+  const isSO = sector === 'SO';
   const navigate = useNavigate();
   const isStaff = user.role !== 'client';
 
@@ -20,11 +21,28 @@ export default function Layout() {
           <span>Interne kwaliteitszorg</span>
         </div>
 
+        {sectors.length > 1 ? (
+          <div className="sector-switch" role="tablist" aria-label="Onderwijsniveau">
+            {SECTORS.filter((s) => sectors.includes(s.key)).map((s) => (
+              <button key={s.key} role="tab" aria-selected={s.key === sector} title={s.label}
+                className={s.key === sector ? 'active' : ''} onClick={() => setSector(s.key)}>
+                {s.short}
+              </button>
+            ))}
+          </div>
+        ) : sector && (
+          <div className="sector-single">{SECTORS.find((s) => s.key === sector)?.label}</div>
+        )}
+
         <nav>
           <NavLink to="/" end className={link}>Overzicht</NavLink>
-          <NavLink to="/vragenlijst" className={link}>Vragenlijst</NavLink>
-          <NavLink to="/jaarplan" className={link}>Jaarplan</NavLink>
-          <NavLink to="/trends" className={link}>Trends</NavLink>
+          {isSO && (
+            <>
+              <NavLink to="/vragenlijst" className={link}>Vragenlijst</NavLink>
+              <NavLink to="/jaarplan" className={link}>Jaarplan</NavLink>
+              <NavLink to="/trends" className={link}>Trends</NavLink>
+            </>
+          )}
           <NavLink to="/documenten" className={link}>Documenten</NavLink>
 
           {isStaff && (
@@ -34,9 +52,9 @@ export default function Layout() {
               <NavLink to="/gebruikers" className={link}>Gebruikers</NavLink>
             </>
           )}
-          {user.role === 'admin' && (
+          {user.role === 'admin' && isSO && (
             <>
-              <div className="nav-heading">Sjablonen</div>
+              <div className="nav-heading">Sjablonen SO</div>
               <NavLink to="/sjablonen/vragen" className={link}>Vragen</NavLink>
               <NavLink to="/sjablonen/jaarplan" className={link}>Standaard jaarplan</NavLink>
               <NavLink to="/sjablonen/lijsten" className={link}>Keuzelijsten</NavLink>

@@ -37,6 +37,13 @@ export const ANSWER_TYPES = [
 ];
 export const NUMERIC_TYPES = ['number', 'percentage', 'scale10'];
 
+// Highest-level split of the tool. SO has the questionnaire, year plan, dashboard and trends; BO comes later.
+export const SECTORS = [
+  { key: 'BO', label: 'Basisonderwijs', short: 'BO' },
+  { key: 'SO', label: 'Secundair onderwijs', short: 'SO' },
+];
+export const sectorLabel = (key) => SECTORS.find((s) => s.key === key)?.label || key;
+
 export const ROLE_LABELS = { admin: 'Admin', consultant: 'Consultant', client: 'School' };
 
 // Belgian school year: September -> August

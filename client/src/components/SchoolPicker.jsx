@@ -21,7 +21,7 @@ export function SchoolMultiSelect({ schools, value, onChange, disabled }) {
         <div className="chips">
           {value.map((id) => (
             <span className="chip" key={id}>
-              {nameOf(id)}
+              {nameOf(id)} <small>{schools.find((s) => s._id === id)?.type}</small>
               {!disabled && <button type="button" aria-label={`${nameOf(id)} verwijderen`} onClick={() => toggle(id)}>×</button>}
             </span>
           ))}
@@ -35,7 +35,7 @@ export function SchoolMultiSelect({ schools, value, onChange, disabled }) {
             {shown.length === 0 ? <div className="muted school-empty">Geen school gevonden.</div> : shown.map((s) => (
               <label className="checkbox-row" key={s._id}>
                 <input type="checkbox" checked={value.includes(s._id)} onChange={() => toggle(s._id)} />
-                <span>{s.name}{s.city && <span className="muted"> · {s.city}</span>}</span>
+                <span>{s.name}{s.city && <span className="muted"> · {s.city}</span>}<span className="sector-tag">{s.type}</span></span>
               </label>
             ))}
           </div>

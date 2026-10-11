@@ -5,6 +5,8 @@ const helmet = require('helmet');
 const path = require('path');
 const connectDB = require('./config/db');
 const { runSeed } = require('./utils/seed');
+const School = require('./models/School');
+const { SECTORS } = require('./utils/constants');
 
 // Fail fast with a clear message instead of a mysterious 500 on the first login
 if (!process.env.JWT_SECRET) {
@@ -60,6 +62,8 @@ const PORT = process.env.PORT || 5050;
 
 (async () => {
   await connectDB();
+  // Everything built before the BO/SO split is SO: give older schools (no type, or the old 'BaO' default) type SO
+  await School.updateMany({ type: { $nin: SECTORS } }, { $set: { type: 'SO' } });
   if (process.env.AUTO_SEED !== 'false') {
     try { await runSeed(); } catch (err) { console.error('[seed] failed:', err.message); }
   }

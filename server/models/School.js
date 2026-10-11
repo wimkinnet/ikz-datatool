@@ -1,9 +1,10 @@
 const mongoose = require('mongoose');
+const { SECTORS } = require('../utils/constants');
 
 const schoolSchema = new mongoose.Schema(
   {
     name: { type: String, required: true, trim: true },
-    type: { type: String, default: 'BaO' }, // basisonderwijs; kept free-text for future school types
+    type: { type: String, enum: SECTORS, required: true }, // 'BO' (basisonderwijs) or 'SO' (secundair onderwijs)
     institutionNumber: { type: String, trim: true },
     city: { type: String, trim: true },
     contactName: { type: String, trim: true },

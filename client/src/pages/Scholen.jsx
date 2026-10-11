@@ -6,12 +6,13 @@ import { useAuth } from '../context/AuthContext';
 import Modal from '../components/Modal';
 import { useConfirm } from '../components/Confirm';
 import { ErrorBanner } from '../components/Bits';
+import { SECTORS, sectorLabel } from '../utils/constants';
 
 const EMPTY = { name: '', institutionNumber: '', city: '', contactName: '', contactEmail: '', contactPhone: '', notes: '', active: true, clientCanEditPlanStructure: false };
 
 export default function Scholen() {
   const { user } = useAuth();
-  const { schools, schoolId, setSchoolId, reload } = useApp();
+  const { sector, schools, schoolId, setSchoolId, reload } = useApp();
   const navigate = useNavigate();
   const confirm = useConfirm();
   const [edit, setEdit] = useState(null);
@@ -49,8 +50,8 @@ export default function Scholen() {
   return (
     <div>
       <div className="page-header">
-        <div><h1>Scholen</h1><p>De scholen en scholengroepen die je opvolgt.</p></div>
-        {user.role === 'admin' && <button className="btn btn-primary" onClick={() => { setError(''); setEdit({ ...EMPTY }); }}>+ Nieuwe school</button>}
+        <div><h1>Scholen</h1><p>De scholen en scholengroepen in {sectorLabel(sector).toLowerCase()} die je opvolgt.</p></div>
+        {user.role === 'admin' && <button className="btn btn-primary" onClick={() => { setError(''); setEdit({ ...EMPTY, type: sector }); }}>+ Nieuwe school</button>}
       </div>
       <ErrorBanner message={error && !edit ? error : ''} />
       <div className="table-wrap">
@@ -80,6 +81,12 @@ export default function Scholen() {
           <ErrorBanner message={error} />
           <form onSubmit={save}>
             <div className="field"><label>Naam</label><input required value={edit.name} onChange={set('name')} /></div>
+            <div className="field"><label>Onderwijsniveau</label>
+              <select required value={edit.type || ''} onChange={set('type')} disabled={user.role !== 'admin'}>
+                {SECTORS.map((s) => <option key={s.key} value={s.key}>{s.label} ({s.key})</option>)}
+              </select>
+              {edit._id && <div className="hint">Kan enkel gewijzigd worden zolang de school nog geen antwoorden of jaarplan heeft.</div>}
+            </div>
             <div className="field-row">
               <div className="field"><label>Instellingsnummer</label><input value={edit.institutionNumber || ''} onChange={set('institutionNumber')} /></div>
               <div className="field"><label>Gemeente</label><input value={edit.city || ''} onChange={set('city')} /></div>
