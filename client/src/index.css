@@ -821,3 +821,65 @@ select.status-select.actie { background: var(--st-actie-bg); color: var(--st-act
   font-weight: 600;
   color: var(--ink-soft);
 }
+
+/* ---------- SO: Kwaliteitsmonitor ---------- */
+.stat-btn {
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+}
+
+.stat-btn:hover,
+.stat-btn.active {
+  border-color: var(--accent);
+}
+
+.stat-btn.active {
+  box-shadow: inset 0 0 0 1px var(--accent);
+}
+
+.stat .value.st-ok { color: var(--st-ok); }
+.stat .value.st-monitoren { color: var(--st-monitoren); }
+.stat .value.st-actie { color: var(--st-actie); }
+
+.status-pill.none,
+select.status-select.none {
+  background: var(--paper);
+  color: var(--ink-soft);
+  border: 1px dashed var(--border);
+}
+
+.so-table td { vertical-align: top; }
+.so-table .domain-row td { background: var(--ink); color: #fff; text-transform: none; font-size: 13.5px; }
+.so-table .exp-row td { background: var(--accent-tint); font-size: 13.5px; }
+.exp-desc { margin: 6px 0 2px; font-size: 13px; max-width: 900px; white-space: normal; }
+
+.link-btn.strong {
+  font-weight: 600;
+  text-align: left;
+  text-decoration: none;
+  color: var(--ink);
+}
+
+.link-btn.strong:hover { text-decoration: underline; }
+
+.so-rok-links {
+  display: grid;
+  gap: 4px;
+  margin-bottom: 16px;
+  font-size: 13px;
+}
+
+.so-month { margin-bottom: 16px; }
+.so-month h2 small { font-size: 13px; font-weight: 400; margin-left: 6px; }
+
+.rok-picker {
+  max-height: 260px;
+  overflow-y: auto;
+  padding: 6px 10px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+}
+
+.rok-picker .checkbox-row { margin: 0; padding: 3px 0; font-size: 13px; }
+.rok-domain { margin: 8px 0 2px; font-size: 11.5px; text-transform: uppercase; letter-spacing: 0.04em; }

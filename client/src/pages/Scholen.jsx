@@ -33,7 +33,7 @@ export default function Scholen() {
   async function remove() {
     const ok = await confirm({
       title: 'School verwijderen?',
-      message: `"${edit.name}" wordt definitief verwijderd, samen met alle antwoorden, het jaarplan, alle documenten. Schoolaccounts die enkel aan deze school gekoppeld zijn, worden ook verwijderd.\n\nDit kan niet ongedaan worden gemaakt. Wil je de school enkel verbergen, zet ze dan op inactief.`,
+      message: `"${edit.name}" wordt definitief verwijderd, samen met alle antwoorden, het jaarplan, de inschalingen en alle documenten. Schoolaccounts die enkel aan deze school gekoppeld zijn, worden ook verwijderd.\n\nDit kan niet ongedaan worden gemaakt. Wil je de school enkel verbergen, zet ze dan op inactief.`,
       confirmLabel: 'School verwijderen',
     });
     if (!ok) return;
@@ -85,7 +85,7 @@ export default function Scholen() {
               <select required value={edit.type || ''} onChange={set('type')} disabled={user.role !== 'admin'}>
                 {SECTORS.map((s) => <option key={s.key} value={s.key}>{s.label} ({s.key})</option>)}
               </select>
-              {edit._id && <div className="hint">Kan enkel gewijzigd worden zolang de school nog geen antwoorden of jaarplan heeft.</div>}
+              {edit._id && <div className="hint">Kan enkel gewijzigd worden zolang de school nog geen gegevens (antwoorden, jaarplan of inschalingen) heeft.</div>}
             </div>
             <div className="field-row">
               <div className="field"><label>Instellingsnummer</label><input value={edit.institutionNumber || ''} onChange={set('institutionNumber')} /></div>

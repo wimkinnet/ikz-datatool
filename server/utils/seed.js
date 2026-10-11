@@ -6,11 +6,13 @@ const User = require('../models/User');
 const ReferenceItem = require('../models/ReferenceItem');
 const Question = require('../models/Question');
 const PlanItem = require('../models/PlanItem');
+const RokExpectation = require('../models/RokExpectation');
+const Indicator = require('../models/Indicator');
 
 const readSeed = (name) => JSON.parse(fs.readFileSync(path.join(__dirname, '..', 'seed', name), 'utf-8'));
 
 // Idempotent: only fills collections that are still empty, so admin edits are never overwritten
-// (unless --reset-templates is passed, which replaces references, questions and the default plan).
+// (unless --reset-templates is passed, which replaces references, questions, the default plan and the SO templates).
 async function runSeed({ reset = false } = {}) {
   const log = [];
 
@@ -18,6 +20,8 @@ async function runSeed({ reset = false } = {}) {
     await ReferenceItem.deleteMany({});
     await Question.deleteMany({});
     await PlanItem.deleteMany({ school: null });
+    await RokExpectation.deleteMany({});
+    await Indicator.deleteMany({});
     log.push('Templates reset');
   }
 
@@ -32,6 +36,16 @@ async function runSeed({ reset = false } = {}) {
   if ((await PlanItem.countDocuments({ school: null })) === 0) {
     await PlanItem.insertMany(readSeed('plan-template.json').map((p) => ({ ...p, school: null, schoolYear: null })));
     log.push('Default year plan seeded');
+  }
+
+  // SO (secundair onderwijs): ROK expectations and the Kwaliteitsmonitor indicators
+  if ((await RokExpectation.countDocuments()) === 0) {
+    await RokExpectation.insertMany(readSeed('so-rok.json'));
+    log.push('SO: ROK seeded');
+  }
+  if ((await Indicator.countDocuments()) === 0) {
+    await Indicator.insertMany(readSeed('so-indicators.json'));
+    log.push('SO: indicators seeded');
   }
 
   const email = (process.env.SEED_ADMIN_EMAIL || '').toLowerCase();

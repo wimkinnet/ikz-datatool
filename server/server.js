@@ -43,6 +43,7 @@ app.use('/api/answers', require('./routes/answers'));
 app.use('/api/plan', require('./routes/plan'));
 app.use('/api/dashboard', require('./routes/dashboard'));
 app.use('/api/documents', require('./routes/documents'));
+app.use('/api/so', require('./routes/so'));
 
 app.get('/api/health', (req, res) => res.json({ status: 'ok' }));
 app.use('/api', (req, res) => res.status(404).json({ message: 'Onbekend API-adres.' }));

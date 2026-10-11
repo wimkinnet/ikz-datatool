@@ -27,3 +27,10 @@ export function SectorRoute({ sector, children }) {
     </div>
   );
 }
+
+// One route, a different page per sector (e.g. the start page: BO Overzicht, SO Kwaliteitsbeeld)
+export function SectorPick({ BO, SO }) {
+  const { sector, ready } = useApp();
+  if (!ready) return <p className="muted">Laden…</p>;
+  return sector === 'SO' ? SO : BO;
+}

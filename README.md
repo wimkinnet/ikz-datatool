@@ -5,8 +5,8 @@ Web app for interne kwaliteitszorg (IKZ), built from the Excel workbook *Dataove
 **BO / SO.** At the highest level the tool is split into *basisonderwijs* (BO) and *secundair onderwijs* (SO).
 Every school is exactly one of the two (chosen when the school is created). A user can be linked to schools of
 both types and then switches with the BO/SO toggle at the top of the sidebar; admins always see both.
-Everything below is the **BO** context. The SO context is still to be built: for now SO only has Scholen,
-Gebruikers and Documenten, and the BO-only pages show a placeholder (the server also refuses BO data for SO schools).
+The sections below up to *SO: Kwaliteitsmonitor* describe the **BO** context. Each sector only shows its own
+pages, and the server refuses BO data for SO schools and the other way round.
 
 Consultants and schools work in the same tool:
 
@@ -41,6 +41,46 @@ thresholds? Default **no** — the consultant owns the structure of the plan.
 | Table on tab *Dashboard* (rows 21+) | **Jaarplan** — the 21 example rows are the *standaard jaarplan*, copied into a school with one click |
 | Tab *Verwijzigen* | **Keuzelijsten** (admin-editable dropdowns) |
 | Tab *Draaitabellen* + the 4 charts | **Overzicht**, computed live from the plan (no pivot tables to refresh) |
+
+## SO: Kwaliteitsmonitor
+
+Built from the workbook *Kwaliteitsmonitor scholen* (Sint Norbertus). It is not a questionnaire but a list of
+**indicators**: each has a source (Smartschool, Datawijzer, Dataloep, Andere, Vakwerkgroepen, Llnbgl & GOK), a
+threshold, a default monitoring month and links to one or more **ROK expectations** (R1–R6, K1–K3, D1–D4, V1–V4,
+B1–B4, O1–O4, BL1–BL12). Per school year a school rates every indicator **op niveau (1) / opvolgen (0) / actie nodig (−1)**
+and can set its own month, threshold and action.
+
+| Excel | App |
+|---|---|
+| Tab *ROK - kwaliteitsbeeld* + counters | **Kwaliteitsbeeld** (SO start page): counters, filters, ROK table |
+| Tabs *Smartschool, Datawijzer, Dataloep, andere, vakwerkgroepen, llnbgl gok* | **Indicatoren** (one tab per source) — where indicators are rated |
+| Tab *Kalender* (+ *Kalenderdata*, *Maandkeuze*) | **Kalender**, generated from all indicators |
+| *Dashboarddata* | computed live |
+
+Each indicator is stored once; the ROK view, calendar and counters all read the same rating. *Vakwerkgroepen* and
+*llnbgl gok* are working sheets with their own ratings and are not linked to the ROK (as in the workbook).
+The *opstartgesprek doorlichting* checklist at the bottom of the ROK tab is not imported.
+
+**Corrections made while importing** (`tools/extract_so_seed.py` prints them; also stored in `tools/data/sint-norbertus.json`):
+- ROK row 13 took its rating from `andere!A7` (empty → 0) instead of `andere!D27` (−1).
+- ROK rows 12, 74 and 123 had the rating typed in (1) instead of linked to `Smartschool!D2`, which was empty and
+  showed as 0 in row 25. The typed 1 was kept as the rating.
+- The Smartschool indicator on row 2 sat above the header row; it is now in the section *Skore*.
+- A note typed into the ROK view under BL4 ("acties afgetoetst aan bronnenboek/wijze lessen/leerpunt") had no source
+  row; it is now an indicator under *Andere › Beleid* (not rated yet).
+- The calendar missed 16 indicators (all inspection reports, andere 55–57 and the BL4 note) and listed 5 twice.
+- "Aantal unieke indicatoren" only counted rated indicators (66 of 106) and empty ratings counted as *opvolgen*;
+  the app counts all 107 and shows unrated ones separately.
+- Text: PDF hyphenation in the ROK texts (*tevreden heid*, *systema tisch*, …) and spelling (*doolichtingsverslag*,
+  *gezamelijke*, *herkennnen*, *redicordi* → *redicodi*, *ten alle tijden* → *te allen tijde*, …).
+
+**Templates and data**
+```bash
+python3 tools/extract_so_seed.py path/to/Kwaliteitsmonitor.xlsx "Sint Norbertus"   # writes server/seed/so-*.json + tools/data/<school>.json
+cd server && npm run seed                                                           # seeds the SO templates when still empty
+npm run import:so -- ../tools/data/sint-norbertus.json                              # creates the SO school + imports its ratings (2026-2027)
+```
+Admins maintain the indicators under *Sjablonen SO → Indicatoren*.
 
 ## Things to check (assumptions I had to make)
 

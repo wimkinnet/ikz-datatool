@@ -59,3 +59,21 @@ export function yearOptions() {
   const cur = currentSchoolYear();
   return [-4, -3, -2, -1, 0, 1].map((n) => shiftYear(cur, n));
 }
+
+// SO (Kwaliteitsmonitor): the source tabs of the workbook and the three-step inschaling
+export const SO_SOURCES = [
+  { key: 'smartschool', label: 'Smartschool' },
+  { key: 'datawijzer', label: 'Datawijzer' },
+  { key: 'dataloep', label: 'Dataloep' },
+  { key: 'andere', label: 'Andere' },
+  { key: 'vakwerkgroepen', label: 'Vakwerkgroepen' },
+  { key: 'llnbgl', label: 'Llnbgl & GOK' },
+];
+export const soSourceLabel = (key) => SO_SOURCES.find((s) => s.key === key)?.label || key;
+// value -> label + the BO status colour class it reuses
+export const INSCHALING_SO = [
+  { value: 1, label: 'Op niveau', cls: 'ok' },
+  { value: 0, label: 'Opvolgen', cls: 'monitoren' },
+  { value: -1, label: 'Actie nodig', cls: 'actie' },
+];
+export const inschalingSO = (v) => INSCHALING_SO.find((i) => i.value === v) || null;

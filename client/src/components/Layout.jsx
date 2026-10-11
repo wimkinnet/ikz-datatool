@@ -35,7 +35,13 @@ export default function Layout() {
         )}
 
         <nav>
-          <NavLink to="/" end className={link}>Overzicht</NavLink>
+          <NavLink to="/" end className={link}>{isBO ? 'Overzicht' : 'Kwaliteitsbeeld'}</NavLink>
+          {!isBO && (
+            <>
+              <NavLink to="/indicatoren" className={link}>Indicatoren</NavLink>
+              <NavLink to="/kalender" className={link}>Kalender</NavLink>
+            </>
+          )}
           {isBO && (
             <>
               <NavLink to="/vragenlijst" className={link}>Vragenlijst</NavLink>
@@ -58,6 +64,12 @@ export default function Layout() {
               <NavLink to="/sjablonen/vragen" className={link}>Vragen</NavLink>
               <NavLink to="/sjablonen/jaarplan" className={link}>Standaard jaarplan</NavLink>
               <NavLink to="/sjablonen/lijsten" className={link}>Keuzelijsten</NavLink>
+            </>
+          )}
+          {user.role === 'admin' && !isBO && (
+            <>
+              <div className="nav-heading">Sjablonen SO</div>
+              <NavLink to="/sjablonen/indicatoren" className={link}>Indicatoren</NavLink>
             </>
           )}
         </nav>

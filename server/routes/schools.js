@@ -7,6 +7,7 @@ const User = require('../models/User');
 const Answer = require('../models/Answer');
 const PlanItem = require('../models/PlanItem');
 const Document = require('../models/Document');
+const IndicatorScore = require('../models/IndicatorScore');
 const { UPLOAD_ROOT } = require('../middleware/upload');
 const { protect, requireRole, requireStaff } = require('../middleware/auth');
 const { schoolIdsOf, canAccessSchool } = require('../middleware/access');
@@ -56,8 +57,9 @@ router.put('/:id', requireStaff, async (req, res) => {
       const current = await School.findById(req.params.id).select('type');
       if (current && fields.type !== current.type) {
         if (req.user.role !== 'admin') return res.status(403).json({ message: 'Enkel een admin kan het onderwijsniveau van een school wijzigen.' });
-        if ((await Answer.exists({ school: req.params.id })) || (await PlanItem.exists({ school: req.params.id }))) {
-          return res.status(409).json({ message: 'Deze school heeft al antwoorden of een jaarplan. Het onderwijsniveau kan niet meer gewijzigd worden.' });
+        const id = req.params.id;
+        if ((await Answer.exists({ school: id })) || (await PlanItem.exists({ school: id })) || (await IndicatorScore.exists({ school: id }))) {
+          return res.status(409).json({ message: 'Deze school heeft al gegevens (antwoorden, jaarplan of inschalingen). Het onderwijsniveau kan niet meer gewijzigd worden.' });
         }
       }
     }
@@ -82,6 +84,7 @@ router.delete('/:id', requireRole('admin'), async (req, res) => {
       Answer.deleteMany({ school: id }),
       PlanItem.deleteMany({ school: id }),
       Document.deleteMany({ school: id }),
+      IndicatorScore.deleteMany({ school: id }),
       User.updateMany({ schools: id }, { $pull: { schools: id } }),
       User.updateMany({ school: id }, { $set: { school: null } }),
     ]);

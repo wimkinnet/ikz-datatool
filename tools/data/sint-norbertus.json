@@ -1,0 +1,873 @@
+{
+ "school": "Sint Norbertus",
+ "type": "SO",
+ "schoolYear": "2026-2027",
+ "scores": [
+  {
+   "indicatorKey": "smartschool-02",
+   "inschaling": 1,
+   "month": "mei",
+   "action": ""
+  },
+  {
+   "indicatorKey": "smartschool-05",
+   "inschaling": null,
+   "month": "oktober",
+   "action": ""
+  },
+  {
+   "indicatorKey": "smartschool-06",
+   "inschaling": null,
+   "month": "oktober",
+   "action": ""
+  },
+  {
+   "indicatorKey": "smartschool-07",
+   "inschaling": null,
+   "month": "oktober",
+   "action": ""
+  },
+  {
+   "indicatorKey": "smartschool-08",
+   "inschaling": null,
+   "month": "oktober",
+   "action": ""
+  },
+  {
+   "indicatorKey": "smartschool-09",
+   "inschaling": null,
+   "month": "september",
+   "action": ""
+  },
+  {
+   "indicatorKey": "smartschool-10",
+   "inschaling": null,
+   "month": "augustus",
+   "action": ""
+  },
+  {
+   "indicatorKey": "smartschool-11",
+   "inschaling": null,
+   "month": "november",
+   "action": ""
+  },
+  {
+   "indicatorKey": "smartschool-12",
+   "inschaling": null,
+   "month": "februari",
+   "action": ""
+  },
+  {
+   "indicatorKey": "smartschool-13",
+   "inschaling": null,
+   "month": "maart",
+   "action": ""
+  },
+  {
+   "indicatorKey": "smartschool-14",
+   "inschaling": null,
+   "month": "november",
+   "action": ""
+  },
+  {
+   "indicatorKey": "smartschool-15",
+   "inschaling": null,
+   "month": "november",
+   "action": ""
+  },
+  {
+   "indicatorKey": "smartschool-16",
+   "inschaling": null,
+   "month": "oktober",
+   "action": ""
+  },
+  {
+   "indicatorKey": "smartschool-18",
+   "inschaling": null,
+   "month": "april",
+   "action": ""
+  },
+  {
+   "indicatorKey": "smartschool-19",
+   "inschaling": null,
+   "month": "november",
+   "action": ""
+  },
+  {
+   "indicatorKey": "smartschool-20",
+   "inschaling": null,
+   "month": "april",
+   "action": ""
+  },
+  {
+   "indicatorKey": "smartschool-21",
+   "inschaling": null,
+   "month": "april",
+   "action": ""
+  },
+  {
+   "indicatorKey": "smartschool-22",
+   "inschaling": null,
+   "month": "april",
+   "action": ""
+  },
+  {
+   "indicatorKey": "smartschool-23",
+   "inschaling": null,
+   "month": "april",
+   "action": ""
+  },
+  {
+   "indicatorKey": "smartschool-24",
+   "inschaling": null,
+   "month": "april",
+   "action": ""
+  },
+  {
+   "indicatorKey": "smartschool-25",
+   "inschaling": null,
+   "month": "april",
+   "action": ""
+  },
+  {
+   "indicatorKey": "smartschool-26",
+   "inschaling": null,
+   "month": "april",
+   "action": ""
+  },
+  {
+   "indicatorKey": "smartschool-27",
+   "inschaling": null,
+   "month": "april",
+   "action": ""
+  },
+  {
+   "indicatorKey": "smartschool-28",
+   "inschaling": null,
+   "month": "april",
+   "action": ""
+  },
+  {
+   "indicatorKey": "smartschool-29",
+   "inschaling": null,
+   "month": "april",
+   "action": ""
+  },
+  {
+   "indicatorKey": "smartschool-30",
+   "inschaling": null,
+   "month": "februari",
+   "action": ""
+  },
+  {
+   "indicatorKey": "smartschool-31",
+   "inschaling": null,
+   "month": "februari",
+   "action": ""
+  },
+  {
+   "indicatorKey": "smartschool-32",
+   "inschaling": null,
+   "month": "februari",
+   "action": ""
+  },
+  {
+   "indicatorKey": "smartschool-33",
+   "inschaling": null,
+   "month": "februari",
+   "action": ""
+  },
+  {
+   "indicatorKey": "smartschool-34",
+   "inschaling": null,
+   "month": "februari",
+   "action": ""
+  },
+  {
+   "indicatorKey": "smartschool-35",
+   "inschaling": null,
+   "month": "februari",
+   "action": ""
+  },
+  {
+   "indicatorKey": "smartschool-36",
+   "inschaling": null,
+   "month": "februari",
+   "action": ""
+  },
+  {
+   "indicatorKey": "smartschool-37",
+   "inschaling": null,
+   "month": "februari",
+   "action": ""
+  },
+  {
+   "indicatorKey": "smartschool-38",
+   "inschaling": null,
+   "month": "februari",
+   "action": ""
+  },
+  {
+   "indicatorKey": "smartschool-39",
+   "inschaling": null,
+   "month": "februari",
+   "action": ""
+  },
+  {
+   "indicatorKey": "smartschool-40",
+   "inschaling": null,
+   "month": "februari",
+   "action": ""
+  },
+  {
+   "indicatorKey": "smartschool-42",
+   "inschaling": null,
+   "month": "oktober",
+   "action": ""
+  },
+  {
+   "indicatorKey": "smartschool-44",
+   "inschaling": null,
+   "month": "oktober",
+   "action": ""
+  },
+  {
+   "indicatorKey": "smartschool-45",
+   "inschaling": null,
+   "month": "oktober",
+   "action": ""
+  },
+  {
+   "indicatorKey": "smartschool-46",
+   "inschaling": null,
+   "month": "november",
+   "action": ""
+  },
+  {
+   "indicatorKey": "smartschool-47",
+   "inschaling": null,
+   "month": "mei",
+   "action": ""
+  },
+  {
+   "indicatorKey": "datawijzer-03",
+   "inschaling": 1,
+   "month": "maart",
+   "action": ""
+  },
+  {
+   "indicatorKey": "datawijzer-04",
+   "inschaling": 1,
+   "month": "maart",
+   "action": ""
+  },
+  {
+   "indicatorKey": "datawijzer-05",
+   "inschaling": 1,
+   "month": "maart",
+   "action": ""
+  },
+  {
+   "indicatorKey": "datawijzer-06",
+   "inschaling": 1,
+   "month": "maart",
+   "action": ""
+  },
+  {
+   "indicatorKey": "datawijzer-07",
+   "inschaling": 0,
+   "month": "maart",
+   "action": ""
+  },
+  {
+   "indicatorKey": "datawijzer-08",
+   "inschaling": 0,
+   "month": "maart",
+   "action": ""
+  },
+  {
+   "indicatorKey": "datawijzer-09",
+   "inschaling": -1,
+   "month": "maart",
+   "action": ""
+  },
+  {
+   "indicatorKey": "datawijzer-10",
+   "inschaling": 1,
+   "month": "maart",
+   "action": ""
+  },
+  {
+   "indicatorKey": "datawijzer-11",
+   "inschaling": 1,
+   "month": "maart",
+   "action": ""
+  },
+  {
+   "indicatorKey": "datawijzer-12",
+   "inschaling": 1,
+   "month": "maart",
+   "action": ""
+  },
+  {
+   "indicatorKey": "datawijzer-13",
+   "inschaling": -1,
+   "month": "maart",
+   "action": ""
+  },
+  {
+   "indicatorKey": "datawijzer-14",
+   "inschaling": 1,
+   "month": "maart",
+   "action": ""
+  },
+  {
+   "indicatorKey": "datawijzer-15",
+   "inschaling": 1,
+   "month": "maart",
+   "action": ""
+  },
+  {
+   "indicatorKey": "datawijzer-16",
+   "inschaling": 1,
+   "month": "maart",
+   "action": ""
+  },
+  {
+   "indicatorKey": "datawijzer-17",
+   "inschaling": 1,
+   "month": "maart",
+   "action": ""
+  },
+  {
+   "indicatorKey": "datawijzer-18",
+   "inschaling": 0,
+   "month": "maart",
+   "action": ""
+  },
+  {
+   "indicatorKey": "datawijzer-19",
+   "inschaling": 0,
+   "month": "maart",
+   "action": ""
+  },
+  {
+   "indicatorKey": "datawijzer-20",
+   "inschaling": -1,
+   "month": "maart",
+   "action": ""
+  },
+  {
+   "indicatorKey": "dataloep-03",
+   "inschaling": 1,
+   "month": "maart",
+   "action": ""
+  },
+  {
+   "indicatorKey": "dataloep-04",
+   "inschaling": 0,
+   "month": "maart",
+   "action": ""
+  },
+  {
+   "indicatorKey": "dataloep-05",
+   "inschaling": -1,
+   "month": "maart",
+   "action": ""
+  },
+  {
+   "indicatorKey": "dataloep-06",
+   "inschaling": 1,
+   "month": "maart",
+   "action": ""
+  },
+  {
+   "indicatorKey": "andere-04",
+   "inschaling": 1,
+   "month": "november",
+   "action": ""
+  },
+  {
+   "indicatorKey": "andere-05",
+   "inschaling": 1,
+   "month": "september",
+   "action": ""
+  },
+  {
+   "indicatorKey": "andere-06",
+   "inschaling": 1,
+   "month": "juni",
+   "action": ""
+  },
+  {
+   "indicatorKey": "andere-09",
+   "inschaling": 1,
+   "month": "september",
+   "action": ""
+  },
+  {
+   "indicatorKey": "andere-10",
+   "inschaling": 1,
+   "month": "juni",
+   "action": ""
+  },
+  {
+   "indicatorKey": "andere-11",
+   "inschaling": 1,
+   "month": "mei",
+   "action": ""
+  },
+  {
+   "indicatorKey": "andere-12",
+   "inschaling": 1,
+   "month": "november",
+   "action": ""
+  },
+  {
+   "indicatorKey": "andere-13",
+   "inschaling": 1,
+   "month": "juni",
+   "action": ""
+  },
+  {
+   "indicatorKey": "andere-16",
+   "inschaling": 1,
+   "month": "mei",
+   "action": ""
+  },
+  {
+   "indicatorKey": "andere-17",
+   "inschaling": -1,
+   "month": "juni",
+   "action": ""
+  },
+  {
+   "indicatorKey": "andere-18",
+   "inschaling": -1,
+   "month": "juli",
+   "action": ""
+  },
+  {
+   "indicatorKey": "andere-19",
+   "inschaling": 1,
+   "month": "augustus",
+   "action": ""
+  },
+  {
+   "indicatorKey": "andere-20",
+   "inschaling": 1,
+   "month": "september",
+   "action": ""
+  },
+  {
+   "indicatorKey": "andere-21",
+   "inschaling": 1,
+   "month": "oktober",
+   "action": ""
+  },
+  {
+   "indicatorKey": "andere-22",
+   "inschaling": 1,
+   "month": "november",
+   "action": ""
+  },
+  {
+   "indicatorKey": "andere-23",
+   "inschaling": -1,
+   "month": "december",
+   "action": ""
+  },
+  {
+   "indicatorKey": "andere-24",
+   "inschaling": 1,
+   "month": "januari",
+   "action": ""
+  },
+  {
+   "indicatorKey": "andere-25",
+   "inschaling": -1,
+   "month": "februari",
+   "action": ""
+  },
+  {
+   "indicatorKey": "andere-26",
+   "inschaling": 0,
+   "month": "maart",
+   "action": ""
+  },
+  {
+   "indicatorKey": "andere-27",
+   "inschaling": -1,
+   "month": "april",
+   "action": ""
+  },
+  {
+   "indicatorKey": "andere-28",
+   "inschaling": 1,
+   "month": "november",
+   "action": ""
+  },
+  {
+   "indicatorKey": "andere-29",
+   "inschaling": 1,
+   "month": "oktober",
+   "action": ""
+  },
+  {
+   "indicatorKey": "andere-32",
+   "inschaling": 1,
+   "month": "mei",
+   "action": ""
+  },
+  {
+   "indicatorKey": "andere-33",
+   "inschaling": 1,
+   "month": "mei",
+   "action": ""
+  },
+  {
+   "indicatorKey": "andere-34",
+   "inschaling": 1,
+   "month": "september",
+   "action": ""
+  },
+  {
+   "indicatorKey": "andere-37",
+   "inschaling": 1,
+   "month": "december",
+   "action": ""
+  },
+  {
+   "indicatorKey": "andere-38",
+   "inschaling": 1,
+   "month": "september",
+   "action": ""
+  },
+  {
+   "indicatorKey": "andere-39",
+   "inschaling": 1,
+   "month": "september",
+   "action": ""
+  },
+  {
+   "indicatorKey": "andere-40",
+   "inschaling": 1,
+   "month": "september",
+   "action": ""
+  },
+  {
+   "indicatorKey": "andere-41",
+   "inschaling": 1,
+   "month": "mei",
+   "action": ""
+  },
+  {
+   "indicatorKey": "andere-44",
+   "inschaling": 1,
+   "month": "juni",
+   "action": ""
+  },
+  {
+   "indicatorKey": "andere-45",
+   "inschaling": 0,
+   "month": "november",
+   "action": ""
+  },
+  {
+   "indicatorKey": "andere-46",
+   "inschaling": 1,
+   "month": "juni",
+   "action": ""
+  },
+  {
+   "indicatorKey": "andere-49",
+   "inschaling": 1,
+   "month": "oktober",
+   "action": ""
+  },
+  {
+   "indicatorKey": "andere-50",
+   "inschaling": 1,
+   "month": "september",
+   "action": ""
+  },
+  {
+   "indicatorKey": "andere-51",
+   "inschaling": 1,
+   "month": "september",
+   "action": ""
+  },
+  {
+   "indicatorKey": "andere-52",
+   "inschaling": 0,
+   "month": "oktober",
+   "action": ""
+  },
+  {
+   "indicatorKey": "andere-53",
+   "inschaling": 0,
+   "month": "juni",
+   "action": ""
+  },
+  {
+   "indicatorKey": "andere-55",
+   "inschaling": 1,
+   "month": "november",
+   "action": ""
+  },
+  {
+   "indicatorKey": "andere-56",
+   "inschaling": 1,
+   "month": "november",
+   "action": ""
+  },
+  {
+   "indicatorKey": "andere-57",
+   "inschaling": 1,
+   "month": "november",
+   "action": ""
+  },
+  {
+   "indicatorKey": "andere-58",
+   "inschaling": 1,
+   "month": "november",
+   "action": ""
+  },
+  {
+   "indicatorKey": "andere-59",
+   "inschaling": 1,
+   "month": "oktober",
+   "action": ""
+  },
+  {
+   "indicatorKey": "vakwerkgroepen-04",
+   "inschaling": 0,
+   "month": "",
+   "action": ""
+  },
+  {
+   "indicatorKey": "vakwerkgroepen-07",
+   "inschaling": 1,
+   "month": "",
+   "action": ""
+  },
+  {
+   "indicatorKey": "vakwerkgroepen-08",
+   "inschaling": 1,
+   "month": "",
+   "action": ""
+  },
+  {
+   "indicatorKey": "vakwerkgroepen-09",
+   "inschaling": 1,
+   "month": "",
+   "action": ""
+  },
+  {
+   "indicatorKey": "vakwerkgroepen-10",
+   "inschaling": 0,
+   "month": "",
+   "action": ""
+  },
+  {
+   "indicatorKey": "vakwerkgroepen-11",
+   "inschaling": 1,
+   "month": "",
+   "action": ""
+  },
+  {
+   "indicatorKey": "vakwerkgroepen-12",
+   "inschaling": 1,
+   "month": "",
+   "action": ""
+  },
+  {
+   "indicatorKey": "vakwerkgroepen-13",
+   "inschaling": 0,
+   "month": "",
+   "action": ""
+  },
+  {
+   "indicatorKey": "vakwerkgroepen-14",
+   "inschaling": 1,
+   "month": "",
+   "action": ""
+  },
+  {
+   "indicatorKey": "vakwerkgroepen-16",
+   "inschaling": 0,
+   "month": "",
+   "action": ""
+  },
+  {
+   "indicatorKey": "vakwerkgroepen-17",
+   "inschaling": 1,
+   "month": "",
+   "action": ""
+  },
+  {
+   "indicatorKey": "vakwerkgroepen-19",
+   "inschaling": 0,
+   "month": "",
+   "action": ""
+  },
+  {
+   "indicatorKey": "vakwerkgroepen-20",
+   "inschaling": 1,
+   "month": "",
+   "action": ""
+  },
+  {
+   "indicatorKey": "vakwerkgroepen-21",
+   "inschaling": 1,
+   "month": "",
+   "action": ""
+  },
+  {
+   "indicatorKey": "vakwerkgroepen-23",
+   "inschaling": 1,
+   "month": "",
+   "action": ""
+  },
+  {
+   "indicatorKey": "vakwerkgroepen-24",
+   "inschaling": -1,
+   "month": "",
+   "action": ""
+  },
+  {
+   "indicatorKey": "vakwerkgroepen-25",
+   "inschaling": 1,
+   "month": "",
+   "action": ""
+  },
+  {
+   "indicatorKey": "vakwerkgroepen-26",
+   "inschaling": 1,
+   "month": "",
+   "action": ""
+  },
+  {
+   "indicatorKey": "llnbgl-04",
+   "inschaling": 1,
+   "month": "",
+   "action": ""
+  },
+  {
+   "indicatorKey": "llnbgl-05",
+   "inschaling": 1,
+   "month": "",
+   "action": ""
+  },
+  {
+   "indicatorKey": "llnbgl-06",
+   "inschaling": -1,
+   "month": "",
+   "action": ""
+  },
+  {
+   "indicatorKey": "llnbgl-07",
+   "inschaling": 1,
+   "month": "",
+   "action": ""
+  },
+  {
+   "indicatorKey": "llnbgl-08",
+   "inschaling": 1,
+   "month": "",
+   "action": ""
+  },
+  {
+   "indicatorKey": "llnbgl-10",
+   "inschaling": 1,
+   "month": "",
+   "action": ""
+  },
+  {
+   "indicatorKey": "llnbgl-11",
+   "inschaling": 1,
+   "month": "",
+   "action": ""
+  },
+  {
+   "indicatorKey": "llnbgl-13",
+   "inschaling": 1,
+   "month": "",
+   "action": ""
+  },
+  {
+   "indicatorKey": "llnbgl-14",
+   "inschaling": 1,
+   "month": "",
+   "action": ""
+  },
+  {
+   "indicatorKey": "llnbgl-15",
+   "inschaling": 1,
+   "month": "",
+   "action": ""
+  },
+  {
+   "indicatorKey": "llnbgl-16",
+   "inschaling": 1,
+   "month": "",
+   "action": ""
+  },
+  {
+   "indicatorKey": "llnbgl-19",
+   "inschaling": -1,
+   "month": "",
+   "action": ""
+  },
+  {
+   "indicatorKey": "llnbgl-21",
+   "inschaling": 1,
+   "month": "",
+   "action": ""
+  },
+  {
+   "indicatorKey": "llnbgl-22",
+   "inschaling": -1,
+   "month": "",
+   "action": ""
+  },
+  {
+   "indicatorKey": "llnbgl-24",
+   "inschaling": 1,
+   "month": "",
+   "action": ""
+  },
+  {
+   "indicatorKey": "llnbgl-25",
+   "inschaling": 1,
+   "month": "",
+   "action": ""
+  },
+  {
+   "indicatorKey": "llnbgl-26",
+   "inschaling": 1,
+   "month": "",
+   "action": ""
+  },
+  {
+   "indicatorKey": "andere-x01",
+   "inschaling": null,
+   "month": "",
+   "action": ""
+  }
+ ],
+ "corrections": [
+  "Smartschool rij 2 stond boven de kopregel; geplaatst in de sectie Skore.",
+  "ROK rij 12 (R1) 'leerdoelen linken aan evaluatie': inschaling was hard getypt (1) i.p.v. gelinkt aan Smartschool!D2.",
+  "   -> de bron was leeg; de getypte waarde 1 is overgenomen als inschaling.",
+  "ROK rij 13 (R1) 'analyse doorlichtingsverslag: leereffecten': inschaling verwees naar andere!A7 (toonde 0) i.p.v. andere!D27 (= -1).",
+  "ROK rij 74 (D2) 'leerdoelen linken aan evaluatie': inschaling was hard getypt (1) i.p.v. gelinkt aan Smartschool!D2.",
+  "ROK rij 123 (O2) 'leerdoelen linken aan evaluatie': inschaling was hard getypt (1) i.p.v. gelinkt aan Smartschool!D2.",
+  "ROK rij 151 (BL4): getypte tekst zonder bron ('acties afgetoetst aan bronnenboek/wijze lessen/leerpunt') is nu een indicator onder Andere › Beleid, nog niet ingeschaald.",
+  "Kalender: 16 indicatoren ontbraken (andere-16, andere-17, andere-18, andere-19, andere-20, andere-21, andere-22, andere-23, andere-24, andere-25, andere-26, andere-27, andere-55, andere-56, andere-57, andere-x01); de tool toont alle indicatoren.",
+  "Kalender: 5 indicatoren stonden er dubbel in (andere-33, dataloep-04, datawijzer-03, smartschool-25, smartschool-30).",
+  "Teller 'aantal unieke indicatoren' telde enkel ingeschaalde indicatoren; de tool telt alle 107 ROK-indicatoren en toont 41 als 'nog niet ingeschaald'.",
+  "Lege inschalingen telden in de teller mee als 'opvolgen' (0); de tool houdt ze apart als 'nog niet ingeschaald'.",
+  "Tekstcorrecties: 'tevreden heid' -> 'tevredenheid', 'beïn vloeden' -> 'beïnvloeden', 'voor opgesteld' -> 'vooropgesteld', 'ver volgonderwijs' -> 'vervolgonderwijs', 'onderwijsleerprak tijk' -> 'onderwijsleerpraktijk', 'systema tisch' -> 'systematisch', 'beoor delingscriteria' -> 'beoordelingscriteria', 'le renden' -> 'lerenden', 'per soneelsbeleid' -> 'personeelsbeleid', 'bege leiding' -> 'begeleiding', 'doolichtingsverslag' -> 'doorlichtingsverslag', 'gezamelijke' -> 'gezamenlijke', 'herkennnen' -> 'herkennen', 'redicordi' -> 'redicodi', 'ten alle tijden' -> 'te allen tijde', 'extra murosoplijsting' -> 'extra-murosoplijsting', 'benchmarkt tov' -> 'benchmark tov'."
+ ]
+}

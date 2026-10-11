@@ -1,0 +1,261 @@
+[
+ {
+  "code": "R1",
+  "domain": "Resultaten en effecten",
+  "title": "De school bereikt de minimaal gewenste output bij een zo groot mogelijke groep van lerenden.",
+  "description": "De minimaal gewenste output omvat het nastreven van de ontwikkelingsdoelen en het realiseren van de eindtermen, basiscompetenties en leerplandoelen. Dit hangt samen met het streven naar welbevinden en betrokkenheid van lerenden en leerkrachten. De algemene kwaliteitscultuur in de school en de kwaliteit van de pedagogische relatie tussen lerenden en teamleden vormen hierbij sleutelelementen",
+  "order": 1
+ },
+ {
+  "code": "R2",
+  "domain": "Resultaten en effecten",
+  "title": "De school streeft naar welbevinden en betrokkenheid bij alle lerenden en het schoolteam en naar tevredenheid bij ouders en bij andere relevante partners.",
+  "description": "Welbevinden staat voor de mate waarin iemand zich lichamelijk, mentaal en sociaal goed voelt. Betrokkenheid uit zich onder andere in de mate waarin iemand geconcentreerd en geïnteresseerd is en actief deelneemt. Welbevinden en betrokkenheid beïnvloeden het leren, de ontwikkeling en de vorming van de lerenden. Ze spelen eveneens een cruciale rol bij de teamleden in het realiseren van gewenste resultaten en effecten. De mate waarin ouders en andere relevante partners tevreden zijn over de school is eveneens een belangrijk outputelement. Welbevinden, betrokkenheid en tevredenheid vormen hefbomen voor kwaliteitsontwikkeling",
+  "order": 2
+ },
+ {
+  "code": "R3",
+  "domain": "Resultaten en effecten",
+  "title": "De school streeft bij elke lerende naar zoveel mogelijk leerwinst.",
+  "description": "Het is belangrijk dat de school alles in het werk stelt om elke lerende zoveel mogelijk ontwikkelingskansen te bieden. Ze ambieert een ruime ontwikkeling en streeft naar zoveel mogelijk leerwinst bij elke lerende. Dit duidt op de toename van kennis en vaardigheden en op de ontwikkeling van attitudes, competenties en talenten van lerenden gedurende een bepaalde periode.",
+  "order": 3
+ },
+ {
+  "code": "R4",
+  "domain": "Resultaten en effecten",
+  "title": "De school stimuleert de studievoortgang van elke lerende.",
+  "description": "Studievoortgang is het bereiken van de minimaal gewenste output binnen een vooropgesteld tijdspad. De school volgt de deelname aan het onderwijsgebeuren van de lerende op en ondersteunt de studievoortgang. De school streeft ernaar dat zoveel mogelijk lerenden gekwalificeerd uitstromen, waarbij ze minimaal voldoen aan de vereisten van het gevalideerd doelenkader.",
+  "order": 4
+ },
+ {
+  "code": "R5",
+  "domain": "Resultaten en effecten",
+  "title": "De school waarborgt de toegang tot onderwijs voor elke lerende.",
+  "description": "Iedereen heeft recht op onderwijs. Daarom heeft iedere school de maatschappelijke opdracht om voor elke lerende de toegang tot onderwijs te waarborgen en gelijke onderwijskansen te realiseren. Scholen kunnen maar resultaten en effecten bereiken als lerenden participeren aan het onderwijsleerproces. De school volgt de deelname van alle lerenden aan het onderwijsgebeuren op en gaat die waar nodig stimuleren",
+  "order": 5
+ },
+ {
+  "code": "R6",
+  "domain": "Resultaten en effecten",
+  "title": "De school streeft naar effecten op langere termijn bij alle lerenden.",
+  "description": "De school beoogt bij alle lerenden persoonlijkheidsontwikkeling, deelname aan het vervolgonderwijs of de arbeidsmarkt en aan diverse facetten van de samenleving. In welke mate deze effecten op langere termijn bereikt worden, hangt af van vele factoren waar op scholen niet altijd een invloed hebben.",
+  "order": 6
+ },
+ {
+  "code": "K1",
+  "domain": "Kwaliteitsontwikkeling",
+  "title": "De school ontwikkelt haar kwaliteit vanuit een gedragen visie die vertaald is in de onderwijsleerpraktijk.",
+  "description": "Kwaliteit heeft te maken met de juiste dingen goed doen. Elke school bepaalt voor zichzelf wat de juiste dingen zijn. De school houdt rekening met de regelgeving en met de schooleigen doelen. Ze betrekt hierbij het schoolteam. Wat in de klas gebeurt, zorgt ervoor dat lerenden kunnen opgroeien tot zelfstandige, sociale en veerkrachtige mensen. Dit draagt eveneens bij tot goede leerprestaties. Daarom concretiseert de school haar visie tot op de praktijkvloer.",
+  "order": 7
+ },
+ {
+  "code": "K2",
+  "domain": "Kwaliteitsontwikkeling",
+  "title": "De school evalueert haar werking cyclisch, systematisch en betrouwbaar vanuit de resultaten en effecten bij de lerenden.",
+  "description": "Scholen onderzoeken, borgen en verbeteren op systematische wijze hun onderwijskwaliteit. Ze bepalen zelf de inhoud en de methode voor de eigen kwaliteitszorg op basis van hun vaststellingen, prioriteiten of doelen. Bij het zelf analyseren en evalueren van de onderwijskwaliteit gebruikt de school diverse relevante bronnen en betrekt ze belanghebbenden. De resultaten en effecten die de school bij de lerenden bereikt, vormen daarbij samen met de context- en inputkenmerken het uitgangspunt. Er is maar sprake van systematiek als de school op geregelde basis haar werking evalueert. Naast het systematische is het cyclische karakter van kwaliteitszorg belangrijk. Een cyclus herhaalt niet de vorige maar voegt er iets aan toe. Op die manier wordt bij elke cyclus kwaliteit verder ontwikkeld.",
+  "order": 8
+ },
+ {
+  "code": "K3",
+  "domain": "Kwaliteitsontwikkeling",
+  "title": "De school borgt en ontwikkelt de kwaliteit van de onderwijsleerpraktijk.",
+  "description": "Zorgen voor kwaliteit veronderstelt dat de school op geregelde basis processen plant, uitvoert, controleert, bijstuurt waar nodig en verankert in de werking. Bij deze kwaliteitsontwikkeling is het van belang dat de school rekening houdt met de veranderende contexten, zich positioneert ten opzichte van vergelijkbare anderen en rekening houdt met externe evaluaties. Belanghebbenden hebben het recht om te weten hoe de school voor de eigen onderwijskwaliteit zorgt en die ontwikkelt. In de school heerst een kwaliteitscultuur als alle teamleden en de school als organisatie zichzelf bevragen, de kwaliteit borgen en waar nodig bijstellen",
+  "order": 9
+ },
+ {
+  "code": "D1",
+  "domain": "Doelen",
+  "title": "Het schoolteam realiseert doelgericht een brede en harmonische vorming die betekenisvol is.",
+  "description": "Om een brede en harmonische vorming te realiseren is een evenwichtige aandacht voor de diverse cultuurcomponenten (exact-wetenschappelijk, muzisch-creatief…) en alle ontwikkelingsgebieden (cognitieve, sociaal-emotionele en motorische vorming) cruciaal. Doelgericht leren veronderstelt dat het schoolteam zowel algemene als specifieke doelen nastreeft op het vlak van kennis, vaardigheden, attitudes en competenties. Dit gaat over zowel schooleigen doelen als doelen uit het gevalideerd doelenkader. Een betekenisvolle vorming veronderstelt dat het schoolteam de overdracht van het geleerde naar andere situaties stimuleert. Wat de lerenden op school verwerven, krijgt zo betekenis in de wereld buiten de school. De buitenwereld binnenbrengen in de school verhoogt de werkelijkheidsgerichtheid van het onderwijs",
+  "order": 10
+ },
+ {
+  "code": "D2",
+  "domain": "Doelen",
+  "title": "Het schoolteam hanteert doelen die sporen met het gevalideerd doelenkader en zorgt voor samenhang tussen de doelen.",
+  "description": "Om te voldoen aan de maatschappelijke verwachtingen hanteert het schoolteam doelen die gebaseerd zijn op het gevalideerd doelenkader. Met gevalideerd doelenkader wordt bedoeld: de eindtermen, de basiscompetenties, de ontwikkelingsdoelen of de doelen vastgelegd in een leerplan. De doelen sluiten aan bij het verwachte beheersingsniveau. Het schoolteam werkt samen om een volledig en samenhangend aanbod te garanderen. Vanuit betekenisvolle contexten werken aan doelen uit verschillende domeinen noemen we horizontale samenhang. De verticale samenhang verwijst naar de continuïteit van doelen over de klasgroepen, pedagogische eenheden of leerjaren heen.",
+  "order": 11
+ },
+ {
+  "code": "D3",
+  "domain": "Doelen",
+  "title": "Het schoolteam hanteert uitdagende en haalbare doelen.",
+  "description": "Het schoolteam heeft zicht op de beginsituatie van de lerenden en benut dit bij het vooropstellen van de doelen. De leer- en ontwikkelingsbehoeften vormen hierbij het uitgangspunt. Het schoolteam doet dit om met zoveel mogelijk lerenden het gemeenschappelijk curriculum te realiseren. Door het evenwicht tussen haalbare en uitdagende doelen te bewaken, verhoogt het schoolteam de kans op succeservaringen, de motivatie en het effect op leren.",
+  "order": 12
+ },
+ {
+  "code": "D4",
+  "domain": "Doelen",
+  "title": "Het schoolteam expliciteert de doelen en de beoordelingscriteria.",
+  "description": "Teamleden zijn zich bewust van het gedrag dat ze concreet nastreven bij de lerende of welke verandering ze bij de lerende willen zien. Ze leggen de doelen helder uit zodat lerenden deze beter begrijpen en eigenaar worden van het leerproces. Dit impliceert ook dat ze verduidelijken aan de lerenden welke criteria gebruikt worden om te oordelen of de doelen bereikt zijn",
+  "order": 13
+ },
+ {
+  "code": "V1",
+  "domain": "Vormgeving onderwijsleerproces en leef- en leeromgeving",
+  "title": "Het schoolteam en de lerenden creëren samen een positief en stimulerend school- en klasklimaat.",
+  "description": "Een positief en stimulerend school- en klasklimaat gebaseerd op veiligheid, vertrouwen en wederzijds respect vormt de basis van de schoolwerking. Om dit te realiseren investeren het schoolteam en de lerenden in positieve en ondersteunende relaties en interacties. Een dergelijk klimaat betekent ook dat het schoolteam met inspraak van de lerenden duidelijke afspraken en regels maakt en deze consequent hanteert.",
+  "order": 14
+ },
+ {
+  "code": "V2",
+  "domain": "Vormgeving onderwijsleerproces en leef- en leeromgeving",
+  "title": "Het schoolteam en de lerenden gaan positief om met diversiteit.",
+  "description": "Diversiteit is een normaal gegeven waar iedereen dagelijks in verschillende situaties mee te maken krijgt. Het kan gaan om verschillen in taal, geslacht, seksuele oriëntatie, religie, cultuur, ras, socio-economische status, cognitieve en fysieke mogelijkheden, beleving, interesses, bezigheden, zienswijzen, behoeften… Deze diversiteit is een meerwaarde voor de ontwikkeling van lerenden indien het schoolteam ze in het onderwijsleerproces positief aanwendt. Zo bouwt het schoolteam aan een inclusieve cultuur",
+  "order": 15
+ },
+ {
+  "code": "V3",
+  "domain": "Vormgeving onderwijsleerproces en leef- en leeromgeving",
+  "title": "De leef- en leeromgeving en de onderwijsorganisatie ondersteunen het bereiken van de doelen.",
+  "description": "De leef- en leeromgeving verwijst naar de situatie waarin de lerende leeft en leert. Wanneer men specifieke inspanningen levert om het leren van de lerende gericht te ondersteunen, spreken we van onderwijzen. De fysieke omgeving, de infrastructuur en de aanwezige leer- en onderwijsmiddelen beïnvloeden het leren van de lerende. Naast de leeromgeving ondersteunt ook de onderwijsorganisatie het bereiken van de doelen. Twee elementen spelen hierbij onder meer een rol: de onderwijstijd en de groeperingsvormen. Het schoolteam wendt de onderwijstijd en de groeperingsvormen doordacht aan. Elke lerende krijgt voldoende tijd en kansen om te leren en te oefenen. Groeperingsvormen verwijzen naar vele mogelijke vormen van werken met individuen, kleine of grote klasgroepen, heterogene of homogene groepen, klasoverstijgend werken…",
+  "order": 16
+ },
+ {
+  "code": "V4",
+  "domain": "Vormgeving onderwijsleerproces en leef- en leeromgeving",
+  "title": "Het schoolteam biedt een passend, actief en samenhangend onderwijsaanbod aan.",
+  "description": "Leren verloopt zowel incidenteel als intentioneel. Bij incidenteel leren is het beoogde resultaat niet vooraf bepaald. Scholen streven intentioneel of doelgericht leren na en benutten incidenteel leren. Met het oog op het intentioneel nastreven van de doelen biedt het schoolteam de inhouden en activiteiten doelbewust aan. De aanpak is afgestemd op de doelen. De activiteiten en de inhouden zijn uitdagend en haalbaar voor de lerenden en sluiten aan bij hun voorkennis. De inhouden en activiteiten worden in gevarieerde en indien relevant, in betekenisvolle contexten aangeboden. Het schoolteam betrekt de lerenden actief bij het leren en onderwijzen en zorgt voor samenhang tussen de verschillende inhouden en activiteiten.",
+  "order": 17
+ },
+ {
+  "code": "B1",
+  "domain": "Begeleiding",
+  "title": "Het schoolteam geeft de begeleiding vorm vanuit een gedragen visie en systematiek en volgt de effecten van de begeleiding op.",
+  "description": "Om alle lerenden adequaat te begeleiden, gaat het schoolteam uit van een gedragen visie. De school plant en coördineert haar begeleiding systematisch en cyclisch. Het schoolteam volgt de gewenste en ongewenste effecten van de begeleiding op. Dit leidt tot het verankeren van doeltreffende praktijken en de nodige bijstellingen in de begeleiding op het niveau van de lerende, de teamleden en de school.",
+  "order": 18
+ },
+ {
+  "code": "B2",
+  "domain": "Begeleiding",
+  "title": "Het schoolteam biedt begeleiding zowel op het vlak van leren en studeren, onderwijsloopbaan, psychisch en sociaal functioneren als preventieve gezondheidszorg.",
+  "description": "Met het oog op het bereiken van de doelen met alle lerenden biedt het schoolteam leerbegeleiding aan. Ze heeft daarbij onder meer aandacht voor het stimuleren van de metacognitieve kennis en vaardigheden. Hiermee worden de kennis en de opvattingen over het eigen denken en leren en het actief bewaken en bijsturen ervan bedoeld. De school geeft de lerende inzicht in zijn individuele competenties en ondersteunt een vlotte overgang tussen de verschillende leerperioden en organisaties. Horizonverruiming en keuzebekwaamheid vanuit de eigen interesses, talenten en competenties bij de lerende zijn hierbij belangrijke elementen. Het schoolteam besteedt ook aandacht aan de sociaal emotionele ontplooiing van de lerende en aan het fysieke welzijn",
+  "order": 19
+ },
+ {
+  "code": "B3",
+  "domain": "Begeleiding",
+  "title": "Het schoolteam biedt elke lerende een passende begeleiding met het oog op gelijke onderwijskansen.",
+  "description": "Om een passende begeleiding te realiseren, detecteert het schoolteam de mogelijkheden en de behoeften van de lerenden en differentieert ze waar nodig. Het schoolteam gaat ervan uit dat iedereen de kracht en de capaciteiten in zich heeft om te leren, te groeien en te veranderen. De sterktes van de lerenden vormen het uitgangspunt voor de begeleiding. Het schoolteam begeleidt de lerenden via een continuüm van zorg en/ of via handelingsplanning. Een gefaseerde benadering van brede basiszorg, verhoogde zorg, uitbreiding van zorg, een individueel aangepast curriculum en/of handelingsplanning vormt de ruggengraat van de begeleiding. Een sterke brede basiszorg werkt preventief. Voor lerenden met specifieke onderwijsbehoeften plant het schoolteam redelijke en gepaste aanpassingen waaronder het inzetten van stimulerende, remediërende, differentiërende, compenserende en/of dispenserende maatregelen. Op die manier draagt het schoolteam bij tot het realiseren van gelijke kansen voor alle lerenden en tot inclusie.",
+  "order": 20
+ },
+ {
+  "code": "B4",
+  "domain": "Begeleiding",
+  "title": "Het schoolteam geeft de begeleiding vorm samen met de lerende, de ouders/thuisomgeving en andere relevante partners.",
+  "description": "Diverse actoren versterken de begeleiding door samenwerking en partnerschap. Lerenden en ouders (thuisomgeving) zijn gelijkwaardige partners en worden actief betrokken door het schoolteam. De begeleiding is transparant voor alle betrokkenen. Het schoolteam houdt rekening met andere culturen, opvoedingsstijlen en socio-economische milieus. Elke school van het leerplichtonderwijs werkt voor de begeleiding samen met een centrum voor leerlingenbegeleiding (CLB)",
+  "order": 21
+ },
+ {
+  "code": "O1",
+  "domain": "Opvolging",
+  "title": "Het schoolteam geeft de lerenden adequate feedback met het oog op de voortgang in het leer- en ontwikkelingsproces.",
+  "description": "Feedback geven aan lerenden verhoogt het leerrendement. Dit gebeurt in onderlinge wisselwerking tussen lerenden en teamleden en werkt het best ingebed in een klimaat van veiligheid en vertrouwen. Feedback is nauw verbonden met het stellen van doelen en leerbegeleiding en sluit aan bij de leerervaring van de lerenden.",
+  "order": 22
+ },
+ {
+  "code": "O2",
+  "domain": "Opvolging",
+  "title": "Het schoolteam evalueert op een brede en onderbouwde wijze het onderwijsleerproces en het behalen van de doelen.",
+  "description": "Evaluatie vormt een essentieel en integraal onderdeel van het leerproces van de lerende. Het schoolteam hanteert een onderbouwde visie op evaluatie. De evaluatie is breed en representatief voor de eigen doelen en het gevalideerde doelenkader. Het schoolteam kiest doordacht voor verschillende evaluatieprocedures en -instrumenten om betrouwbaar gegevens te verzamelen. De gehanteerde beoordelingscriteria zijn objectief en helder gecommuniceerd. De evaluatie is stimulerend en ontwikkelingsgericht en verloopt fair en transparant.",
+  "order": 23
+ },
+ {
+  "code": "O3",
+  "domain": "Opvolging",
+  "title": "Het schoolteam stuurt het onderwijsleerproces bij op basis van de feedback- en evaluatiegegevens.",
+  "description": "Het schoolteam verzamelt, analyseert en interpreteert de evaluatiegegevens van de lerenden en stuurt op basis hiervan het onderwijsleerproces bij. Feedback leidt tot de nodige borging en bijsturing van het onderwijsleerproces",
+  "order": 24
+ },
+ {
+  "code": "O4",
+  "domain": "Opvolging",
+  "title": "Het schoolteam beslist en rapporteert onderbouwd over het behalen van de doelen bij de lerende.",
+  "description": "Het schoolteam rapporteert tijdig en regelmatig over de voortgang van het leer- en ontwikkelingsproces en communiceert hierover transparant. Deze informatie vormt te vens de basis om een beslissing met betrekking tot de eindevaluatie te nemen en te onderbouwen. Het schoolteam oriënteert elke lerende op basis van de behaalde doelen, competenties en interesses. Hierbij betrekt het schoolteam de lerende en de ouders/ thuisomgeving",
+  "order": 25
+ },
+ {
+  "code": "BL1",
+  "domain": "Beleid",
+  "title": "De school ontwikkelt en voert een gedragen, geïntegreerd en samenhangend beleid rekening houdend met haar (ped)agogisch project.",
+  "description": "De school ontwikkelt en expliciteert haar gedeelde waarden, missie en visie. Ze houdt hierbij rekening met haar context- en inputkenmerken. De school streeft duidelijke en gedragen doelen na en ontwikkelt een strategie. Ze stimuleert alle teamleden om zich hiervoor gezamenlijk in te zetten. In het beleid dat de school voert, is er gerichte aan dacht voor zowel de onderwijskundige werking als voor het personeels- en professionaliseringsbeleid, het financieel en het materieel beleid. Keuzes op onderwijskundig vlak worden vertaald in het personeels- en professionaliseringsbeleid en het financieel en materieel beleid van de school",
+  "order": 26
+ },
+ {
+  "code": "BL2",
+  "domain": "Beleid",
+  "title": "De school geeft haar organisatie vorm op het vlak van cultuur en structuur.",
+  "description": "De school bouwt doelgericht aan de cultuur en structuur van haar organisatie, die het bereiken van haar vooropgestelde doelen ondersteunen. Teamleden zijn gezamenlijk verantwoordelijk voor de realisatie van deze doelen. De organisatiecultuur en -structuur worden geregeld geëvalueerd, verankerd of bijgesteld.",
+  "order": 27
+ },
+ {
+  "code": "BL3",
+  "domain": "Beleid",
+  "title": "De school werkt participatief en responsief.",
+  "description": "De school ontwikkelt een cultuur waarin participatie en dialoog belangrijke elementen zijn. Participatie is overleggen, afstemmen en rekening houden met elkaar. Vooral het uitwisselen van zienswijzen tussen de verschillende participanten en samen school maken is belangrijk. Dit verhoogt het draagvlak voor beslissingen en de betrokkenheid van het schoolteam en de lerenden. De school staat open voor externe vragen en verwachtingen en maakt hierbij bewuste en onderbouwde keuzes",
+  "order": 28
+ },
+ {
+  "code": "BL4",
+  "domain": "Beleid",
+  "title": "In de school heerst een innovatieve en lerende organisatiecultuur",
+  "description": "In de school zijn de teamleden gericht op voortdurende ontwikkeling. De school initieert veranderingen om het leren en onderwijzen te verbeteren. Het schoolteam probeert nieuwe benaderingen en werkwijzen uit. De school stimuleert de samenwerking tussen de teamleden en het leren van en met elkaar met het oog op expertisedeling.",
+  "order": 29
+ },
+ {
+  "code": "BL5",
+  "domain": "Beleid",
+  "title": "De school bouwt samenwerkingsverbanden uit die het leren en onderwijzen ten goede komen.",
+  "description": "De school bouwt aan relaties met ouders en andere partners. Ze verbindt de school praktijk met de thuisomgeving en de lokale en bredere omgeving. Ze zorgt voor een doeltreffende samenwerking met andere partners. Ze legt daarbij prioriteiten in functie van het leren en onderwijzen",
+  "order": 30
+ },
+ {
+  "code": "BL6",
+  "domain": "Beleid",
+  "title": "De school communiceert transparant over haar werking met alle betrokkenen",
+  "description": "De school voert een actieve communicatie met interne en externe belanghebbenden over haar doelen, resultaten, effecten en (onderwijskundige) ontwikkelingen. Ze creëert hiervoor voldoende mogelijkheden tot open dialoog",
+  "order": 31
+ },
+ {
+  "code": "BL7",
+  "domain": "Beleid",
+  "title": "De school ontwikkelt en voert een doeltreffend beleid op het vlak van leren en onderwijzen.",
+  "description": "De school ondersteunt en monitort de continuïteit, de opbouw en de samenhang van de doelen, de vormgeving van het onderwijsleerproces en de leef- en leeromgeving, de begeleiding en de evaluatie- en rapporteringspraktijk. Ze verzamelt gerichte informatie om haar werking te borgen en bij te stellen",
+  "order": 32
+ },
+ {
+  "code": "BL8",
+  "domain": "Beleid",
+  "title": "De school ontwikkelt en voert een doeltreffend personeelsbeleid dat integraal en samenhangend is.",
+  "description": "De school gebruikt duidelijke en overlegde criteria bij het aanwerven en inzetten van teamleden. Ze speelt in op de competenties van het schoolteam. De school voert in formele en formele gesprekken met de teamleden en heeft specifieke aandacht voor ondersteuning. De teamleden krijgen feedback over de manier waarop ze hun opdracht vervullen. Hierdoor toont de school dat zij de inspanningen van de teamleden waardeert. De school voert een transparant en rechtvaardig evaluatiebeleid",
+  "order": 33
+ },
+ {
+  "code": "BL9",
+  "domain": "Beleid",
+  "title": "De school ontwikkelt en voert een doeltreffend professionaliseringsbeleid en heeft hierbij specifieke aandacht voor beginnende leraren.",
+  "description": "De school ontwikkelt een systematisch professionaliseringsbeleid. Hierbij staan de professionaliseringsnoden van de teamleden en de prioritaire doelen van de school centraal. De school bevordert de professionele dialoog en reflectie over leren en onderwijzen en biedt hierbij de nodige ondersteuning. Interne en externe expertisedeling worden gestimuleerd. De school moedigt de implementatie van professionaliseringsinitiatieven aan en volgt de effecten ervan op. Beginnende teamleden krijgen een passende begeleiding",
+  "order": 34
+ },
+ {
+  "code": "BL10",
+  "domain": "Beleid",
+  "title": "De school ontwikkelt en voert een doeltreffend financieel en materieel beleid.",
+  "description": "De school heeft zicht op de materiële noden. Ze wendt de toegekende middelen aan op basis van duidelijke en overlegde criteria in functie van de prioriteiten en de doelen die ze wil bereiken. De school volgt de effecten van haar financieel en materieel beleid op",
+  "order": 35
+ },
+ {
+  "code": "BL11",
+  "domain": "Beleid",
+  "title": "De school beheerst de kosten voor alle lerenden.",
+  "description": "De school reflecteert over de kosten voor alle lerenden. Ze maakt strategische keuzes om deze te beheersen. Ze heeft hierbij bijzondere aandacht voor maatschappelijk kwetsbare groepen. De school communiceert transparant over de kosten met alle belanghebbenden",
+  "order": 36
+ },
+ {
+  "code": "BL12",
+  "domain": "Beleid",
+  "title": "De school ontwikkelt en voert een doeltreffend beleid met het oog op de fysieke en mentale veiligheid van de leef-, leer- en werkomgeving.",
+  "description": "De lerenden en teamleden voelen zich mentaal veilig in de school. Het onderwijs vindt plaats in lokalen die bewoonbaar, veilig en hygiënisch zijn. Om dit te realiseren neemt de school een samenhangend geheel van maatregelen gericht op het voorkomen, evalueren en bestrijden van risico’s. Dit beleid is ingebed in het onderwijskundig beleid van de school en verankerd in de dagelijkse praktijk. Op basis van een analyse van de risico’s, de beschikbare financiële middelen en de wettelijke vereisten, stelt de school prioriteiten voorop. Verbeteringen leiden binnen een redelijke termijn tot de gewenste resultaten.",
+  "order": 37
+ }
+]
