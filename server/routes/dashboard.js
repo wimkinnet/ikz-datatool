@@ -6,7 +6,7 @@ const { PLAN_MONTHS, SCHOOL_YEAR_RE } = require('../utils/constants');
 const { loadPlan } = require('../utils/plan');
 const { computeProgress } = require('../utils/progress');
 
-router.use(protect, schoolScope, requireSchoolType('SO')); // questionnaire and dashboard are SO-only for now
+router.use(protect, schoolScope, requireSchoolType('BO')); // questionnaire and dashboard are BO-only for now
 
 const tally = (arr) => {
   const m = new Map();

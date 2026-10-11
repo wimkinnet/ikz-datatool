@@ -26,17 +26,17 @@ export default function App() {
           <Routes>
             <Route path="/login" element={<Login />} />
             <Route path="/" element={<PrivateRoute><Layout /></PrivateRoute>}>
-              <Route index element={<SectorRoute sector="SO"><Overzicht /></SectorRoute>} />
-              <Route path="vragenlijst" element={<SectorRoute sector="SO"><Vragenlijst /></SectorRoute>} />
-              <Route path="jaarplan" element={<SectorRoute sector="SO"><Jaarplan /></SectorRoute>} />
-              <Route path="trends" element={<SectorRoute sector="SO"><Trends /></SectorRoute>} />
+              <Route index element={<SectorRoute sector="BO"><Overzicht /></SectorRoute>} />
+              <Route path="vragenlijst" element={<SectorRoute sector="BO"><Vragenlijst /></SectorRoute>} />
+              <Route path="jaarplan" element={<SectorRoute sector="BO"><Jaarplan /></SectorRoute>} />
+              <Route path="trends" element={<SectorRoute sector="BO"><Trends /></SectorRoute>} />
               <Route path="documenten" element={<Documenten />} />
               <Route path="profiel" element={<Profiel />} />
               <Route path="scholen" element={<RoleRoute roles={staff}><Scholen /></RoleRoute>} />
               <Route path="gebruikers" element={<RoleRoute roles={staff}><Gebruikers /></RoleRoute>} />
-              <Route path="sjablonen/vragen" element={<RoleRoute roles={['admin']}><SectorRoute sector="SO"><Vragen /></SectorRoute></RoleRoute>} />
-              <Route path="sjablonen/jaarplan" element={<RoleRoute roles={['admin']}><SectorRoute sector="SO"><Jaarplan template /></SectorRoute></RoleRoute>} />
-              <Route path="sjablonen/lijsten" element={<RoleRoute roles={['admin']}><SectorRoute sector="SO"><Lijsten /></SectorRoute></RoleRoute>} />
+              <Route path="sjablonen/vragen" element={<RoleRoute roles={['admin']}><SectorRoute sector="BO"><Vragen /></SectorRoute></RoleRoute>} />
+              <Route path="sjablonen/jaarplan" element={<RoleRoute roles={['admin']}><SectorRoute sector="BO"><Jaarplan template /></SectorRoute></RoleRoute>} />
+              <Route path="sjablonen/lijsten" element={<RoleRoute roles={['admin']}><SectorRoute sector="BO"><Lijsten /></SectorRoute></RoleRoute>} />
             </Route>
             <Route path="*" element={<Navigate to="/" replace />} />
           </Routes>

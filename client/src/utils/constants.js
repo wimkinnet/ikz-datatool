@@ -37,7 +37,7 @@ export const ANSWER_TYPES = [
 ];
 export const NUMERIC_TYPES = ['number', 'percentage', 'scale10'];
 
-// Highest-level split of the tool. SO has the questionnaire, year plan, dashboard and trends; BO comes later.
+// Highest-level split of the tool. BO has the questionnaire, year plan, dashboard and trends; SO comes later.
 export const SECTORS = [
   { key: 'BO', label: 'Basisonderwijs', short: 'BO' },
   { key: 'SO', label: 'Secundair onderwijs', short: 'SO' },

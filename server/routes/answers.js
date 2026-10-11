@@ -11,7 +11,7 @@ const { SCHOOL_YEAR_RE } = require('../utils/constants');
 const { numericValue } = require('../utils/answerValues');
 const { computeProgress } = require('../utils/progress');
 
-router.use(protect, schoolScope, requireSchoolType('SO')); // questionnaire and dashboard are SO-only for now
+router.use(protect, schoolScope, requireSchoolType('BO')); // questionnaire and dashboard are BO-only for now
 
 async function coerceValue(question, raw) {
   if (raw === '' || raw === null || raw === undefined) return null;

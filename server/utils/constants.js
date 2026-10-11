@@ -7,7 +7,7 @@ const STATUSES = ['monitoren', 'ok', 'actie'];
 const ROLES = ['admin', 'consultant', 'client'];
 
 // Highest-level split of the tool: every school is either basisonderwijs (BO) or secundair onderwijs (SO).
-// The questionnaire, year plan, dashboard and trends are built for SO; the BO context comes later.
+// The questionnaire, year plan, dashboard and trends are built for BO; the SO context comes later.
 const SECTORS = ['BO', 'SO'];
 
 const monthIndex = (m) => {

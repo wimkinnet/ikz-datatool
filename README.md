@@ -5,8 +5,8 @@ Web app for interne kwaliteitszorg (IKZ), built from the Excel workbook *Dataove
 **BO / SO.** At the highest level the tool is split into *basisonderwijs* (BO) and *secundair onderwijs* (SO).
 Every school is exactly one of the two (chosen when the school is created). A user can be linked to schools of
 both types and then switches with the BO/SO toggle at the top of the sidebar; admins always see both.
-Everything below is the **SO** context. The BO context is still to be built: for now BO only has Scholen,
-Gebruikers and Documenten, and the SO-only pages show a placeholder (the server also refuses SO data for BO schools).
+Everything below is the **BO** context. The SO context is still to be built: for now SO only has Scholen,
+Gebruikers and Documenten, and the BO-only pages show a placeholder (the server also refuses BO data for SO schools).
 
 Consultants and schools work in the same tool:
 

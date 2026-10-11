@@ -36,7 +36,7 @@ export function AppProvider({ children }) {
     if (user.role === 'admin') return SECTORS.map((s) => s.key);
     return SECTORS.map((s) => s.key).filter((key) => allSchools.some((s) => s.type === key));
   }, [user, allSchools]);
-  const sector = sectors.includes(storedSector) ? storedSector : sectors.includes('SO') ? 'SO' : sectors[0] || '';
+  const sector = sectors.includes(storedSector) ? storedSector : sectors.includes('BO') ? 'BO' : sectors[0] || '';
   const setSector = (key) => {
     localStorage.setItem('sector', key);
     setStoredSector(key);

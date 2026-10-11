@@ -62,8 +62,8 @@ const PORT = process.env.PORT || 5050;
 
 (async () => {
   await connectDB();
-  // Everything built before the BO/SO split is SO: give older schools (no type, or the old 'BaO' default) type SO
-  await School.updateMany({ type: { $nin: SECTORS } }, { $set: { type: 'SO' } });
+  // Everything built before the BO/SO split is BO: give older schools (no type, or the old 'BaO' default) type BO
+  await School.updateMany({ type: { $nin: SECTORS } }, { $set: { type: 'BO' } });
   if (process.env.AUTO_SEED !== 'false') {
     try { await runSeed(); } catch (err) { console.error('[seed] failed:', err.message); }
   }

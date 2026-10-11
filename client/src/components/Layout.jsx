@@ -9,7 +9,7 @@ const link = ({ isActive }) => 'nav-link' + (isActive ? ' active' : '');
 export default function Layout() {
   const { user, logout } = useAuth();
   const { sector, setSector, sectors, schools, school, schoolId, setSchoolId, year, setYear, ready } = useApp();
-  const isSO = sector === 'SO';
+  const isBO = sector === 'BO';
   const navigate = useNavigate();
   const isStaff = user.role !== 'client';
 
@@ -36,7 +36,7 @@ export default function Layout() {
 
         <nav>
           <NavLink to="/" end className={link}>Overzicht</NavLink>
-          {isSO && (
+          {isBO && (
             <>
               <NavLink to="/vragenlijst" className={link}>Vragenlijst</NavLink>
               <NavLink to="/jaarplan" className={link}>Jaarplan</NavLink>
@@ -52,9 +52,9 @@ export default function Layout() {
               <NavLink to="/gebruikers" className={link}>Gebruikers</NavLink>
             </>
           )}
-          {user.role === 'admin' && isSO && (
+          {user.role === 'admin' && isBO && (
             <>
-              <div className="nav-heading">Sjablonen SO</div>
+              <div className="nav-heading">Sjablonen BO</div>
               <NavLink to="/sjablonen/vragen" className={link}>Vragen</NavLink>
               <NavLink to="/sjablonen/jaarplan" className={link}>Standaard jaarplan</NavLink>
               <NavLink to="/sjablonen/lijsten" className={link}>Keuzelijsten</NavLink>
