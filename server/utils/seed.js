@@ -8,6 +8,7 @@ const Question = require('../models/Question');
 const PlanItem = require('../models/PlanItem');
 const RokExpectation = require('../models/RokExpectation');
 const Indicator = require('../models/Indicator');
+const TestResult = require('../models/test/TestResult');
 
 const readSeed = (name) => JSON.parse(fs.readFileSync(path.join(__dirname, '..', 'seed', name), 'utf-8'));
 
@@ -46,6 +47,12 @@ async function runSeed({ reset = false } = {}) {
   if ((await Indicator.countDocuments()) === 0) {
     await Indicator.insertMany(readSeed('so-indicators.json'));
     log.push('SO: indicators seeded');
+  }
+
+  // Test: the library of beoogde resultaten (from the themes of the BO year plan)
+  if ((await TestResult.countDocuments()) === 0) {
+    await TestResult.insertMany(readSeed('test-results.json'));
+    log.push('Test: beoogde resultaten seeded');
   }
 
   const email = (process.env.SEED_ADMIN_EMAIL || '').toLowerCase();

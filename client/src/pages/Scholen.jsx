@@ -50,8 +50,8 @@ export default function Scholen() {
   return (
     <div>
       <div className="page-header">
-        <div><h1>Scholen</h1><p>De scholen en scholengroepen in {sectorLabel(sector).toLowerCase()} die je opvolgt.</p></div>
-        {user.role === 'admin' && <button className="btn btn-primary" onClick={() => { setError(''); setEdit({ ...EMPTY, type: sector }); }}>+ Nieuwe school</button>}
+        <div><h1>Scholen</h1><p>{sector === 'TEST' ? 'Alle scholen, basis- en secundair onderwijs.' : `De scholen en scholengroepen in ${sectorLabel(sector).toLowerCase()} die je opvolgt.`}</p></div>
+        {user.role === 'admin' && <button className="btn btn-primary" onClick={() => { setError(''); setEdit({ ...EMPTY, type: sector === 'TEST' ? '' : sector }); }}>+ Nieuwe school</button>}
       </div>
       <ErrorBanner message={error && !edit ? error : ''} />
       <div className="table-wrap">

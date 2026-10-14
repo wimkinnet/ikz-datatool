@@ -1,0 +1,116 @@
+[
+ {
+  "name": "Instroom",
+  "category": "context",
+  "description": "",
+  "order": 1
+ },
+ {
+  "name": "Uitstroom",
+  "category": "resultaten",
+  "description": "",
+  "order": 2
+ },
+ {
+  "name": "Vlaamse toetsen",
+  "category": "resultaten",
+  "description": "",
+  "order": 3
+ },
+ {
+  "name": "AVI",
+  "category": "resultaten",
+  "description": "",
+  "order": 4
+ },
+ {
+  "name": "Koala",
+  "category": "context",
+  "description": "",
+  "order": 5
+ },
+ {
+  "name": "DIAtoetsen",
+  "category": "resultaten",
+  "description": "",
+  "order": 6
+ },
+ {
+  "name": "Ouderbevraging over communicatie",
+  "category": "proces",
+  "description": "",
+  "order": 7
+ },
+ {
+  "name": "10 minuutgesprekken",
+  "category": "proces",
+  "description": "",
+  "order": 8
+ },
+ {
+  "name": "Effectieve didactiek - project TM",
+  "category": "proces",
+  "description": "",
+  "order": 9
+ },
+ {
+  "name": "Aantal leerlingen met remediëringstraject + welke zorgthema's spelen",
+  "category": "context",
+  "description": "",
+  "order": 10
+ },
+ {
+  "name": "Leerlingenaantal op 1 februari",
+  "category": "context",
+  "description": "",
+  "order": 11
+ },
+ {
+  "name": "Inschaling Brede basiszorg",
+  "category": "proces",
+  "description": "",
+  "order": 12
+ },
+ {
+  "name": "Beleidsvoerend vermogen",
+  "category": "proces",
+  "description": "",
+  "order": 13
+ },
+ {
+  "name": "Aantal verlofstelsels en ziekte personeel",
+  "category": "context",
+  "description": "",
+  "order": 14
+ },
+ {
+  "name": "Professionalisering per leerkracht",
+  "category": "proces",
+  "description": "",
+  "order": 15
+ },
+ {
+  "name": "Evaluatie leerkrachten (deel van team)",
+  "category": "proces",
+  "description": "",
+  "order": 16
+ },
+ {
+  "name": "Resultaten getuigschriften",
+  "category": "resultaten",
+  "description": "",
+  "order": 17
+ },
+ {
+  "name": "Aanmeldingen leersteun",
+  "category": "context",
+  "description": "",
+  "order": 18
+ },
+ {
+  "name": "Studiesucces in SO",
+  "category": "resultaten",
+  "description": "",
+  "order": 19
+ }
+]

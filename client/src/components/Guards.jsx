@@ -29,8 +29,8 @@ export function SectorRoute({ sector, children }) {
 }
 
 // One route, a different page per sector (e.g. the start page: BO Overzicht, SO Kwaliteitsbeeld)
-export function SectorPick({ BO, SO }) {
+export function SectorPick({ BO, SO, TEST }) {
   const { sector, ready } = useApp();
   if (!ready) return <p className="muted">Laden…</p>;
-  return sector === 'SO' ? SO : BO;
+  return sector === 'TEST' ? TEST : sector === 'SO' ? SO : BO;
 }

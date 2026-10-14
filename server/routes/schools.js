@@ -8,6 +8,10 @@ const Answer = require('../models/Answer');
 const PlanItem = require('../models/PlanItem');
 const Document = require('../models/Document');
 const IndicatorScore = require('../models/IndicatorScore');
+const TestGoal = require('../models/test/TestGoal');
+const TestMeetpunt = require('../models/test/TestMeetpunt');
+const TestMeting = require('../models/test/TestMeting');
+const TestAction = require('../models/test/TestAction');
 const { UPLOAD_ROOT } = require('../middleware/upload');
 const { protect, requireRole, requireStaff } = require('../middleware/auth');
 const { schoolIdsOf, canAccessSchool } = require('../middleware/access');
@@ -85,6 +89,10 @@ router.delete('/:id', requireRole('admin'), async (req, res) => {
       PlanItem.deleteMany({ school: id }),
       Document.deleteMany({ school: id }),
       IndicatorScore.deleteMany({ school: id }),
+      TestGoal.deleteMany({ school: id }),
+      TestMeetpunt.deleteMany({ school: id }),
+      TestMeting.deleteMany({ school: id }),
+      TestAction.deleteMany({ school: id }),
       User.updateMany({ schools: id }, { $pull: { schools: id } }),
       User.updateMany({ school: id }, { $set: { school: null } }),
     ]);

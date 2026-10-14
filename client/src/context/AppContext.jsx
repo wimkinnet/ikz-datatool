@@ -1,7 +1,7 @@
 import { createContext, useContext, useState, useEffect, useCallback, useMemo } from 'react';
 import api from '../api/axios';
 import { useAuth } from './AuthContext';
-import { currentSchoolYear, SECTORS } from '../utils/constants';
+import { currentSchoolYear, SECTORS, SWITCH_OPTIONS } from '../utils/constants';
 
 const AppContext = createContext(null);
 
@@ -33,7 +33,7 @@ export function AppProvider({ children }) {
   // Admins work in both sectors; everyone else in the sectors of the schools they are linked to
   const sectors = useMemo(() => {
     if (!user) return [];
-    if (user.role === 'admin') return SECTORS.map((s) => s.key);
+    if (user.role === 'admin') return SWITCH_OPTIONS.map((s) => s.key); // BO, SO and Test
     return SECTORS.map((s) => s.key).filter((key) => allSchools.some((s) => s.type === key));
   }, [user, allSchools]);
   const sector = sectors.includes(storedSector) ? storedSector : sectors.includes('BO') ? 'BO' : sectors[0] || '';
@@ -42,8 +42,8 @@ export function AppProvider({ children }) {
     setStoredSector(key);
   };
 
-  // The schools of the active sector; the active school is remembered per sector (falling back to the first)
-  const schools = useMemo(() => allSchools.filter((s) => s.type === sector), [allSchools, sector]);
+  // The schools of the active sector (Test: all schools); the active school is remembered per sector
+  const schools = useMemo(() => (sector === 'TEST' ? allSchools : allSchools.filter((s) => s.type === sector)), [allSchools, sector]);
   const schoolId = useMemo(() => {
     if (!user) return '';
     if (schools.some((s) => s._id === storedSchool[sector])) return storedSchool[sector];

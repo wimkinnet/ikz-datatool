@@ -82,6 +82,21 @@ npm run import:so -- ../tools/data/sint-norbertus.json                          
 ```
 Admins maintain the indicators under *Sjablonen SO → Indicatoren*.
 
+## Test: operationele doelen (experiment, admins only)
+
+A third tab next to BO and SO, visible to admins only and working on every school (BO and SO). Its data is kept
+apart (`server/models/test/`, `/api/test`), so the experiment never touches BO or SO data.
+
+- **Operationele doelen** (start page) — per school and school year, from **2026-2027**. Each goal contributes to one
+  or more ROK expectations and is linked to one or more **beoogde resultaten**.
+- **Beoogde resultaten** — a shared library (*Sjablonen Test*), seeded from the 19 themes of the BO default year plan.
+  Each is *proces*, *resultaten* or *context* (the initial category per theme is an assumption; admins can change it).
+- **Meetpunten** — defined per school under a beoogd resultaat: uitleg, bron, month of evaluation, value type
+  (percentage, absolute number or free text) and an optional threshold. Measurements are stored per school year from
+  **2024-2025**, with a value and a red/green assessment (suggested from the threshold, but always the user's choice).
+- **Takendashboard** — actions linked to a measuring result (meetpunt + school year), with owner, deadline and status
+  (open / bezig / afgerond); overdue actions are flagged.
+
 ## Things to check (assumptions I had to make)
 
 1. **Answer types were inferred** from the question wording (123 questions: 70 text, 34 number, 8 percentage,

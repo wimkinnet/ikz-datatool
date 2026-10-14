@@ -42,7 +42,10 @@ export const SECTORS = [
   { key: 'BO', label: 'Basisonderwijs', short: 'BO' },
   { key: 'SO', label: 'Secundair onderwijs', short: 'SO' },
 ];
-export const sectorLabel = (key) => SECTORS.find((s) => s.key === key)?.label || key;
+// Test is not a school type but an experimental workspace (admins only) that works on every school
+export const TEST_SECTOR = { key: 'TEST', label: 'Test', short: 'Test' };
+export const SWITCH_OPTIONS = [...SECTORS, TEST_SECTOR];
+export const sectorLabel = (key) => SWITCH_OPTIONS.find((s) => s.key === key)?.label || key;
 
 export const ROLE_LABELS = { admin: 'Admin', consultant: 'Consultant', client: 'School' };
 
@@ -77,3 +80,29 @@ export const INSCHALING_SO = [
   { value: -1, label: 'Actie nodig', cls: 'actie' },
 ];
 export const inschalingSO = (v) => INSCHALING_SO.find((i) => i.value === v) || null;
+
+// Test: operationele doelen -> beoogde resultaten -> meetpunten -> metingen -> acties
+export const TEST_CATEGORIES = [
+  { key: 'proces', label: 'Proces' },
+  { key: 'resultaten', label: 'Resultaten' },
+  { key: 'context', label: 'Context' },
+];
+export const testCategoryLabel = (key) => TEST_CATEGORIES.find((c) => c.key === key)?.label || key;
+export const TEST_VALUE_TYPES = [
+  { key: 'percentage', label: 'Percentage' },
+  { key: 'absoluut', label: 'Absoluut getal' },
+  { key: 'tekst', label: 'Vrije tekst' },
+];
+export const TEST_ACTION_STATUSES = [
+  { key: 'open', label: 'Open' },
+  { key: 'bezig', label: 'Bezig' },
+  { key: 'afgerond', label: 'Afgerond' },
+];
+export const FIRST_GOAL_YEAR = '2026-2027';
+export const FIRST_MEASURE_YEAR = '2024-2025';
+// School years from `from` up to and including `to` ('2024-2025', '2025-2026', …)
+export function yearsBetween(from, to) {
+  const out = [];
+  for (let y = from; y <= to && out.length < 20; y = shiftYear(y, 1)) out.push(y);
+  return out;
+}

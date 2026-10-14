@@ -19,6 +19,10 @@ import Kwaliteitsbeeld from './pages/so/Kwaliteitsbeeld';
 import Indicatoren from './pages/so/Indicatoren';
 import Kalender from './pages/so/Kalender';
 import IndicatorTemplates from './pages/so/IndicatorTemplates';
+import Doelen from './pages/test/Doelen';
+import Meetpunten from './pages/test/Meetpunten';
+import Taken from './pages/test/Taken';
+import Resultaten from './pages/test/Resultaten';
 
 const staff = ['admin', 'consultant'];
 
@@ -30,9 +34,11 @@ export default function App() {
           <Routes>
             <Route path="/login" element={<Login />} />
             <Route path="/" element={<PrivateRoute><Layout /></PrivateRoute>}>
-              <Route index element={<SectorPick BO={<Overzicht />} SO={<Kwaliteitsbeeld />} />} />
+              <Route index element={<SectorPick BO={<Overzicht />} SO={<Kwaliteitsbeeld />} TEST={<Doelen />} />} />
               <Route path="indicatoren" element={<SectorRoute sector="SO"><Indicatoren /></SectorRoute>} />
               <Route path="kalender" element={<SectorRoute sector="SO"><Kalender /></SectorRoute>} />
+              <Route path="meetpunten" element={<RoleRoute roles={['admin']}><SectorRoute sector="TEST"><Meetpunten /></SectorRoute></RoleRoute>} />
+              <Route path="taken" element={<RoleRoute roles={['admin']}><SectorRoute sector="TEST"><Taken /></SectorRoute></RoleRoute>} />
               <Route path="vragenlijst" element={<SectorRoute sector="BO"><Vragenlijst /></SectorRoute>} />
               <Route path="jaarplan" element={<SectorRoute sector="BO"><Jaarplan /></SectorRoute>} />
               <Route path="trends" element={<SectorRoute sector="BO"><Trends /></SectorRoute>} />
@@ -43,6 +49,7 @@ export default function App() {
               <Route path="sjablonen/vragen" element={<RoleRoute roles={['admin']}><SectorRoute sector="BO"><Vragen /></SectorRoute></RoleRoute>} />
               <Route path="sjablonen/jaarplan" element={<RoleRoute roles={['admin']}><SectorRoute sector="BO"><Jaarplan template /></SectorRoute></RoleRoute>} />
               <Route path="sjablonen/lijsten" element={<RoleRoute roles={['admin']}><SectorRoute sector="BO"><Lijsten /></SectorRoute></RoleRoute>} />
+              <Route path="sjablonen/resultaten" element={<RoleRoute roles={['admin']}><SectorRoute sector="TEST"><Resultaten /></SectorRoute></RoleRoute>} />
               <Route path="sjablonen/indicatoren" element={<RoleRoute roles={['admin']}><SectorRoute sector="SO"><IndicatorTemplates /></SectorRoute></RoleRoute>} />
             </Route>
             <Route path="*" element={<Navigate to="/" replace />} />
