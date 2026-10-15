@@ -96,6 +96,12 @@ apart (`server/models/test/`, `/api/test`), so the experiment never touches BO o
   **2024-2025**, with a value and a red/green assessment (suggested from the threshold, but always the user's choice).
 - **Takendashboard** — actions linked to a measuring result (meetpunt + school year), with owner, deadline and status
   (open / bezig / afgerond); overdue actions are flagged.
+- **Kalender** — per month of the school year, the meetpunten to evaluate, marked done / this month / overdue / planned.
+- **Inschatting per operationeel doel** — from the red/green verdicts of its meetpunten in that school year:
+  ≥ 75% green *op koers*, ≥ 50% *aandacht*, otherwise *niet op koers*; *voorlopig* while not every meetpunt is assessed
+  (rule and thresholds in `client/src/test/assess.js`).
+- **Dashboard** — KPIs, assessment per goal, share of green per school year (from 2024-2025), meetpunten per
+  category, red meetpunten without an open action, and overdue actions.
 
 ## Things to check (assumptions I had to make)
 

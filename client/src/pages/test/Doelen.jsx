@@ -2,7 +2,8 @@ import { useState } from 'react';
 import { useApp } from '../../context/AppContext';
 import { NoSchool, ErrorBanner } from '../../components/Bits';
 import { useTest } from '../../test/useTest';
-import { Beoordeling, CategoryTag, GoalModal, MeetpuntModal, MetingModal, formatValue } from '../../test/TestBits';
+import { Beoordeling, CategoryTag, GoalModal, GoalStatus, MeetpuntModal, MetingModal, formatValue } from '../../test/TestBits';
+import { assessGoal, goalMeetpunten } from '../../test/assess';
 import { FIRST_GOAL_YEAR, TEST_CATEGORIES } from '../../utils/constants';
 
 // Test: the school's operational goals for the active school year, each with its beoogde resultaten
@@ -34,19 +35,18 @@ export default function Doelen() {
       ) : t.loading ? <p className="muted">Laden…</p> : t.goals.length === 0 ? (
         <div className="card empty-state">Nog geen operationele doelen voor {t.year}. Voeg er een toe en koppel het aan het ROK en aan beoogde resultaten.</div>
       ) : t.goals.map((g) => {
-        const mps = g.results.flatMap((rid) => t.meetpunten.filter((m) => m.result === rid && m.active));
-        const verdicts = mps.map((m) => t.metingOf(m._id, t.year)?.beoordeling);
+        const mps = goalMeetpunten(g, t.meetpunten);
+        const a = assessGoal(g, t, t.year);
         const openActions = t.actions.filter((a) => a.status !== 'afgerond' && mps.some((m) => m._id === a.meetpunt)).length;
         return (
           <section key={g._id} className="card goal-card">
             <div className="tree-head">
               <h2 style={{ margin: 0 }}>{g.title}</h2>
               <span className="spacer" />
+              <GoalStatus a={a} />
               <span className="tally">
-                <span className="tally-dot ok" title="Groen">{verdicts.filter((v) => v === 'groen').length}</span>
-                <span className="tally-dot actie" title="Rood">{verdicts.filter((v) => v === 'rood').length}</span>
-                <span className="tally-dot none" title="Nog niet gemeten">{verdicts.filter((v) => !v).length}</span>
-                {openActions > 0 && <span>{openActions} open actie{openActions === 1 ? '' : 's'}</span>}
+                {a.total > 0 && <span>{a.groen} groen · {a.rood} rood · {a.open} nog niet gemeten</span>}
+                {openActions > 0 && <span>· {openActions} open actie{openActions === 1 ? '' : 's'}</span>}
               </span>
               <button className="btn btn-sm" onClick={() => { t.setError(''); setGoal(g); }}>Bewerken</button>
             </div>

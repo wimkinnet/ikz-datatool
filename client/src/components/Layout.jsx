@@ -40,7 +40,9 @@ export default function Layout() {
           <NavLink to="/" end className={link}>{isBO ? 'Overzicht' : isSO ? 'Kwaliteitsbeeld' : 'Operationele doelen'}</NavLink>
           {isTest && (
             <>
+              <NavLink to="/dashboard" className={link}>Dashboard</NavLink>
               <NavLink to="/meetpunten" className={link}>Meetpunten</NavLink>
+              <NavLink to="/kalender" className={link}>Kalender</NavLink>
               <NavLink to="/taken" className={link}>Takendashboard</NavLink>
             </>
           )}

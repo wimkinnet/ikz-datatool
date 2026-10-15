@@ -15,6 +15,19 @@ export function Beoordeling({ value, empty = '—' }) {
   return <span className="muted">{empty}</span>;
 }
 
+// Overall assessment of an operational goal (see test/assess.js)
+export function GoalStatus({ a }) {
+  const pct = a.ratio === null ? '' : ` · ${Math.round(a.ratio * 100)}% groen`;
+  const title = a.total
+    ? `${a.measured} van ${a.total} meetpunten beoordeeld (${a.groen} groen, ${a.rood} rood)${a.provisional ? ' - voorlopig' : ''}`
+    : 'Koppel meetpunten aan de beoogde resultaten van dit doel';
+  return (
+    <span className={`status-pill ${a.cls}`} title={title}>
+      {a.label}{pct}{a.provisional && <span className="provisional"> · voorlopig</span>}
+    </span>
+  );
+}
+
 export function CategoryTag({ category }) {
   return <span className={`cat-tag ${category}`}>{testCategoryLabel(category)}</span>;
 }

@@ -23,6 +23,8 @@ import Doelen from './pages/test/Doelen';
 import Meetpunten from './pages/test/Meetpunten';
 import Taken from './pages/test/Taken';
 import Resultaten from './pages/test/Resultaten';
+import TestKalender from './pages/test/TestKalender';
+import TestDashboard from './pages/test/TestDashboard';
 
 const staff = ['admin', 'consultant'];
 
@@ -36,7 +38,8 @@ export default function App() {
             <Route path="/" element={<PrivateRoute><Layout /></PrivateRoute>}>
               <Route index element={<SectorPick BO={<Overzicht />} SO={<Kwaliteitsbeeld />} TEST={<Doelen />} />} />
               <Route path="indicatoren" element={<SectorRoute sector="SO"><Indicatoren /></SectorRoute>} />
-              <Route path="kalender" element={<SectorRoute sector="SO"><Kalender /></SectorRoute>} />
+              <Route path="kalender" element={<SectorPick BO={<SectorRoute sector="SO"><Kalender /></SectorRoute>} SO={<Kalender />} TEST={<RoleRoute roles={['admin']}><TestKalender /></RoleRoute>} />} />
+              <Route path="dashboard" element={<RoleRoute roles={['admin']}><SectorRoute sector="TEST"><TestDashboard /></SectorRoute></RoleRoute>} />
               <Route path="meetpunten" element={<RoleRoute roles={['admin']}><SectorRoute sector="TEST"><Meetpunten /></SectorRoute></RoleRoute>} />
               <Route path="taken" element={<RoleRoute roles={['admin']}><SectorRoute sector="TEST"><Taken /></SectorRoute></RoleRoute>} />
               <Route path="vragenlijst" element={<SectorRoute sector="BO"><Vragenlijst /></SectorRoute>} />
