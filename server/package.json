@@ -8,7 +8,9 @@
     "dev": "nodemon server.js",
     "seed": "node utils/seed.js",
     "seed:reset-templates": "node utils/seed.js --reset-templates",
-    "import:so": "node utils/importSoSchool.js"
+    "import:so": "node utils/importSoSchool.js",
+    "seed:test-dummy": "node utils/seedTestDummy.js",
+    "seed:test-dummy:remove": "node utils/seedTestDummy.js --remove"
   },
   "dependencies": {
     "bcryptjs": "^2.4.3",
