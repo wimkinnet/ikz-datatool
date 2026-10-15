@@ -114,7 +114,7 @@ export default function Overzicht() {
                 <XAxis type="number" allowDecimals={false} fontSize={12} />
                 <YAxis type="category" dataKey="key" width={44} fontSize={12} />
                 <Tooltip />
-                <Bar dataKey="count" name="Taken" fill="#3f6659" />
+                <Bar dataKey="count" name="Taken" fill="#009089" />
               </BarChart>
             </ResponsiveContainer>
           )}

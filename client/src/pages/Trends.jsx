@@ -82,10 +82,10 @@ export default function Trends() {
               <XAxis dataKey="schoolYear" fontSize={12} />
               <YAxis domain={yDomain} allowDecimals={isScale ? false : true} ticks={isScale ? trend.scale.map((_, i) => i + 1) : undefined} tickFormatter={fmtTick} fontSize={12} width={isScale ? 130 : 50} />
               <Tooltip formatter={(v, n, p) => [isScale ? p.payload.label : `${v}${unit}`, q.text.slice(0, 40)]} />
-              {points.some((p) => p.schoolYear === year) && kind === 'line' && <ReferenceLine x={year} stroke="#3f6659" strokeDasharray="4 4" />}
+              {points.some((p) => p.schoolYear === year) && kind === 'line' && <ReferenceLine x={year} stroke="#009089" strokeDasharray="4 4" />}
               {kind === 'line'
-                ? <Line type="monotone" dataKey="value" stroke="#3f6659" strokeWidth={2.5} dot={{ r: 5 }}><LabelList dataKey="value" position="top" formatter={(v) => (isScale ? '' : `${v}${unit}`)} /></Line>
-                : <Bar dataKey="value" fill="#3f6659" radius={[4, 4, 0, 0]}><LabelList dataKey="value" position="top" formatter={(v) => (isScale ? '' : `${v}${unit}`)} /></Bar>}
+                ? <Line type="monotone" dataKey="value" stroke="#009089" strokeWidth={2.5} dot={{ r: 5 }}><LabelList dataKey="value" position="top" formatter={(v) => (isScale ? '' : `${v}${unit}`)} /></Line>
+                : <Bar dataKey="value" fill="#009089" radius={[4, 4, 0, 0]}><LabelList dataKey="value" position="top" formatter={(v) => (isScale ? '' : `${v}${unit}`)} /></Bar>}
             </Chart>
           </ResponsiveContainer>
         )}
