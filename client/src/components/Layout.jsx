@@ -37,13 +37,14 @@ export default function Layout() {
         )}
 
         <nav>
-          <NavLink to="/" end className={link}>{isBO ? 'Overzicht' : isSO ? 'Kwaliteitsbeeld' : 'Operationele doelen'}</NavLink>
+          <NavLink to="/" end className={link}>{isBO ? 'Overzicht' : isSO ? 'Kwaliteitsbeeld' : 'Dashboard'}</NavLink>
           {isTest && (
             <>
-              <NavLink to="/dashboard" className={link}>Dashboard</NavLink>
-              <NavLink to="/meetpunten" className={link}>Meetpunten</NavLink>
+              <NavLink to="/rok" className={link}>ROK</NavLink>
+              <NavLink to="/doelen" className={link}>Operationele doelen</NavLink>
               <NavLink to="/kalender" className={link}>Kalender</NavLink>
-              <NavLink to="/taken" className={link}>Takendashboard</NavLink>
+              <NavLink to="/meetpunten" className={link}>Meetpunten</NavLink>
+              <NavLink to="/taken" className={link}>Actielijst</NavLink>
             </>
           )}
           {isSO && (
@@ -59,7 +60,7 @@ export default function Layout() {
               <NavLink to="/trends" className={link}>Trends</NavLink>
             </>
           )}
-          <NavLink to="/rok" className={link}>ROK</NavLink>
+          {!isTest && <NavLink to="/rok" className={link}>ROK</NavLink>}
           <NavLink to="/documenten" className={link}>Documenten</NavLink>
 
           {isStaff && (

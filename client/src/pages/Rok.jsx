@@ -113,7 +113,7 @@ export default function Rok() {
                         <div className="rok-goals">
                           <div className="muted rok-domain">Operationele doelen die hieraan bijdragen</div>
                           {linked.length === 0 ? <p className="muted" style={{ margin: 0 }}>Nog geen.</p> : (
-                            <ul>{linked.map((g) => <li key={g._id}><Link to={`/?goal=${g._id}`}>{g.title}</Link></li>)}</ul>
+                            <ul>{linked.map((g) => <li key={g._id}><Link to={`/doelen?goal=${g._id}`}>{g.title}</Link></li>)}</ul>
                           )}
                         </div>
                       )}

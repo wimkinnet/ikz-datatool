@@ -86,21 +86,22 @@ Admins maintain the indicators under *Sjablonen SO → Indicatoren*.
 
 A third tab next to BO and SO, visible to admins only and working on every school (BO and SO). Its data is kept
 apart (`server/models/test/`, `/api/test`), so the experiment never touches BO or SO data.
+Menu order: Dashboard, ROK, Operationele doelen, Kalender, Meetpunten, Actielijst.
 
-- **Operationele doelen** (start page) — per school and school year, from **2026-2027**. Each goal contributes to one
+- **Operationele doelen** — per school and school year, from **2026-2027**. Each goal contributes to one
   or more ROK expectations and is linked to one or more **beoogde resultaten**.
 - **Beoogde resultaten** — a shared library (*Sjablonen Test*), seeded from the 19 themes of the BO default year plan.
   Each is *proces*, *resultaten* or *context* (the initial category per theme is an assumption; admins can change it).
 - **Meetpunten** — defined per school under a beoogd resultaat: uitleg, bron, month of evaluation, value type
   (percentage, absolute number or free text) and an optional threshold. Measurements are stored per school year from
   **2024-2025**, with a value and a red/green assessment (suggested from the threshold, but always the user's choice).
-- **Takendashboard** — actions linked to a measuring result (meetpunt + school year), with owner, deadline and status
+- **Actielijst** — actions linked to a measuring result (meetpunt + school year), with owner, deadline and status
   (open / bezig / afgerond); overdue actions are flagged.
 - **Kalender** — per month of the school year, the meetpunten to evaluate, marked done / this month / overdue / planned.
 - **Inschatting per operationeel doel** — from the red/green verdicts of its meetpunten in that school year:
   ≥ 75% green *op koers*, ≥ 50% *aandacht*, otherwise *niet op koers*; *voorlopig* while not every meetpunt is assessed
   (rule and thresholds in `client/src/test/assess.js`).
-- **Dashboard** — KPIs, assessment per goal, share of green per school year (from 2024-2025), meetpunten per
+- **Dashboard** (start page) — KPIs, assessment per goal, share of green per school year (from 2024-2025), meetpunten per
   category, red meetpunten without an open action, and overdue actions.
 
 ## Things to check (assumptions I had to make)

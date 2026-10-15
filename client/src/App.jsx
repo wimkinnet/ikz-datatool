@@ -37,10 +37,11 @@ export default function App() {
           <Routes>
             <Route path="/login" element={<Login />} />
             <Route path="/" element={<PrivateRoute><Layout /></PrivateRoute>}>
-              <Route index element={<SectorPick BO={<Overzicht />} SO={<Kwaliteitsbeeld />} TEST={<Doelen />} />} />
+              <Route index element={<SectorPick BO={<Overzicht />} SO={<Kwaliteitsbeeld />} TEST={<TestDashboard />} />} />
               <Route path="indicatoren" element={<SectorRoute sector="SO"><Indicatoren /></SectorRoute>} />
               <Route path="kalender" element={<SectorPick BO={<SectorRoute sector="SO"><Kalender /></SectorRoute>} SO={<Kalender />} TEST={<RoleRoute roles={['admin']}><TestKalender /></RoleRoute>} />} />
-              <Route path="dashboard" element={<RoleRoute roles={['admin']}><SectorRoute sector="TEST"><TestDashboard /></SectorRoute></RoleRoute>} />
+              <Route path="doelen" element={<RoleRoute roles={['admin']}><SectorRoute sector="TEST"><Doelen /></SectorRoute></RoleRoute>} />
+              <Route path="dashboard" element={<Navigate to="/" replace />} />
               <Route path="meetpunten" element={<RoleRoute roles={['admin']}><SectorRoute sector="TEST"><Meetpunten /></SectorRoute></RoleRoute>} />
               <Route path="taken" element={<RoleRoute roles={['admin']}><SectorRoute sector="TEST"><Taken /></SectorRoute></RoleRoute>} />
               <Route path="vragenlijst" element={<SectorRoute sector="BO"><Vragenlijst /></SectorRoute>} />

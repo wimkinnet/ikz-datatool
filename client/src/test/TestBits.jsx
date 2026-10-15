@@ -178,7 +178,7 @@ export function MeetpuntModal({ meetpunt, t, onClose }) {
     const ok = await confirm({
       title: 'Meetpunt verwijderen?',
       message: linked.length
-        ? `"${f.title}" wordt definitief verwijderd, samen met:\n• ${linked.join('\n• ')}\n\nDe acties verdwijnen ook uit het takendashboard. Dit kan niet ongedaan worden gemaakt. Wil je de historiek bewaren, zet het meetpunt dan op inactief.`
+        ? `"${f.title}" wordt definitief verwijderd, samen met:\n• ${linked.join('\n• ')}\n\nDe acties verdwijnen ook uit de actielijst. Dit kan niet ongedaan worden gemaakt. Wil je de historiek bewaren, zet het meetpunt dan op inactief.`
         : `"${f.title}" wordt definitief verwijderd.`,
       confirmLabel: linked.length ? 'Meetpunt en gekoppelde gegevens verwijderen' : 'Verwijderen',
     });

@@ -184,7 +184,7 @@ export default function TestDashboard() {
                   </BarChart>
                 </ResponsiveContainer>
                 <ul className="goal-status-list">
-                  {data.goals.map(({ g, a }) => <li key={g._id}><GoalStatus a={a} /> <span>{g.title}</span></li>)}
+                  {data.goals.map(({ g, a }) => <li key={g._id}><GoalStatus a={a} /> <Link to={`/doelen?goal=${g._id}`}>{g.title}</Link></li>)}
                 </ul>
               </>
             )}
