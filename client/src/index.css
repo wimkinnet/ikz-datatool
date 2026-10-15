@@ -975,3 +975,26 @@ td.late { color: var(--st-actie); font-weight: 600; }
 .month-status-table tbody th { text-align: left; font-weight: 500; }
 .month-status-table thead th { font-weight: 600; color: var(--ink-soft); }
 .legend-swatch { display: inline-block; width: 10px; height: 10px; border-radius: 2px; margin-right: 6px; vertical-align: -1px; }
+
+/* Collapsible lists (shared) */
+.cal-month h3 .tree-toggle:disabled { cursor: default; }
+.cal-tally { margin-left: auto; }
+.cal-month.folded { padding-bottom: 12px; }
+.cal-month.folded h3 { margin-bottom: 0; }
+.goal-card .tree-toggle h2 { font-size: inherit; }
+.goal-card.focus, .rok-item.focus { box-shadow: 0 0 0 2px var(--accent); }
+.tag-link { text-decoration: none; }
+.tag-link:hover { background: var(--accent); color: #fff; }
+
+/* ROK page */
+.rok-domain-block { margin-bottom: 14px; }
+.rok-domain-head { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; padding: 9px 14px; border-radius: var(--radius); background: var(--ink); color: #fff; font-weight: 600; }
+.rok-domain-head .spacer { flex: 1; }
+.rok-domain-head .tree-all { background: transparent; color: #fff; border-color: rgba(255, 255, 255, 0.4); }
+.rok-item { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); margin-top: 6px; }
+.rok-item-head { width: 100%; padding: 10px 14px; }
+.rok-item-head strong { font-weight: 600; }
+.rok-goal-count { margin-left: auto; font-size: 12px; font-weight: 600; color: var(--accent-dark); background: var(--accent-tint); padding: 1px 8px; border-radius: 100px; white-space: nowrap; }
+.rok-item-body { padding: 0 14px 12px 36px; font-size: 13.5px; }
+.rok-item-body p { margin: 0 0 10px; max-width: 900px; }
+.rok-goals ul { margin: 4px 0 0; padding-left: 18px; display: grid; gap: 3px; }

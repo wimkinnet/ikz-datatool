@@ -3,7 +3,9 @@ import { useApp } from '../../context/AppContext';
 import { NoSchool, ErrorBanner } from '../../components/Bits';
 import { useSo } from '../../so/useSo';
 import { InschalingSelect, IndicatorModal, RokTags } from '../../so/SoBits';
-import { PLAN_MONTHS, soSourceLabel } from '../../utils/constants';
+import { INSCHALING_SO, PLAN_MONTHS, soSourceLabel } from '../../utils/constants';
+import { useCollapse, Chevron, ToggleAll } from '../../components/Collapse';
+import { monthPhase } from '../../test/assess';
 
 // SO: the monitoring calendar. Built from all indicators, so each indicator appears exactly once,
 // in the month it is monitored (the school's own month, or the template's).
@@ -21,6 +23,14 @@ export default function Kalender() {
     return out.filter((m) => m.rows.length);
   }, [rows, onlyRok]);
 
+  // Open by default: this month (or, outside the current school year, the first month with indicators)
+  const c = useCollapse(() => {
+    const idx = PLAN_MONTHS.findIndex((m, i) => monthPhase(year, i) === 'now');
+    const now = idx >= 0 && months.find((m) => m.key === PLAN_MONTHS[idx].key);
+    return [now ? now.key : months[0]?.key || 'none'];
+  }, !loading);
+  const monthKeys = months.map((m) => m.key || 'none');
+
   if (!schoolId) return <NoSchool />;
 
   return (
@@ -36,11 +46,25 @@ export default function Kalender() {
         <label className="checkbox-row" style={{ margin: 0 }}>
           <input type="checkbox" checked={onlyRok} onChange={(e) => setOnlyRok(e.target.checked)} /> Enkel indicatoren uit het kwaliteitsbeeld
         </label>
+        <span className="spacer" />
+        <ToggleAll c={c} keys={monthKeys} />
       </div>
 
       {loading ? <p className="muted">Laden…</p> : months.map((m) => (
         <section key={m.key || 'none'} className="card so-month">
-          <h2>{m.label} <small className="muted">{m.rows.length}</small></h2>
+          <h2 className="tree-head">
+            <button className="tree-toggle" onClick={() => c.toggle(m.key || 'none')} aria-expanded={c.isOpen(m.key || 'none')}>
+              <Chevron open={c.isOpen(m.key || 'none')} /> {m.label}
+            </button>
+            <small className="muted">{m.rows.length}</small>
+            <span className="tally">
+              {INSCHALING_SO.map((i) => {
+                const n = m.rows.filter((r) => r.inschaling === i.value).length;
+                return n > 0 && <span key={i.value} className={`tally-dot ${i.cls}`} title={i.label}>{n}</span>;
+              })}
+            </span>
+          </h2>
+          {c.isOpen(m.key || 'none') && (
           <table className="so-table">
             <tbody>
               {m.rows.map((r) => (
@@ -53,6 +77,7 @@ export default function Kalender() {
               ))}
             </tbody>
           </table>
+          )}
         </section>
       ))}
 

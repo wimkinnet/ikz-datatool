@@ -25,6 +25,7 @@ import Taken from './pages/test/Taken';
 import Resultaten from './pages/test/Resultaten';
 import TestKalender from './pages/test/TestKalender';
 import TestDashboard from './pages/test/TestDashboard';
+import Rok from './pages/Rok';
 
 const staff = ['admin', 'consultant'];
 
@@ -46,6 +47,7 @@ export default function App() {
               <Route path="jaarplan" element={<SectorRoute sector="BO"><Jaarplan /></SectorRoute>} />
               <Route path="trends" element={<SectorRoute sector="BO"><Trends /></SectorRoute>} />
               <Route path="documenten" element={<Documenten />} />
+              <Route path="rok" element={<Rok />} />
               <Route path="profiel" element={<Profiel />} />
               <Route path="scholen" element={<RoleRoute roles={staff}><Scholen /></RoleRoute>} />
               <Route path="gebruikers" element={<RoleRoute roles={staff}><Gebruikers /></RoleRoute>} />

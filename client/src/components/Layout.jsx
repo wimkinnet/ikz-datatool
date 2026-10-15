@@ -59,6 +59,7 @@ export default function Layout() {
               <NavLink to="/trends" className={link}>Trends</NavLink>
             </>
           )}
+          <NavLink to="/rok" className={link}>ROK</NavLink>
           <NavLink to="/documenten" className={link}>Documenten</NavLink>
 
           {isStaff && (

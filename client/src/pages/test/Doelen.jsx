@@ -1,10 +1,12 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
+import { Link, useSearchParams } from 'react-router-dom';
 import { useApp } from '../../context/AppContext';
 import { NoSchool, ErrorBanner } from '../../components/Bits';
 import { useTest } from '../../test/useTest';
 import { Beoordeling, CategoryTag, GoalModal, GoalStatus, MeetpuntModal, MetingModal, formatValue } from '../../test/TestBits';
 import { assessGoal, goalMeetpunten } from '../../test/assess';
 import { FIRST_GOAL_YEAR, TEST_CATEGORIES } from '../../utils/constants';
+import { useCollapse, Chevron, ToggleAll } from '../../components/Collapse';
 
 // Test: the school's operational goals for the active school year, each with its beoogde resultaten
 // and, under those, the school's meetpunten with this year's measurement.
@@ -14,6 +16,16 @@ export default function Doelen() {
   const [goal, setGoal] = useState(null);
   const [meetpunt, setMeetpunt] = useState(null);
   const [meting, setMeting] = useState(null); // meetpunt whose measurement of this year is open
+  const [params] = useSearchParams();
+  const focus = params.get('goal') || ''; // ?goal=<id>, e.g. from the ROK page
+
+  // Goal cards fold to their header; a requested goal opens, and with only a few goals all open
+  const c = useCollapse(() => (focus ? [focus] : t.goals.length <= 2 ? t.goals.map((g) => g._id) : []), !t.loading);
+  useEffect(() => {
+    if (!focus || t.loading) return;
+    c.expand([focus]);
+    setTimeout(() => document.getElementById(`goal-${focus}`)?.scrollIntoView({ behavior: 'smooth', block: 'start' }), 50);
+  }, [focus, t.loading]); // eslint-disable-line react-hooks/exhaustive-deps
 
   if (!t.schoolId) return <NoSchool />;
   const tooEarly = t.year < FIRST_GOAL_YEAR;
@@ -29,6 +41,9 @@ export default function Doelen() {
         {!tooEarly && <button className="btn btn-primary" onClick={() => { t.setError(''); setGoal({}); }}>+ Nieuw operationeel doel</button>}
       </div>
       <ErrorBanner message={!goal && !meetpunt && !meting ? t.error : ''} />
+      {!tooEarly && t.goals.length > 1 && (
+        <div className="toolbar"><span className="spacer" /><ToggleAll c={c} keys={t.goals.map((g) => g._id)} /></div>
+      )}
 
       {tooEarly ? (
         <div className="card empty-state">Operationele doelen starten in {FIRST_GOAL_YEAR}. Kies rechtsboven dat schooljaar of later. Metingen kan je wel al vanaf 2024-2025 invullen onder Meetpunten.</div>
@@ -38,10 +53,13 @@ export default function Doelen() {
         const mps = goalMeetpunten(g, t.meetpunten);
         const a = assessGoal(g, t, t.year);
         const openActions = t.actions.filter((a) => a.status !== 'afgerond' && mps.some((m) => m._id === a.meetpunt)).length;
+        const open = c.isOpen(g._id);
         return (
-          <section key={g._id} className="card goal-card">
+          <section key={g._id} id={`goal-${g._id}`} className={`card goal-card ${g._id === focus ? 'focus' : ''}`}>
             <div className="tree-head">
-              <h2 style={{ margin: 0 }}>{g.title}</h2>
+              <button className="tree-toggle" onClick={() => c.toggle(g._id)} aria-expanded={open}>
+                <Chevron open={open} /> <h2 style={{ margin: 0 }}>{g.title}</h2>
+              </button>
               <span className="spacer" />
               <GoalStatus a={a} />
               <span className="tally">
@@ -50,12 +68,14 @@ export default function Doelen() {
               </span>
               <button className="btn btn-sm" onClick={() => { t.setError(''); setGoal(g); }}>Bewerken</button>
             </div>
-            {g.description && <p className="muted">{g.description}</p>}
-            {g.rok.length > 0 && (
-              <div className="goal-rok">Draagt bij aan: {g.rok.map((c) => <span key={c} className="tag" title={t.rokByCode[c]?.title}>{c}</span>)}</div>
+            {open && g.description && <p className="muted">{g.description}</p>}
+            {open && g.rok.length > 0 && (
+              <div className="goal-rok">Draagt bij aan: {g.rok.map((code) => (
+                <Link key={code} to={`/rok?code=${code}`} className="tag tag-link" title={t.rokByCode[code]?.title}>{code}</Link>
+              ))}</div>
             )}
 
-            {[...g.results].sort((a, b) => catOrder(a) - catOrder(b)).map((rid) => {
+            {open && [...g.results].sort((a, b) => catOrder(a) - catOrder(b)).map((rid) => {
               const r = t.resultById[rid];
               if (!r) return null;
               const list = t.meetpunten.filter((m) => m.result === rid && m.active);

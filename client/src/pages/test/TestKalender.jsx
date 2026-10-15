@@ -5,6 +5,7 @@ import { useTest } from '../../test/useTest';
 import { Beoordeling, MetingModal, formatValue } from '../../test/TestBits';
 import { goalMeetpunten, isFilled, monthPhase } from '../../test/assess';
 import { PLAN_MONTHS } from '../../utils/constants';
+import { useCollapse, Chevron, ToggleAll } from '../../components/Collapse';
 
 // Test: which meetpunten have to be filled in in which month of the active school year
 export default function TestKalender() {
@@ -29,6 +30,10 @@ export default function TestKalender() {
     out.push({ key: '', label: 'Zonder evaluatiemaand', phase: 'none', items: list.filter((m) => !m.month).map((m) => withState(m, 'future')) });
     return out;
   }, [t, onlyGoals, inGoals]);
+
+  // Open by default: this month and every month with something overdue; the rest show a tally only
+  const c = useCollapse(() => months.filter((mo) => mo.phase === 'now' || mo.items.some((i) => i.state === 'late')).map((mo) => mo.key || 'none'), !t.loading);
+  const monthKeys = months.filter((mo) => mo.items.length).map((mo) => mo.key || 'none');
 
   if (!t.schoolId) return <NoSchool />;
   const all = months.flatMap((mo) => mo.items);
@@ -55,6 +60,8 @@ export default function TestKalender() {
         <label className="checkbox-row" style={{ margin: 0 }}>
           <input type="checkbox" checked={onlyGoals} onChange={(e) => setOnlyGoals(e.target.checked)} /> Enkel meetpunten van de operationele doelen van {t.year}
         </label>
+        <span className="spacer" />
+        <ToggleAll c={c} keys={monthKeys} />
       </div>
 
       {t.loading ? <p className="muted">Laden…</p> : all.length === 0 ? (
@@ -62,9 +69,15 @@ export default function TestKalender() {
       ) : (
         <div className="cal-grid">
           {months.filter((mo) => mo.items.length || mo.phase === 'now').map((mo) => (
-            <section key={mo.key || 'none'} className={`card cal-month ${mo.phase}`}>
-              <h3>{mo.label}{mo.phase === 'now' && <span className="cal-now">deze maand</span>}</h3>
-              {mo.items.length === 0 ? <p className="muted" style={{ margin: 0 }}>Niets te evalueren.</p> : (
+            <section key={mo.key || 'none'} className={`card cal-month ${mo.phase} ${c.isOpen(mo.key || 'none') ? '' : 'folded'}`}>
+              <h3>
+                <button className="tree-toggle" onClick={() => c.toggle(mo.key || 'none')} aria-expanded={c.isOpen(mo.key || 'none')} disabled={!mo.items.length}>
+                  {mo.items.length > 0 && <Chevron open={c.isOpen(mo.key || 'none')} />} {mo.label}
+                </button>
+                {mo.phase === 'now' && <span className="cal-now">deze maand</span>}
+                <MonthTally items={mo.items} />
+              </h3>
+              {!c.isOpen(mo.key || 'none') ? null : mo.items.length === 0 ? <p className="muted" style={{ margin: 0 }}>Niets te evalueren.</p> : (
                 <ul className="cal-list">
                   {mo.items.map(({ m, mt, state }) => (
                     <li key={m._id} className={`cal-item ${state}`}>
@@ -87,5 +100,19 @@ export default function TestKalender() {
 
       {meting && <MetingModal meetpunt={meting} schoolYear={t.year} t={t} onClose={() => setMeting(null)} />}
     </div>
+  );
+}
+
+// Compact count per state, shown in every month header (also when folded)
+function MonthTally({ items }) {
+  const n = (st) => items.filter((i) => i.state === st).length;
+  if (!items.length) return null;
+  return (
+    <span className="tally cal-tally">
+      {n('done') > 0 && <span className="tally-dot ok" title="Ingevuld">{n('done')}</span>}
+      {n('late') > 0 && <span className="tally-dot actie" title="Achterstallig">{n('late')}</span>}
+      {n('now') > 0 && <span className="tally-dot monitoren" title="Deze maand in te vullen">{n('now')}</span>}
+      {n('planned') > 0 && <span className="tally-dot none" title="Gepland">{n('planned')}</span>}
+    </span>
   );
 }

@@ -1,9 +1,10 @@
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { useApp } from '../../context/AppContext';
 import { NoSchool, ErrorBanner } from '../../components/Bits';
 import { useSo } from '../../so/useSo';
 import { InschalingSelect, IndicatorModal, RokTags } from '../../so/SoBits';
-import { PLAN_MONTHS, SO_SOURCES } from '../../utils/constants';
+import { INSCHALING_SO, PLAN_MONTHS, SO_SOURCES } from '../../utils/constants';
+import { useCollapse, Chevron, ToggleAll } from '../../components/Collapse';
 
 // SO: the source tabs of the Kwaliteitsmonitor (Smartschool, Datawijzer, …). This is where indicators are rated.
 export default function Indicatoren() {
@@ -25,6 +26,14 @@ export default function Indicatoren() {
     }
     return out;
   }, [rows, source, q]);
+
+  // Sections fold to a header with a tally; searching opens every section with a match
+  const c = useCollapse([]);
+  const groupKey = (g) => `${source}:${g.group || '-'}`;
+  const groupKeys = groups.map(groupKey);
+  useEffect(() => { if (q.trim()) c.expand(groupKeys); }, [q, source]); // eslint-disable-line react-hooks/exhaustive-deps
+  // A source with a single section (Datawijzer, Dataloep) opens it straight away
+  useEffect(() => { if (groups.length === 1) c.expand(groupKeys); }, [source, groups.length]); // eslint-disable-line react-hooks/exhaustive-deps
 
   if (!schoolId) return <NoSchool />;
   const countFor = (key) => {
@@ -54,6 +63,8 @@ export default function Indicatoren() {
       )}
       <div className="toolbar">
         <input className="input-inline" placeholder="Zoeken…" value={q} onChange={(e) => setQ(e.target.value)} />
+        <span className="spacer" />
+        <ToggleAll c={c} keys={groupKeys} />
       </div>
 
       <div className="table-wrap" style={{ overflowX: 'auto' }}>
@@ -66,7 +77,7 @@ export default function Indicatoren() {
             </thead>
             <tbody>
               {groups.map((g) => (
-                <GroupRows key={g.group || '-'} g={g} rokByCode={rokByCode} save={save} onEdit={setEdit} />
+                <GroupRows key={g.group || '-'} g={g} open={c.isOpen(groupKey(g))} toggle={() => c.toggle(groupKey(g))} rokByCode={rokByCode} save={save} onEdit={setEdit} />
               ))}
             </tbody>
           </table>
@@ -78,11 +89,22 @@ export default function Indicatoren() {
   );
 }
 
-function GroupRows({ g, rokByCode, save, onEdit }) {
+function GroupRows({ g, open, toggle, rokByCode, save, onEdit }) {
+  const n = (v) => g.rows.filter((r) => r.inschaling === v).length;
   return (
     <>
-      {g.group && <tr className="month-row"><td colSpan={7}>{g.group}</td></tr>}
-      {g.rows.map((r) => (
+      <tr className="month-row">
+        <td colSpan={7}>
+          <div className="tree-head">
+            <button className="tree-toggle" onClick={toggle} aria-expanded={open}><Chevron open={open} /> {g.group || 'Indicatoren'}</button>
+            <span className="tally">
+              <span>{g.rows.length - n(null)}/{g.rows.length} ingeschaald</span>
+              {INSCHALING_SO.map((i) => n(i.value) > 0 && <span key={i.value} className={`tally-dot ${i.cls}`} title={i.label}>{n(i.value)}</span>)}
+            </span>
+          </div>
+        </td>
+      </tr>
+      {open && g.rows.map((r) => (
         <tr key={r.key}>
           <td>{r.bron}</td>
           <td><button className="link-btn strong" onClick={() => onEdit(r)}>{r.text}</button></td>
