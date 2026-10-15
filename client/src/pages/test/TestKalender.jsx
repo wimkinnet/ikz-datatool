@@ -3,21 +3,8 @@ import { useApp } from '../../context/AppContext';
 import { NoSchool, ErrorBanner } from '../../components/Bits';
 import { useTest } from '../../test/useTest';
 import { Beoordeling, MetingModal, formatValue } from '../../test/TestBits';
-import { goalMeetpunten } from '../../test/assess';
-import { PLAN_MONTHS, currentSchoolYear } from '../../utils/constants';
-
-// Index (0 = september … 11 = augustus) of today's month, and today's school year
-const todayIdx = () => (new Date().getMonth() + 4) % 12;
-
-// Where a month of `schoolYear` stands relative to today: 'past', 'now' or 'future'
-function monthPhase(schoolYear, idx) {
-  const cur = currentSchoolYear();
-  if (schoolYear < cur) return 'past';
-  if (schoolYear > cur) return 'future';
-  return idx < todayIdx() ? 'past' : idx === todayIdx() ? 'now' : 'future';
-}
-
-const filled = (mt) => !!mt && ((mt.value !== null && mt.value !== '') || !!mt.beoordeling);
+import { goalMeetpunten, isFilled, monthPhase } from '../../test/assess';
+import { PLAN_MONTHS } from '../../utils/constants';
 
 // Test: which meetpunten have to be filled in in which month of the active school year
 export default function TestKalender() {
@@ -32,7 +19,7 @@ export default function TestKalender() {
     const list = t.meetpunten.filter((m) => m.active && (!onlyGoals || inGoals.has(m._id)));
     const withState = (m, phase) => {
       const mt = t.metingOf(m._id, t.year);
-      const state = filled(mt) ? 'done' : phase === 'past' ? 'late' : phase === 'now' ? 'now' : 'planned';
+      const state = isFilled(mt) ? 'done' : phase === 'past' ? 'late' : phase === 'now' ? 'now' : 'planned';
       return { m, mt, state };
     };
     const out = PLAN_MONTHS.map((mo, idx) => {

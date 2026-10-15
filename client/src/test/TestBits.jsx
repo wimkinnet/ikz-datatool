@@ -168,8 +168,22 @@ export function MeetpuntModal({ meetpunt, t, onClose }) {
   }
 
   async function remove() {
-    if (!(await confirm({ title: 'Meetpunt verwijderen?', message: `"${f.title}" wordt definitief verwijderd.` }))) return;
-    if (await t.run(() => api.delete(`/test/meetpunten/${f._id}`))) onClose();
+    const metingen = t.metingen.filter((m) => m.meetpunt === f._id);
+    const acties = t.actions.filter((a) => a.meetpunt === f._id);
+    const open = acties.filter((a) => a.status !== 'afgerond').length;
+    const linked = [
+      metingen.length && `${metingen.length} meting${metingen.length === 1 ? '' : 'en'} (${metingen.map((m) => m.schoolYear).sort().join(', ')})`,
+      acties.length && `${acties.length} actie${acties.length === 1 ? '' : 's'}${open ? `, waarvan ${open} nog niet afgerond` : ''}`,
+    ].filter(Boolean);
+    const ok = await confirm({
+      title: 'Meetpunt verwijderen?',
+      message: linked.length
+        ? `"${f.title}" wordt definitief verwijderd, samen met:\n• ${linked.join('\n• ')}\n\nDe acties verdwijnen ook uit het takendashboard. Dit kan niet ongedaan worden gemaakt. Wil je de historiek bewaren, zet het meetpunt dan op inactief.`
+        : `"${f.title}" wordt definitief verwijderd.`,
+      confirmLabel: linked.length ? 'Meetpunt en gekoppelde gegevens verwijderen' : 'Verwijderen',
+    });
+    if (!ok) return;
+    if (await t.run(() => api.delete(`/test/meetpunten/${f._id}`, { params: { cascade: 1 } }))) onClose();
   }
 
   return (

@@ -1,3 +1,5 @@
+import { currentSchoolYear } from '../utils/constants';
+
 // Overall assessment of an operational goal from the red/green verdicts of its meetpunten in one school year.
 // Share of green among the meetpunten that were assessed: >= 75% op koers, >= 50% aandacht, otherwise niet op koers.
 export const GOAL_RULE = { opKoers: 0.75, aandacht: 0.5 };
@@ -10,8 +12,28 @@ export const GOAL_STATUS = {
   geen: { label: 'Geen meetpunten', cls: 'none' },
 };
 
-// Chart colours (validated: chroma floor and CVD separation pass; red/green always ship with labels + legend)
-export const CHART = { groen: '#23875a', aandacht: '#b8892b', rood: '#b3432b', none: '#c8c3b8', accent: '#3f6659' };
+// Chart colours (validated: chroma floor and CVD separation pass; red/green always ship with labels + legend).
+// For the month chart the stack order groen, ingevuld, rood, achterstallig, open keeps red and green apart.
+export const CHART = { groen: '#23875a', aandacht: '#b8892b', rood: '#b3432b', none: '#c8c3b8', accent: '#3f6659', ingevuld: '#2f6fb0' };
+
+// Index (0 = september … 11 = augustus) of today's month
+export const todayMonthIdx = () => (new Date().getMonth() + 4) % 12;
+
+// Where month `idx` of `schoolYear` stands relative to today: 'past', 'now' or 'future'
+export function monthPhase(schoolYear, idx) {
+  const cur = currentSchoolYear();
+  if (schoolYear < cur) return 'past';
+  if (schoolYear > cur) return 'future';
+  return idx < todayMonthIdx() ? 'past' : idx === todayMonthIdx() ? 'now' : 'future';
+}
+
+export const isFilled = (mt) => !!mt && ((mt.value !== null && mt.value !== '') || !!mt.beoordeling);
+
+// State of one meetpunt in a month: 'groen' | 'rood' | 'ingevuld' (no verdict) | 'late' | 'now' | 'planned'
+export function meetpuntState(mt, phase) {
+  if (isFilled(mt)) return mt.beoordeling || 'ingevuld';
+  return phase === 'past' ? 'late' : phase === 'now' ? 'now' : 'planned';
+}
 
 // The active meetpunten under a goal's beoogde resultaten (each counted once)
 export function goalMeetpunten(goal, meetpunten) {

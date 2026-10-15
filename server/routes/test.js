@@ -139,15 +139,19 @@ router.put('/meetpunten/:id', async (req, res) => {
   } catch (err) { fail(res, err, 'Kon meetpunt niet bijwerken.'); }
 });
 
-// A meetpunt with measurements or actions is deactivated instead of deleted, to keep its history
+// Deletes a meetpunt. When it has measurements or actions, ?cascade=1 is required (the client asks for
+// confirmation first) and those are deleted with it; without it nothing is removed.
 router.delete('/meetpunten/:id', async (req, res) => {
   try {
     const id = req.params.id;
-    if ((await TestMeting.exists({ meetpunt: id })) || (await TestAction.exists({ meetpunt: id }))) {
-      return res.status(409).json({ message: 'Dit meetpunt heeft al metingen of acties. Zet het op "inactief" om de historiek te bewaren.' });
+    if (!(await TestMeetpunt.exists({ _id: id }))) return res.status(404).json({ message: 'Meetpunt niet gevonden.' });
+    const [metingen, acties] = await Promise.all([TestMeting.countDocuments({ meetpunt: id }), TestAction.countDocuments({ meetpunt: id })]);
+    if ((metingen || acties) && !req.query.cascade) {
+      return res.status(409).json({ message: `Dit meetpunt heeft ${metingen} meting(en) en ${acties} actie(s). Bevestig om ze mee te verwijderen.`, metingen, acties });
     }
+    await Promise.all([TestMeting.deleteMany({ meetpunt: id }), TestAction.deleteMany({ meetpunt: id })]);
     await TestMeetpunt.findByIdAndDelete(id);
-    res.json({ message: 'Meetpunt verwijderd.' });
+    res.json({ message: 'Meetpunt verwijderd.', metingen, acties });
   } catch (err) { fail(res, err, 'Kon meetpunt niet verwijderen.'); }
 });
 

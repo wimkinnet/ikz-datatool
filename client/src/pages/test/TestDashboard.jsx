@@ -5,7 +5,7 @@ import { useApp } from '../../context/AppContext';
 import { NoSchool, ErrorBanner, ChartEmpty } from '../../components/Bits';
 import { useTest } from '../../test/useTest';
 import { GoalStatus, MetingModal, formatValue } from '../../test/TestBits';
-import { assessGoal, CHART, GOAL_STATUS } from '../../test/assess';
+import { assessGoal, CHART, GOAL_STATUS, meetpuntState, monthPhase } from '../../test/assess';
 import { FIRST_GOAL_YEAR, FIRST_MEASURE_YEAR, PLAN_MONTHS, TEST_CATEGORIES, currentSchoolYear, yearsBetween } from '../../utils/constants';
 import { formatDate } from '../../utils/format';
 
@@ -14,6 +14,17 @@ const thisMonth = () => PLAN_MONTHS[(new Date().getMonth() + 4) % 12].key;
 const short = (s, n = 34) => (s.length > n ? `${s.slice(0, n - 1)}…` : s);
 // Hide a segment label when the segment is empty (Recharts still renders "0")
 const countLabel = (v) => (v ? v : '');
+
+const MONTH_SHORT = ['sep', 'okt', 'nov', 'dec', 'jan', 'feb', 'mrt', 'apr', 'mei', 'jun', 'jul', 'aug'];
+
+// Month chart series, in stack order (keeps red and green apart; validated palette, see test/assess.js)
+const MONTH_SERIES = [
+  { key: 'groen', label: 'Groen', color: CHART.groen, ink: '#fff' },
+  { key: 'ingevuld', label: 'Ingevuld, zonder beoordeling', color: CHART.ingevuld, ink: '#fff' },
+  { key: 'rood', label: 'Rood', color: CHART.rood, ink: '#fff' },
+  { key: 'late', label: 'Achterstallig', color: CHART.aandacht, ink: '#fff' },
+  { key: 'todo', label: 'Nog in te vullen', color: CHART.none, ink: '#1f2a24' },
+];
 
 // Test: one overview of the school's operational goals, meetpunten and actions for the active school year
 export default function TestDashboard() {
@@ -54,7 +65,20 @@ export default function TestDashboard() {
       ? active.filter((m) => m.month === thisMonth() && !t.metingOf(m._id, year)).length
       : null;
 
-    return { goals, goalStatusCount, goalBars, total: active.length, groen, rood, trend, perCategory, openActions, late, redWithoutAction, dueNow };
+    // Meetpunten per evaluation month of the active school year, by state
+    const perMonth = PLAN_MONTHS.map((mo, idx) => {
+      const phase = monthPhase(year, idx);
+      const row = { name: MONTH_SHORT[idx], full: mo.label, phase, groen: 0, ingevuld: 0, rood: 0, late: 0, todo: 0 };
+      for (const m of active.filter((x) => x.month === mo.key)) {
+        const st = meetpuntState(t.metingOf(m._id, year), phase);
+        row[st === 'now' || st === 'planned' ? 'todo' : st]++;
+      }
+      row.total = row.groen + row.ingevuld + row.rood + row.late + row.todo;
+      return row;
+    });
+    const withoutMonth = active.filter((m) => !m.month).length;
+
+    return { perMonth, withoutMonth, goals, goalStatusCount, goalBars, total: active.length, groen, rood, trend, perCategory, openActions, late, redWithoutAction, dueNow };
   }, [t, year]);
 
   if (!t.schoolId) return <NoSchool />;
@@ -104,6 +128,44 @@ export default function TestDashboard() {
       </div>
 
       <div className="chart-grid">
+        <div className="chart-card chart-wide">
+          <h3>Meetpunten per maand ({year})</h3>
+          {data.perMonth.every((r) => !r.total) ? <ChartEmpty>Nog geen meetpunten met een maand van evaluatie.</ChartEmpty> : (
+            <>
+              <ResponsiveContainer width="100%" height={280}>
+                <BarChart data={data.perMonth} margin={{ top: 10, right: 10, left: -20, bottom: 0 }} barCategoryGap="22%">
+                  <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#ebe7de" />
+                  <XAxis dataKey="name" fontSize={12} tickLine={false} />
+                  <YAxis allowDecimals={false} fontSize={12} tickLine={false} />
+                  <Tooltip cursor={{ fill: 'rgba(63,102,89,0.06)' }} labelFormatter={(_, p) => (p?.[0] ? `${p[0].payload.full}${p[0].payload.phase === 'now' ? ' (deze maand)' : ''}` : '')} />
+                  <Legend />
+                  {MONTH_SERIES.map((sr) => (
+                    <Bar key={sr.key} dataKey={sr.key} name={sr.label} stackId="m" fill={sr.color} stroke="#fff" strokeWidth={2} maxBarSize={48}>
+                      <LabelList dataKey={sr.key} fill={sr.ink} fontSize={11} formatter={countLabel} />
+                    </Bar>
+                  ))}
+                </BarChart>
+              </ResponsiveContainer>
+              <div className="table-scroll">
+                <table className="month-status-table">
+                  <thead>
+                    <tr><th></th>{data.perMonth.map((r) => <th key={r.full} className={r.phase === 'now' ? 'year-current' : ''}>{r.name}</th>)}</tr>
+                  </thead>
+                  <tbody>
+                    {MONTH_SERIES.map((sr) => (
+                      <tr key={sr.key}>
+                        <th><span className="legend-swatch" style={{ background: sr.color }} />{sr.label}</th>
+                        {data.perMonth.map((r) => <td key={r.full} className={r.phase === 'now' ? 'year-current' : ''}>{r[sr.key] || ''}</td>)}
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+              {data.withoutMonth > 0 && <p className="muted" style={{ fontSize: 12.5 }}>{data.withoutMonth} meetpunt{data.withoutMonth === 1 ? '' : 'en'} zonder maand van evaluatie (niet in de grafiek).</p>}
+            </>
+          )}
+        </div>
+
         <div className="chart-card">
           <h3>Inschatting per operationeel doel</h3>
           {year < FIRST_GOAL_YEAR ? <ChartEmpty>Operationele doelen starten in {FIRST_GOAL_YEAR}.</ChartEmpty>

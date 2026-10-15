@@ -966,3 +966,12 @@ td.late { color: var(--st-actie); font-weight: 600; }
 .cal-item.late .cal-btn { border-left-color: var(--st-actie); }
 .cal-item.late .cal-state { color: var(--st-actie); }
 .cal-item.planned .cal-state { color: var(--ink-soft); font-weight: 400; }
+
+/* Test dashboard: month overview */
+.chart-wide { grid-column: 1 / -1; }
+.table-scroll { overflow-x: auto; margin-top: 8px; }
+.month-status-table { width: 100%; border-collapse: collapse; font-size: 12.5px; }
+.month-status-table th, .month-status-table td { padding: 4px 6px; border-bottom: 1px solid var(--border); text-align: center; white-space: nowrap; }
+.month-status-table tbody th { text-align: left; font-weight: 500; }
+.month-status-table thead th { font-weight: 600; color: var(--ink-soft); }
+.legend-swatch { display: inline-block; width: 10px; height: 10px; border-radius: 2px; margin-right: 6px; vertical-align: -1px; }
