@@ -92,7 +92,7 @@ Menu order: Dashboard, ROK, Operationele doelen, Kalender, Meetpunten, Actielijs
   or more ROK expectations and is linked to one or more **beoogde resultaten**.
 - **Beoogde resultaten** — a shared library (*Sjablonen Test*), seeded from the 19 themes of the BO default year plan.
   Each is *proces*, *resultaten* or *context* (the initial category per theme is an assumption; admins can change it).
-- **Meetpunten** — defined per school under a beoogd resultaat: uitleg, bron, month of evaluation, value type
+- **Meetpunten** — defined per school under one or more beoogde resultaten (listed under each of them): uitleg, bron, month of evaluation, value type
   (percentage, absolute number or free text) and an optional threshold. Measurements are stored per school year from
   **2024-2025**, with a value and a red/green assessment (suggested from the threshold, but always the user's choice).
 - **Actielijst** — actions linked to a measuring result (meetpunt + school year), with owner, deadline and status

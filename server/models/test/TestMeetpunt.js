@@ -1,13 +1,16 @@
 const mongoose = require('mongoose');
 
-// Test: a measuring point a school defines under a beoogd resultaat (not necessarily the same for every school).
+// Test: a measuring point a school defines under one or more beoogde resultaten (not necessarily the same for every school).
 // Its values per school year are TestMeting documents, so history (from 2024-2025) is kept.
 const VALUE_TYPES = ['percentage', 'absoluut', 'tekst'];
 
 const testMeetpuntSchema = new mongoose.Schema(
   {
     school: { type: mongoose.Schema.Types.ObjectId, ref: 'School', required: true },
-    result: { type: mongoose.Schema.Types.ObjectId, ref: 'TestResult', required: true },
+    results: {
+      type: [{ type: mongoose.Schema.Types.ObjectId, ref: 'TestResult' }],
+      validate: { validator: (v) => v.length > 0, message: 'Kies minstens één beoogd resultaat.' },
+    },
     title: { type: String, required: true, trim: true },
     uitleg: { type: String, default: '' },
     bron: { type: String, default: '' },
@@ -22,7 +25,7 @@ const testMeetpuntSchema = new mongoose.Schema(
   { timestamps: true }
 );
 
-testMeetpuntSchema.index({ school: 1, result: 1 });
+testMeetpuntSchema.index({ school: 1, results: 1 });
 
 module.exports = mongoose.model('TestMeetpunt', testMeetpuntSchema);
 module.exports.VALUE_TYPES = VALUE_TYPES;

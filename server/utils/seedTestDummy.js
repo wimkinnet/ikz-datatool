@@ -12,12 +12,12 @@ const TestAction = require('../models/test/TestAction');
 //                                 node utils/seedTestDummy.js --remove deletes the school and its data
 const SCHOOL = 'Testschool (dummy)';
 
-// [beoogd resultaat, meetpunt, type, threshold, direction, month, bron, values per year (2024-25, 2025-26, 2026-27)]
+// [beoogd resultaat (or a list of them), meetpunt, type, threshold, direction, month, bron, values per year (2024-25, 2025-26, 2026-27)]
 // A value of undefined means: not measured that year. Text points carry [value, verdict].
 const MEETPUNTEN = [
   ['Vlaamse toetsen', '% leerlingen boven het Vlaamse gemiddelde begrijpend lezen (6de lj)', 'percentage', 60, 'min', 'juni', 'Vlaamse toetsen', [52, 58]],
   ['AVI', '% leerlingen op of boven AVI-niveau (1ste-3de lj)', 'percentage', 80, 'min', 'januari', 'LVS', [74, 79]],
-  ['AVI', 'Aantal leerlingen meer dan 1 AVI-niveau achter', 'absoluut', 8, 'max', 'juni', 'LVS', [11, 9]],
+  [['AVI', "Aantal leerlingen met remediëringstraject + welke zorgthema's spelen"], 'Aantal leerlingen meer dan 1 AVI-niveau achter', 'absoluut', 8, 'max', 'juni', 'LVS', [11, 9]],
   ['DIAtoetsen', '% leerlingen met A- of B-score lezen', 'percentage', 70, 'min', 'oktober', 'DIA', [66, 71, 73]],
   ['Ouderbevraging over communicatie', 'Tevredenheid ouders over de communicatie', 'percentage', 75, 'min', 'november', 'eigen ouderbevraging', [81, 72]],
   ['10 minuutgesprekken', '% ouders aanwezig op het oudercontact', 'percentage', 85, 'min', 'december', 'aanwezigheidslijsten', [88, 83]],
@@ -28,7 +28,7 @@ const MEETPUNTEN = [
   ['Professionalisering per leerkracht', 'Gemiddeld aantal nascholingsuren per leerkracht', 'absoluut', 12, 'min', 'mei', 'nascholingsoverzicht', [9, 13]],
   ['Professionalisering per leerkracht', '% nascholingen gekoppeld aan het schoolwerkplan', 'percentage', 70, 'min', 'mei', 'nascholingsoverzicht', [55, 68]],
   ['Evaluatie leerkrachten (deel van team)', '% leerkrachten met een functioneringsgesprek', 'percentage', 90, 'min', 'juni', 'functioneringsverslagen', [92, 86]],
-  ['Effectieve didactiek - project TM', '% klasbezoeken met effectieve instructie', 'percentage', 75, 'min', 'oktober', 'observatie-instrument klasbezoek', [undefined, 60]],
+  [['Effectieve didactiek - project TM', 'Evaluatie leerkrachten (deel van team)'], '% klasbezoeken met effectieve instructie', 'percentage', 75, 'min', 'oktober', 'observatie-instrument klasbezoek', [undefined, 60]],
   ['Instroom', 'Aantal zij-instromers', 'absoluut', null, 'min', 'september', 'wisa', [14, 18, 16]],
 ];
 
@@ -86,7 +86,7 @@ async function run() {
   let metingen = 0;
   for (const [i, [result, title, valueType, threshold, dir, month, bron, values, thresholdText]] of MEETPUNTEN.entries()) {
     const mp = await TestMeetpunt.create({
-      school: school._id, result: resultId(result), title, valueType, threshold, thresholdDirection: dir,
+      school: school._id, results: [].concat(result).map(resultId), title, valueType, threshold, thresholdDirection: dir,
       thresholdText: thresholdText || '', month, bron, order: i + 1,
       uitleg: valueType === 'tekst' ? 'Jaarlijkse inschaling door het zorgteam met het referentiekader brede basiszorg.' : '',
     });

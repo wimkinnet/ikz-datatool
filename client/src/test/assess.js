@@ -35,10 +35,15 @@ export function meetpuntState(mt, phase) {
   return phase === 'past' ? 'late' : phase === 'now' ? 'now' : 'planned';
 }
 
-// The active meetpunten under a goal's beoogde resultaten (each counted once)
+// A meetpunt can belong to several beoogde resultaten
+export const resultsOf = (m) => (m.results || []).map(String);
+export const inResult = (m, resultId) => resultsOf(m).includes(String(resultId));
+export const resultNames = (m, resultById) => resultsOf(m).map((id) => resultById[id]?.name).filter(Boolean).join(', ');
+
+// The active meetpunten under a goal's beoogde resultaten (each counted once, also when it serves several)
 export function goalMeetpunten(goal, meetpunten) {
   const ids = new Set(goal.results.map(String));
-  return meetpunten.filter((m) => m.active && ids.has(String(m.result)));
+  return meetpunten.filter((m) => m.active && resultsOf(m).some((id) => ids.has(id)));
 }
 
 export function assessGoal(goal, t, schoolYear) {

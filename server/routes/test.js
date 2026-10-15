@@ -52,7 +52,7 @@ router.put('/results/:id', async (req, res) => {
 router.delete('/results/:id', async (req, res) => {
   try {
     const id = req.params.id;
-    if ((await TestGoal.exists({ results: id })) || (await TestMeetpunt.exists({ result: id }))) {
+    if ((await TestGoal.exists({ results: id })) || (await TestMeetpunt.exists({ results: id }))) {
       return res.status(409).json({ message: 'Dit beoogd resultaat wordt al gebruikt in doelen of meetpunten. Zet het op "inactief" in plaats van te verwijderen.' });
     }
     await TestResult.findByIdAndDelete(id);
@@ -101,10 +101,16 @@ router.delete('/goals/:id', async (req, res) => {
 });
 
 // ---------------------------------------------------------------- meetpunten (per school)
-const MEETPUNT_FIELDS = ['result', 'title', 'uitleg', 'bron', 'month', 'valueType', 'threshold', 'thresholdDirection', 'thresholdText', 'order', 'active'];
+const MEETPUNT_FIELDS = ['results', 'title', 'uitleg', 'bron', 'month', 'valueType', 'threshold', 'thresholdDirection', 'thresholdText', 'order', 'active'];
 
-function meetpuntFields(body) {
+async function meetpuntFields(body) {
   const f = pick(body, MEETPUNT_FIELDS);
+  if ('results' in f) {
+    f.results = ids(f.results);
+    if (!f.results.length || (await TestResult.countDocuments({ _id: { $in: f.results } })) !== f.results.length) {
+      throw new Error('Kies minstens één beoogd resultaat.');
+    }
+  }
   if (f.month && !PLAN_MONTHS.includes(f.month)) throw new Error('Ongeldige maand.');
   if ('threshold' in f) {
     if (f.threshold === '' || f.threshold === null) f.threshold = null;
@@ -122,8 +128,8 @@ router.get('/meetpunten', schoolScope, async (req, res) => {
 
 router.post('/meetpunten', schoolScope, async (req, res) => {
   try {
-    const f = meetpuntFields(req.body);
-    if (!(await TestResult.exists({ _id: f.result }))) throw new Error('Kies een beoogd resultaat.');
+    const f = await meetpuntFields(req.body);
+    if (!f.results) throw new Error('Kies minstens één beoogd resultaat.');
     if (f.valueType === 'tekst') f.threshold = null;
     res.status(201).json(await TestMeetpunt.create({ ...f, school: req.schoolId }));
   } catch (err) { fail(res, err, 'Kon meetpunt niet aanmaken.'); }
@@ -131,7 +137,7 @@ router.post('/meetpunten', schoolScope, async (req, res) => {
 
 router.put('/meetpunten/:id', async (req, res) => {
   try {
-    const f = meetpuntFields(req.body);
+    const f = await meetpuntFields(req.body);
     if (f.valueType === 'tekst') f.threshold = null;
     const mp = await TestMeetpunt.findByIdAndUpdate(req.params.id, f, { new: true, runValidators: true });
     if (!mp) return res.status(404).json({ message: 'Meetpunt niet gevonden.' });

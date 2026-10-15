@@ -5,7 +5,7 @@ import { useApp } from '../../context/AppContext';
 import { NoSchool, ErrorBanner, ChartEmpty } from '../../components/Bits';
 import { useTest } from '../../test/useTest';
 import { GoalStatus, MetingModal, formatValue } from '../../test/TestBits';
-import { assessGoal, CHART, GOAL_STATUS, meetpuntState, monthPhase } from '../../test/assess';
+import { assessGoal, CHART, GOAL_STATUS, meetpuntState, monthPhase, resultNames, resultsOf } from '../../test/assess';
 import { FIRST_GOAL_YEAR, FIRST_MEASURE_YEAR, PLAN_MONTHS, TEST_CATEGORIES, currentSchoolYear, yearsBetween } from '../../utils/constants';
 import { formatDate } from '../../utils/format';
 
@@ -53,7 +53,8 @@ export default function TestDashboard() {
     });
 
     const perCategory = TEST_CATEGORIES.map((c) => {
-      const list = active.filter((m) => t.resultById[m.result]?.category === c.key);
+      // A meetpunt counts once in every category one of its beoogde resultaten belongs to
+      const list = active.filter((m) => resultsOf(m).some((id) => t.resultById[id]?.category === c.key));
       const v = list.map((m) => verdictOf(m, year));
       return { name: c.label, groen: v.filter((x) => x === 'groen').length, rood: v.filter((x) => x === 'rood').length, open: v.filter((x) => !x).length };
     }).filter((c) => c.groen + c.rood + c.open > 0);
@@ -233,7 +234,7 @@ export default function TestDashboard() {
               {data.redWithoutAction.map((m) => (
                 <li key={m._id}>
                   <button className="link-btn strong" onClick={() => { t.setError(''); setMeting(m); }}>{m.title}</button>
-                  <span className="muted"> · {formatValue(m, t.metingOf(m._id, year)?.value)} · {t.resultById[m.result]?.name}</span>
+                  <span className="muted"> · {formatValue(m, t.metingOf(m._id, year)?.value)} · {resultNames(m, t.resultById)}</span>
                 </li>
               ))}
             </ul>

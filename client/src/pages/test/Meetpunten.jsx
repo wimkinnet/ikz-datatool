@@ -4,6 +4,7 @@ import { NoSchool, ErrorBanner } from '../../components/Bits';
 import { useTest } from '../../test/useTest';
 import { Beoordeling, MeetpuntModal, MetingModal, formatValue, thresholdLabel } from '../../test/TestBits';
 import { useCollapse, Chevron, ToggleAll } from '../../components/Collapse';
+import { inResult, resultsOf } from '../../test/assess';
 import { FIRST_GOAL_YEAR, FIRST_MEASURE_YEAR, TEST_CATEGORIES, monthLabel, yearsBetween } from '../../utils/constants';
 
 // Test: the school's meetpunten per category and beoogd resultaat, with one column per school year
@@ -11,21 +12,21 @@ import { FIRST_GOAL_YEAR, FIRST_MEASURE_YEAR, TEST_CATEGORIES, monthLabel, years
 export default function Meetpunten() {
   const { school } = useApp();
   const t = useTest();
-  const [showAll, setShowAll] = useState(false);
-  const [showInactive, setShowInactive] = useState(false);
   const [meetpunt, setMeetpunt] = useState(null);
   const [meting, setMeting] = useState(null); // { meetpunt, schoolYear }
 
   const years = yearsBetween(FIRST_MEASURE_YEAR, t.year > FIRST_MEASURE_YEAR ? t.year : FIRST_MEASURE_YEAR);
   const inGoals = useMemo(() => new Set(t.goals.flatMap((g) => g.results)), [t.goals]);
 
+  // Beoogde resultaten that have meetpunten or are part of this year's goals; a meetpunt that serves several
+  // results is listed under each of them. Inactive meetpunten stay visible (dimmed) so they can be reactivated.
   const categories = useMemo(() => TEST_CATEGORIES.map((c) => ({
     ...c,
     results: t.results
       .filter((r) => r.category === c.key)
-      .map((r) => ({ ...r, meetpunten: t.meetpunten.filter((m) => m.result === r._id && (showInactive || m.active)) }))
-      .filter((r) => showAll || r.meetpunten.length || inGoals.has(r._id)),
-  })).filter((c) => c.results.length), [t.results, t.meetpunten, inGoals, showAll, showInactive]);
+      .map((r) => ({ ...r, meetpunten: t.meetpunten.filter((m) => inResult(m, r._id)) }))
+      .filter((r) => r.meetpunten.length || inGoals.has(r._id)),
+  })).filter((c) => c.results.length), [t.results, t.meetpunten, inGoals]);
 
   // Categories start open, beoogde resultaten folded (their row shows a tally of their meetpunten)
   const c = useCollapse(() => TEST_CATEGORIES.map((x) => `c:${x.key}`), true);
@@ -44,12 +45,6 @@ export default function Meetpunten() {
       </div>
       <ErrorBanner message={!meetpunt && !meting ? t.error : ''} />
       <div className="toolbar">
-        <label className="checkbox-row" style={{ margin: 0 }}>
-          <input type="checkbox" checked={showAll} onChange={(e) => setShowAll(e.target.checked)} /> Alle beoogde resultaten tonen
-        </label>
-        <label className="checkbox-row" style={{ margin: 0 }}>
-          <input type="checkbox" checked={showInactive} onChange={(e) => setShowInactive(e.target.checked)} /> Inactieve meetpunten tonen
-        </label>
         <span className="spacer" />
         <ToggleAll c={c} keys={allKeys} />
       </div>
@@ -57,7 +52,7 @@ export default function Meetpunten() {
       <div className="table-wrap" style={{ overflowX: 'auto' }}>
         {t.loading ? <p className="muted" style={{ padding: 20 }}>Laden…</p> : categories.length === 0 ? (
           <div className="empty-state">
-            Nog geen meetpunten. {t.year >= FIRST_GOAL_YEAR ? 'Koppel beoogde resultaten aan een operationeel doel, of ' : ''}vink "Alle beoogde resultaten tonen" aan om meetpunten toe te voegen.
+            Nog geen meetpunten. Voeg er een toe met "+ Nieuw meetpunt"{t.year >= FIRST_GOAL_YEAR ? ', of koppel beoogde resultaten aan een operationeel doel' : ''}.
           </div>
         ) : (
           <table className="plan-table so-table">
@@ -70,7 +65,7 @@ export default function Meetpunten() {
             <tbody>
               {categories.map((cat) => (
                 <CategoryRows key={cat.key} cat={cat} col={c} years={years} t={t} inGoals={inGoals}
-                  onAdd={(rid) => { t.setError(''); setMeetpunt({ result: rid }); }}
+                  onAdd={(rid) => { t.setError(''); setMeetpunt({ results: [rid] }); }}
                   onEdit={(m) => { t.setError(''); setMeetpunt(m); }}
                   onMeting={(m, y) => { t.setError(''); setMeting({ meetpunt: m, schoolYear: y }); }} />
               ))}
@@ -136,6 +131,12 @@ function ResultRows({ r, open, toggle, cols, years, t, linked, onAdd, onEdit, on
         <tr key={m._id} style={m.active ? undefined : { opacity: 0.55 }}>
           <td>
             <button className="link-btn strong" onClick={() => onEdit(m)}>{m.title}</button>
+            {!m.active && <span className="badge status-inactive" style={{ marginLeft: 6 }}>inactief</span>}
+            {resultsOf(m).length > 1 && (
+              <div className="muted" style={{ fontSize: 12 }}>
+                ook bij: {resultsOf(m).filter((id) => id !== String(r._id)).map((id) => t.resultById[id]?.name).filter(Boolean).join(', ')}
+              </div>
+            )}
             {m.uitleg && <div className="muted" style={{ fontSize: 12 }}>{m.uitleg}</div>}
           </td>
           <td>{m.bron || '—'}</td>

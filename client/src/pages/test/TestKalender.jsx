@@ -3,7 +3,7 @@ import { useApp } from '../../context/AppContext';
 import { NoSchool, ErrorBanner } from '../../components/Bits';
 import { useTest } from '../../test/useTest';
 import { Beoordeling, MetingModal, formatValue } from '../../test/TestBits';
-import { goalMeetpunten, isFilled, monthPhase } from '../../test/assess';
+import { goalMeetpunten, isFilled, monthPhase, resultNames } from '../../test/assess';
 import { PLAN_MONTHS } from '../../utils/constants';
 import { useCollapse, Chevron, ToggleAll } from '../../components/Collapse';
 
@@ -38,7 +38,7 @@ export default function TestKalender() {
   if (!t.schoolId) return <NoSchool />;
   const all = months.flatMap((mo) => mo.items);
   const count = (s) => all.filter((i) => i.state === s).length;
-  const resultName = (m) => t.resultById[m.result]?.name || '';
+  const resultName = (m) => resultNames(m, t.resultById);
 
   return (
     <div>

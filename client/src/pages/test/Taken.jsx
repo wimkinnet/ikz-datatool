@@ -5,6 +5,7 @@ import { NoSchool, ErrorBanner } from '../../components/Bits';
 import { useTest } from '../../test/useTest';
 import { ActionModal, Beoordeling, formatValue } from '../../test/TestBits';
 import { TEST_ACTION_STATUSES } from '../../utils/constants';
+import { resultNames } from '../../test/assess';
 import { formatDate } from '../../utils/format';
 
 const today = () => new Date().toISOString().slice(0, 10);
@@ -97,7 +98,7 @@ export default function Taken() {
                       {a.description && <div className="muted" style={{ fontSize: 12 }}>{a.description}</div>}
                     </td>
                     <td>
-                      {m ? <>{m.title} <span className="muted">· {t.resultById[m.result]?.name}</span></> : <span className="muted">—</span>}
+                      {m ? <>{m.title} <span className="muted">· {resultNames(m, t.resultById)}</span></> : <span className="muted">—</span>}
                       <div className="muted" style={{ fontSize: 12 }}>
                         {a.schoolYear}{mt && <> · {formatValue(m, mt.value)} <Beoordeling value={mt.beoordeling} empty="" /></>}
                       </div>

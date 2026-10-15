@@ -1,5 +1,6 @@
 require('dotenv').config();
 const express = require('express');
+const mongoose = require('mongoose');
 const cors = require('cors');
 const helmet = require('helmet');
 const path = require('path');
@@ -66,6 +67,11 @@ const PORT = process.env.PORT || 5050;
   await connectDB();
   // Everything built before the BO/SO split is BO: give older schools (no type, or the old 'BaO' default) type BO
   await School.updateMany({ type: { $nin: SECTORS } }, { $set: { type: 'BO' } });
+  // Test: a meetpunt used to have one beoogd resultaat (`result`); it now has a list (`results`)
+  await mongoose.connection.collection('testmeetpunts').updateMany(
+    { result: { $exists: true } },
+    [{ $set: { results: { $setUnion: [{ $ifNull: ['$results', []] }, ['$result']] } } }, { $unset: 'result' }]
+  );
   if (process.env.AUTO_SEED !== 'false') {
     try { await runSeed(); } catch (err) { console.error('[seed] failed:', err.message); }
   }

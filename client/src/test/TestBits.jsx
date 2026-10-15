@@ -149,7 +149,7 @@ export function MeetpuntModal({ meetpunt, t, onClose }) {
   const confirm = useConfirm();
   const [f, setF] = useState({
     title: '', uitleg: '', bron: '', month: '', valueType: 'percentage', thresholdDirection: 'min', thresholdText: '', active: true,
-    ...meetpunt, threshold: meetpunt.threshold ?? '',
+    ...meetpunt, results: (meetpunt.results || []).map(String), threshold: meetpunt.threshold ?? '',
   });
   const [busy, setBusy] = useState(false);
   const set = (k) => (e) => setF({ ...f, [k]: e.target.type === 'checkbox' ? e.target.checked : e.target.value });
@@ -157,9 +157,10 @@ export function MeetpuntModal({ meetpunt, t, onClose }) {
 
   async function submit(e) {
     e.preventDefault();
+    if (!f.results.length) { t.setError('Kies minstens één beoogd resultaat.'); return; }
     setBusy(true);
     const body = {
-      result: f.result, title: f.title, uitleg: f.uitleg, bron: f.bron, month: f.month, valueType: f.valueType,
+      results: f.results, title: f.title, uitleg: f.uitleg, bron: f.bron, month: f.month, valueType: f.valueType,
       threshold: numeric ? f.threshold : '', thresholdDirection: f.thresholdDirection, thresholdText: f.thresholdText, active: f.active,
     };
     const ok = await t.run(() => (f._id ? api.put(`/test/meetpunten/${f._id}`, body) : api.post('/test/meetpunten', { ...body, school: t.schoolId })));
@@ -190,15 +191,9 @@ export function MeetpuntModal({ meetpunt, t, onClose }) {
     <Modal title={f._id ? 'Meetpunt bewerken' : 'Nieuw meetpunt'} onClose={onClose} wide>
       <ErrorBanner message={t.error} />
       <form onSubmit={submit}>
-        <div className="field"><label>Beoogd resultaat</label>
-          <select required value={f.result || ''} onChange={set('result')}>
-            <option value="">Kies…</option>
-            {TEST_CATEGORIES.map((c) => (
-              <optgroup key={c.key} label={c.label}>
-                {t.results.filter((r) => r.category === c.key).map((r) => <option key={r._id} value={r._id}>{r.name}</option>)}
-              </optgroup>
-            ))}
-          </select>
+        <div className="field"><label>Hoort bij beoogd(e) resulta(a)t(en)</label>
+          <ResultPicker results={t.results} value={f.results} onChange={(results) => setF({ ...f, results })} />
+          <div className="hint">Een meetpunt kan bij meerdere beoogde resultaten horen; het verschijnt dan onder elk ervan.</div>
         </div>
         <div className="field"><label>Meetpunt</label><input required value={f.title} onChange={set('title')} placeholder="bv. % leerlingen met AVI-niveau op leeftijd" /></div>
         <div className="field"><label>Uitleg</label><textarea rows={2} value={f.uitleg} onChange={set('uitleg')} /></div>

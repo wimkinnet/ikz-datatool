@@ -4,7 +4,7 @@ import { useApp } from '../../context/AppContext';
 import { NoSchool, ErrorBanner } from '../../components/Bits';
 import { useTest } from '../../test/useTest';
 import { Beoordeling, CategoryTag, GoalModal, GoalStatus, MeetpuntModal, MetingModal, formatValue } from '../../test/TestBits';
-import { assessGoal, goalMeetpunten } from '../../test/assess';
+import { assessGoal, goalMeetpunten, inResult } from '../../test/assess';
 import { FIRST_GOAL_YEAR, TEST_CATEGORIES } from '../../utils/constants';
 import { useCollapse, Chevron, ToggleAll } from '../../components/Collapse';
 
@@ -78,13 +78,13 @@ export default function Doelen() {
             {open && [...g.results].sort((a, b) => catOrder(a) - catOrder(b)).map((rid) => {
               const r = t.resultById[rid];
               if (!r) return null;
-              const list = t.meetpunten.filter((m) => m.result === rid && m.active);
+              const list = t.meetpunten.filter((m) => inResult(m, rid) && m.active);
               return (
                 <div key={rid} className="goal-result">
                   <div className="tree-head">
                     <CategoryTag category={r.category} /> <strong>{r.name}</strong>
                     <span className="spacer" />
-                    <button className="link-btn" onClick={() => { t.setError(''); setMeetpunt({ result: rid }); }}>+ meetpunt</button>
+                    <button className="link-btn" onClick={() => { t.setError(''); setMeetpunt({ results: [rid] }); }}>+ meetpunt</button>
                   </div>
                   {list.length === 0 ? <p className="muted goal-empty">Nog geen meetpunten voor deze school.</p> : (
                     <table className="so-table goal-mps">
