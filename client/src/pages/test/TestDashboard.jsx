@@ -147,21 +147,6 @@ export default function TestDashboard() {
                   ))}
                 </BarChart>
               </ResponsiveContainer>
-              <div className="table-scroll">
-                <table className="month-status-table">
-                  <thead>
-                    <tr><th></th>{data.perMonth.map((r) => <th key={r.full} className={r.phase === 'now' ? 'year-current' : ''}>{r.name}</th>)}</tr>
-                  </thead>
-                  <tbody>
-                    {MONTH_SERIES.map((sr) => (
-                      <tr key={sr.key}>
-                        <th><span className="legend-swatch" style={{ background: sr.color }} />{sr.label}</th>
-                        {data.perMonth.map((r) => <td key={r.full} className={r.phase === 'now' ? 'year-current' : ''}>{r[sr.key] || ''}</td>)}
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
-              </div>
               {data.withoutMonth > 0 && <p className="muted" style={{ fontSize: 12.5 }}>{data.withoutMonth} meetpunt{data.withoutMonth === 1 ? '' : 'en'} zonder maand van evaluatie (niet in de grafiek).</p>}
             </>
           )}
