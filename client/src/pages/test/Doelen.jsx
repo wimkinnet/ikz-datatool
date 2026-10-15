@@ -36,7 +36,7 @@ export default function Doelen() {
       <div className="page-header">
         <div>
           <h1>Operationele doelen</h1>
-          <p>De operationele doelen van {school?.name} voor {t.year}, met de beoogde resultaten en meetpunten die ze opvolgen.</p>
+          <p>De operationele doelen van {school?.name} voor {t.year}, met de domeinen en meetpunten die ze opvolgen.</p>
         </div>
         {!tooEarly && <button className="btn btn-primary" onClick={() => { t.setError(''); setGoal({}); }}>+ Nieuw operationeel doel</button>}
       </div>
@@ -48,7 +48,7 @@ export default function Doelen() {
       {tooEarly ? (
         <div className="card empty-state">Operationele doelen starten in {FIRST_GOAL_YEAR}. Kies rechtsboven dat schooljaar of later. Metingen kan je wel al vanaf 2024-2025 invullen onder Meetpunten.</div>
       ) : t.loading ? <p className="muted">Laden…</p> : t.goals.length === 0 ? (
-        <div className="card empty-state">Nog geen operationele doelen voor {t.year}. Voeg er een toe en koppel het aan het ROK en aan beoogde resultaten.</div>
+        <div className="card empty-state">Nog geen operationele doelen voor {t.year}. Voeg er een toe en koppel het aan het ROK en aan domeinen.</div>
       ) : t.goals.map((g) => {
         const mps = goalMeetpunten(g, t.meetpunten);
         const a = assessGoal(g, t, t.year);

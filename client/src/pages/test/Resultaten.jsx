@@ -32,20 +32,20 @@ export default function Resultaten() {
   }
 
   async function remove() {
-    if (!(await confirm({ title: 'Beoogd resultaat verwijderen?', message: `"${edit.name}" wordt definitief verwijderd.` }))) return;
+    if (!(await confirm({ title: 'Domein verwijderen?', message: `"${edit.name}" wordt definitief verwijderd.` }))) return;
     try { await api.delete(`/test/results/${edit._id}`); setEdit(null); load(); } catch (err) { setError(errMsg(err)); }
   }
 
   return (
     <div>
       <div className="page-header">
-        <div><h1>Beoogde resultaten</h1><p>De gedeelde lijst waaruit scholen kiezen bij hun operationele doelen. Elk resultaat hoort bij proces, resultaten of context.</p></div>
-        <button className="btn btn-primary" onClick={() => { setError(''); setEdit({ ...EMPTY }); }}>+ Nieuw beoogd resultaat</button>
+        <div><h1>Domeinen</h1><p>De gedeelde lijst waaruit scholen kiezen bij hun operationele doelen en meetpunten. Elk domein hoort bij proces, resultaten of context.</p></div>
+        <button className="btn btn-primary" onClick={() => { setError(''); setEdit({ ...EMPTY }); }}>+ Nieuw domein</button>
       </div>
       <ErrorBanner message={error && !edit ? error : ''} />
       <div className="table-wrap">
         <table className="plan-table so-table">
-          <thead><tr><th>Beoogd resultaat</th><th>Categorie</th><th>Toelichting</th><th></th></tr></thead>
+          <thead><tr><th>Domein</th><th>Categorie</th><th>Toelichting</th><th></th></tr></thead>
           <tbody>
             {TEST_CATEGORIES.map((c) => (
               <CategoryBlock key={c.key} label={c.label} list={results.filter((r) => r.category === c.key)} onEdit={(r) => { setError(''); setEdit({ ...EMPTY, ...r }); }} />
@@ -55,10 +55,10 @@ export default function Resultaten() {
       </div>
 
       {edit && (
-        <Modal title={edit._id ? 'Beoogd resultaat bewerken' : 'Nieuw beoogd resultaat'} onClose={() => setEdit(null)}>
+        <Modal title={edit._id ? 'Domein bewerken' : 'Nieuw domein'} onClose={() => setEdit(null)}>
           <ErrorBanner message={error} />
           <form onSubmit={save}>
-            <div className="field"><label>Beoogd resultaat</label><input required value={edit.name} onChange={set('name')} /></div>
+            <div className="field"><label>Domein</label><input required value={edit.name} onChange={set('name')} /></div>
             <div className="field"><label>Categorie</label>
               <select value={edit.category} onChange={set('category')}>{TEST_CATEGORIES.map((c) => <option key={c.key} value={c.key}>{c.label}</option>)}</select>
             </div>
@@ -79,7 +79,7 @@ function CategoryBlock({ label, list, onEdit }) {
   return (
     <>
       <tr className="month-row domain-row"><td colSpan={4}>{label} <span style={{ opacity: 0.7, fontWeight: 400 }}>({list.length})</span></td></tr>
-      {list.length === 0 && <tr><td colSpan={4} className="muted">Nog geen beoogde resultaten.</td></tr>}
+      {list.length === 0 && <tr><td colSpan={4} className="muted">Nog geen domeinen.</td></tr>}
       {list.map((r) => (
         <tr key={r._id} style={r.active ? undefined : { opacity: 0.5 }}>
           <td><strong>{r.name}</strong>{!r.active && <span className="badge status-inactive" style={{ marginLeft: 6 }}>inactief</span>}</td>

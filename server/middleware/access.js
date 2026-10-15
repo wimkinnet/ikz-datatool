@@ -39,14 +39,4 @@ async function schoolScope(req, res, next) {
   }
 }
 
-// Use after schoolScope: only lets requests through for schools of the given type ('BO' or 'SO')
-function requireSchoolType(type) {
-  return (req, res, next) => {
-    if (req.school && req.school.type !== type) {
-      return res.status(400).json({ message: `Dit onderdeel is enkel beschikbaar voor ${type === 'SO' ? 'secundair onderwijs' : 'basisonderwijs'}.` });
-    }
-    next();
-  };
-}
-
-module.exports = { schoolIdsOf, canAccessSchool, schoolScope, requireSchoolType };
+module.exports = { schoolIdsOf, canAccessSchool, schoolScope };

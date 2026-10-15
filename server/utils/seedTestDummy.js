@@ -7,12 +7,12 @@ const TestMeetpunt = require('../models/test/TestMeetpunt');
 const TestMeting = require('../models/test/TestMeting');
 const TestAction = require('../models/test/TestAction');
 
-// Fills a separate dummy school with example data for the Test tab, so the pages can be tried out
+// Fills a separate dummy school with example data, so the pages can be tried out
 // without touching real schools:  node utils/seedTestDummy.js        (re)creates the data
 //                                 node utils/seedTestDummy.js --remove deletes the school and its data
 const SCHOOL = 'Testschool (dummy)';
 
-// [beoogd resultaat (or a list of them), meetpunt, type, threshold, direction, month, bron, values per year (2024-25, 2025-26, 2026-27)]
+// [domein (or a list of them), meetpunt, type, threshold, direction, month, bron, values per year (2024-25, 2025-26, 2026-27)]
 // A value of undefined means: not measured that year. Text points carry [value, verdict].
 const MEETPUNTEN = [
   ['Vlaamse toetsen', '% leerlingen boven het Vlaamse gemiddelde begrijpend lezen (6de lj)', 'percentage', 60, 'min', 'juni', 'Vlaamse toetsen', [52, 58]],
@@ -73,12 +73,12 @@ async function run() {
     console.log(existing ? `${SCHOOL} en al zijn Test-gegevens verwijderd.` : `${SCHOOL} bestond niet.`);
     return;
   }
-  const school = existing || (await School.create({ name: SCHOOL, type: 'BO', city: 'Voorbeeldgem', notes: 'Dummy school met voorbeeldgegevens voor de Test-tab.' }));
+  const school = existing || (await School.create({ name: SCHOOL, city: 'Voorbeeldgem', notes: 'Dummy school met voorbeeldgegevens.' }));
 
   const results = await TestResult.find().lean();
   const resultId = (name) => {
     const r = results.find((x) => x.name.toLowerCase() === name.toLowerCase());
-    if (!r) throw new Error(`Beoogd resultaat "${name}" niet gevonden - seed eerst de Test-sjablonen.`);
+    if (!r) throw new Error(`Domein "${name}" niet gevonden - seed eerst de domeinen (npm run seed).`);
     return r._id;
   };
 

@@ -1,20 +1,19 @@
-import { useEffect, useMemo, useState, useCallback } from 'react';
+import { useEffect, useState, useCallback } from 'react';
 import api, { errMsg } from '../api/axios';
 import { useApp } from '../context/AppContext';
 import { useAuth } from '../context/AuthContext';
 import { NoSchool, ErrorBanner } from '../components/Bits';
 import { useConfirm } from '../components/Confirm';
 import { formatDate, formatSize } from '../utils/format';
-import { yearOptions, monthLabel } from '../utils/constants';
+import { yearOptions } from '../utils/constants';
 
-const CAT = { bijlage: 'Bijlage bij vraag', rapport: 'Rapport', overig: 'Overig' };
+const CAT = { bijlage: 'Bijlage', rapport: 'Rapport', overig: 'Overig' };
 
 export default function Documenten() {
   const { user } = useAuth();
   const { schoolId, year } = useApp();
   const confirm = useConfirm();
   const [docs, setDocs] = useState([]);
-  const [questions, setQuestions] = useState([]);
   const [filterYear, setFilterYear] = useState('');
   const [file, setFile] = useState(null);
   const [upYear, setUpYear] = useState(year);
@@ -33,8 +32,6 @@ export default function Documenten() {
 
   useEffect(() => { load(); }, [load]);
   useEffect(() => { setUpYear(year); }, [year]);
-  useEffect(() => { api.get('/questions').then((r) => setQuestions(r.data)).catch(() => {}); }, []);
-  const qByKey = useMemo(() => Object.fromEntries(questions.map((q) => [q.key, q])), [questions]);
 
   if (!schoolId) return <NoSchool />;
 
@@ -74,7 +71,7 @@ export default function Documenten() {
   return (
     <div>
       <div className="page-header">
-        <div><h1>Documenten</h1><p>Rapporten en bijlagen van deze school. Bijlagen bij een vraag vind je ook hier terug.</p></div>
+        <div><h1>Documenten</h1><p>Rapporten en bijlagen van deze school.</p></div>
       </div>
       <ErrorBanner message={error} />
 
@@ -103,17 +100,15 @@ export default function Documenten() {
       <div className="table-wrap">
         {docs.length === 0 ? <div className="empty-state">Nog geen documenten.</div> : (
           <table>
-            <thead><tr><th>Bestand</th><th>Type</th><th>Schooljaar</th><th>Bij vraag</th><th>Toegevoegd</th><th></th></tr></thead>
+            <thead><tr><th>Bestand</th><th>Type</th><th>Schooljaar</th><th>Toegevoegd</th><th></th></tr></thead>
             <tbody>
               {docs.map((d) => {
-                const q = qByKey[d.questionKey];
                 const canDelete = user.role !== 'client' || d.uploadedBy?._id === user.id;
                 return (
                   <tr key={d._id}>
                     <td><button className="link-btn" onClick={() => download(d)}>{d.originalName}</button><div className="muted">{formatSize(d.size)}{d.notes ? ` · ${d.notes}` : ''}</div></td>
                     <td><span className="badge">{CAT[d.category]}</span></td>
                     <td>{d.schoolYear || '—'}</td>
-                    <td style={{ maxWidth: 260 }}>{q ? <><span className="muted">{monthLabel(q.month)} · </span>{q.text}</> : '—'}</td>
                     <td>{formatDate(d.createdAt)}<div className="muted">{d.uploadedBy?.name}</div></td>
                     <td style={{ textAlign: 'right' }}>{canDelete && <button className="btn btn-sm btn-danger" onClick={() => remove(d)}>Verwijder</button>}</td>
                   </tr>

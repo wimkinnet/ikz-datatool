@@ -7,9 +7,9 @@ import { useCollapse, Chevron, ToggleAll } from '../components/Collapse';
 import { FIRST_GOAL_YEAR } from '../utils/constants';
 
 // The ROK (referentiekader voor onderwijskwaliteit): every domain and quality expectation with its explanation.
-// In the Test tab it also lists the active school's operational goals per expectation. ?code=R1 opens one.
+// It also lists the active school's operational goals per expectation. ?code=R1 opens one.
 export default function Rok() {
-  const { sector, schoolId, school, year } = useApp();
+  const { schoolId, school, year } = useApp();
   const [params] = useSearchParams();
   const focus = params.get('code') || '';
   const [rok, setRok] = useState([]);
@@ -17,10 +17,10 @@ export default function Rok() {
   const [error, setError] = useState('');
   const [q, setQ] = useState('');
   const focusRef = useRef(null);
-  const withGoals = sector === 'TEST' && schoolId && year >= FIRST_GOAL_YEAR;
+  const withGoals = !!schoolId && year >= FIRST_GOAL_YEAR;
 
   useEffect(() => {
-    api.get('/so/rok').then((r) => setRok(r.data)).catch((e) => setError(errMsg(e, 'Kon het ROK niet laden.')));
+    api.get('/rok').then((r) => setRok(r.data)).catch((e) => setError(errMsg(e, 'Kon het ROK niet laden.')));
   }, []);
   useEffect(() => {
     if (!withGoals) { setGoals([]); return; }
@@ -68,7 +68,7 @@ export default function Rok() {
         <div>
           <h1>ROK</h1>
           <p>
-            Het referentiekader voor onderwijskwaliteit: alle kwaliteitsverwachtingen per domein.
+            Het referentiekader voor onderwijskwaliteit: alle kwaliteitsverwachtingen per ROK-domein.
             {withGoals && ` Per verwachting zie je de operationele doelen van ${school?.name} voor ${year}.`}
           </p>
         </div>

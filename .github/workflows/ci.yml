@@ -18,10 +18,10 @@ jobs:
         run: npm install
         working-directory: server
       - name: Check server syntax
-        run: for f in server.js config/*.js middleware/*.js models/*.js routes/*.js utils/*.js; do node --check "$f"; done
+        run: for f in server.js config/*.js middleware/*.js models/*.js models/test/*.js routes/*.js utils/*.js; do node --check "$f"; done
         working-directory: server
       - name: Validate seed data
-        run: node -e "['questions','plan-template','references'].forEach(n => JSON.parse(require('fs').readFileSync('seed/'+n+'.json','utf8')))"
+        run: node -e "['rok','test-results'].forEach(n => JSON.parse(require('fs').readFileSync('seed/'+n+'.json','utf8')))"
         working-directory: server
       - name: Install and build client
         run: npm install && npm run build

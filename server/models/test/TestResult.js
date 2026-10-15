@@ -1,6 +1,6 @@
 const mongoose = require('mongoose');
 
-// Test: a "beoogd resultaat" from the shared library (seeded from the themes of the BO year plan).
+// A "domein" from the shared list (seeded from the themes of the former BO year plan); stored as TestResult.
 // Operational goals link to these; each school hangs its own meetpunten under them.
 const CATEGORIES = ['proces', 'resultaten', 'context'];
 

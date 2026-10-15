@@ -114,7 +114,7 @@ export default function TestDashboard() {
           <div className="value st-ok">{pctGroen === null ? '—' : `${pctGroen}%`}</div>
           <div className="stat-sub">{data.groen} groen · {data.rood} rood</div>
         </div>
-        <Link to="/taken" className="stat stat-link">
+        <Link to="/acties" className="stat stat-link">
           <div className="label">Open acties</div>
           <div className="value">{data.openActions.length}</div>
           <div className={`stat-sub ${data.late.length ? 'st-actie' : ''}`}>{data.late.length} te laat</div>
@@ -229,7 +229,7 @@ export default function TestDashboard() {
             <ul className="dash-list">
               {data.late.map((a) => (
                 <li key={a._id}>
-                  <Link to="/taken">{a.title}</Link>
+                  <Link to="/acties">{a.title}</Link>
                   <span className="muted"> · {a.owner || 'geen verantwoordelijke'} · deadline {formatDate(a.dueDate)}</span>
                 </li>
               ))}

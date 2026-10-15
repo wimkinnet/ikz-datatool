@@ -49,7 +49,7 @@ export default function Taken() {
     <div>
       <div className="page-header">
         <div>
-          <h1>Actielijst</h1>
+          <h1>Acties</h1>
           <p>De acties van {school?.name} bij de meetresultaten. Nieuwe acties voeg je toe bij een meting (Meetpunten of Operationele doelen).</p>
         </div>
       </div>

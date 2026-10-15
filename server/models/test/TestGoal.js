@@ -1,7 +1,7 @@
 const mongoose = require('mongoose');
 
-// Test: a school's operational goal for one school year (from 2026-2027). It contributes to one or more
-// ROK expectations and is linked to one or more beoogde resultaten.
+// A school's operational goal for one school year (from 2026-2027). It contributes to one or more
+// ROK expectations and is linked to one or more domeinen.
 const testGoalSchema = new mongoose.Schema(
   {
     school: { type: mongoose.Schema.Types.ObjectId, ref: 'School', required: true },

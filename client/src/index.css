@@ -779,51 +779,6 @@ select.status-select.actie { background: var(--st-actie-bg); color: var(--st-act
   color: var(--accent-dark);
 }
 
-/* BO / SO switch at the top of the sidebar: the highest-level choice in the tool */
-.sector-switch {
-  display: flex;
-  gap: 2px;
-  margin: 0 6px 14px;
-  padding: 3px;
-  border-radius: var(--radius);
-  background: rgba(255, 255, 255, 0.08);
-}
-
-.sector-switch button {
-  flex: 1;
-  padding: 6px 0;
-  border: 0;
-  border-radius: 4px;
-  background: none;
-  color: inherit;
-  opacity: 0.7;
-  font-weight: 600;
-  letter-spacing: 0.04em;
-  cursor: pointer;
-}
-
-.sector-switch button.active {
-  background: var(--surface);
-  color: var(--accent-dark);
-  opacity: 1;
-}
-
-.sector-single {
-  margin: 0 10px 14px;
-  font-size: 12px;
-  opacity: 0.75;
-}
-
-.sector-tag {
-  display: inline-block;
-  margin-left: 6px;
-  padding: 0 6px;
-  border-radius: 100px;
-  border: 1px solid var(--border);
-  font-size: 11px;
-  font-weight: 600;
-  color: var(--ink-soft);
-}
 
 /* ---------- SO: Kwaliteitsmonitor ---------- */
 .stat-btn {

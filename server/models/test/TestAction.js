@@ -1,6 +1,6 @@
 const mongoose = require('mongoose');
 
-// Test: an action linked to a measuring result (meetpunt + school year), followed up in the task dashboard.
+// An action linked to a measuring result (meetpunt + school year), followed up under Acties.
 const STATUSES = ['open', 'bezig', 'afgerond'];
 
 const testActionSchema = new mongoose.Schema(

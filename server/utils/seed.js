@@ -3,56 +3,31 @@ const fs = require('fs');
 const path = require('path');
 const mongoose = require('mongoose');
 const User = require('../models/User');
-const ReferenceItem = require('../models/ReferenceItem');
-const Question = require('../models/Question');
-const PlanItem = require('../models/PlanItem');
 const RokExpectation = require('../models/RokExpectation');
-const Indicator = require('../models/Indicator');
 const TestResult = require('../models/test/TestResult');
 
 const readSeed = (name) => JSON.parse(fs.readFileSync(path.join(__dirname, '..', 'seed', name), 'utf-8'));
 
 // Idempotent: only fills collections that are still empty, so admin edits are never overwritten
-// (unless --reset-templates is passed, which replaces references, questions, the default plan and the SO templates).
+// (unless --reset-templates is passed, which replaces the ROK and the list of domeinen).
 async function runSeed({ reset = false } = {}) {
   const log = [];
 
   if (reset) {
-    await ReferenceItem.deleteMany({});
-    await Question.deleteMany({});
-    await PlanItem.deleteMany({ school: null });
     await RokExpectation.deleteMany({});
-    await Indicator.deleteMany({});
+    await TestResult.deleteMany({});
     log.push('Templates reset');
   }
 
-  if ((await ReferenceItem.countDocuments()) === 0) {
-    await ReferenceItem.insertMany(readSeed('references.json'));
-    log.push('Reference lists seeded');
-  }
-  if ((await Question.countDocuments()) === 0) {
-    await Question.insertMany(readSeed('questions.json'));
-    log.push('Questionnaire seeded');
-  }
-  if ((await PlanItem.countDocuments({ school: null })) === 0) {
-    await PlanItem.insertMany(readSeed('plan-template.json').map((p) => ({ ...p, school: null, schoolYear: null })));
-    log.push('Default year plan seeded');
-  }
-
-  // SO (secundair onderwijs): ROK expectations and the Kwaliteitsmonitor indicators
+  // The ROK (referentiekader voor onderwijskwaliteit) with every quality expectation
   if ((await RokExpectation.countDocuments()) === 0) {
-    await RokExpectation.insertMany(readSeed('so-rok.json'));
-    log.push('SO: ROK seeded');
+    await RokExpectation.insertMany(readSeed('rok.json'));
+    log.push('ROK seeded');
   }
-  if ((await Indicator.countDocuments()) === 0) {
-    await Indicator.insertMany(readSeed('so-indicators.json'));
-    log.push('SO: indicators seeded');
-  }
-
-  // Test: the library of beoogde resultaten (from the themes of the BO year plan)
+  // The shared list of domeinen that operational goals and meetpunten link to
   if ((await TestResult.countDocuments()) === 0) {
     await TestResult.insertMany(readSeed('test-results.json'));
-    log.push('Test: beoogde resultaten seeded');
+    log.push('Domeinen seeded');
   }
 
   const email = (process.env.SEED_ADMIN_EMAIL || '').toLowerCase();

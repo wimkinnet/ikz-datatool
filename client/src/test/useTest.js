@@ -18,9 +18,9 @@ export function useTest() {
   const [error, setError] = useState('');
 
   useEffect(() => {
-    Promise.all([api.get('/test/results'), api.get('/so/rok')])
+    Promise.all([api.get('/test/results'), api.get('/rok')])
       .then(([r, k]) => { setResults(r.data); setRok(k.data); })
-      .catch((e) => setError(errMsg(e, 'Kon de beoogde resultaten niet laden.')));
+      .catch((e) => setError(errMsg(e, 'Kon de domeinen niet laden.')));
   }, []);
 
   const reload = useCallback(async () => {

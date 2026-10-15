@@ -1,6 +1,6 @@
 const mongoose = require('mongoose');
 
-// Test: the result of one meetpunt in one school year (value + red/green assessment).
+// The result of one meetpunt in one school year (value + red/green assessment).
 const testMetingSchema = new mongoose.Schema(
   {
     school: { type: mongoose.Schema.Types.ObjectId, ref: 'School', required: true },

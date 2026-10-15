@@ -20,7 +20,7 @@ export function GoalStatus({ a }) {
   const pct = a.ratio === null ? '' : ` · ${Math.round(a.ratio * 100)}% groen`;
   const title = a.total
     ? `${a.measured} van ${a.total} meetpunten beoordeeld (${a.groen} groen, ${a.rood} rood)${a.provisional ? ' - voorlopig' : ''}`
-    : 'Koppel meetpunten aan de beoogde resultaten van dit doel';
+    : 'Koppel meetpunten aan de domeinen van dit doel';
   return (
     <span className={`status-pill ${a.cls}`} title={title}>
       {a.label}{pct}{a.provisional && <span className="provisional"> · voorlopig</span>}
@@ -81,7 +81,7 @@ export function ResultPicker({ results, value, onChange }) {
   const toggle = (id) => onChange(value.includes(id) ? value.filter((x) => x !== id) : [...value, id]);
   return (
     <div>
-      <input type="search" placeholder="Zoek een beoogd resultaat…" value={q} onChange={(e) => setQ(e.target.value)} style={{ marginBottom: 6 }} />
+      <input type="search" placeholder="Zoek een domein…" value={q} onChange={(e) => setQ(e.target.value)} style={{ marginBottom: 6 }} />
       <div className="rok-picker">
         {TEST_CATEGORIES.map((c) => {
           const list = results.filter((r) => r.category === c.key && (!term || r.name.toLowerCase().includes(term)));
@@ -110,7 +110,7 @@ export function GoalModal({ goal, t, onClose }) {
 
   async function submit(e) {
     e.preventDefault();
-    if (!f.results.length) { t.setError('Koppel minstens één beoogd resultaat.'); return; }
+    if (!f.results.length) { t.setError('Koppel minstens één domein.'); return; }
     setBusy(true);
     const body = { title: f.title, description: f.description, rok: f.rok, results: f.results };
     const ok = await t.run(() => (f._id
@@ -133,7 +133,7 @@ export function GoalModal({ goal, t, onClose }) {
         <div className="field"><label>Toelichting</label><textarea rows={2} value={f.description} onChange={(e) => setF({ ...f, description: e.target.value })} /></div>
         <div className="field-row">
           <div className="field"><label>Draagt bij aan (ROK)</label><RokPicker rok={t.rok} value={f.rok} onChange={(rok) => setF({ ...f, rok })} /></div>
-          <div className="field"><label>Beoogde resultaten</label><ResultPicker results={t.results} value={f.results} onChange={(results) => setF({ ...f, results })} /></div>
+          <div className="field"><label>Domeinen</label><ResultPicker results={t.results} value={f.results} onChange={(results) => setF({ ...f, results })} /></div>
         </div>
         <div className="modal-actions">
           <button className="btn btn-primary" type="submit" disabled={busy}>{busy ? 'Bezig…' : 'Opslaan'}</button>
@@ -157,7 +157,7 @@ export function MeetpuntModal({ meetpunt, t, onClose }) {
 
   async function submit(e) {
     e.preventDefault();
-    if (!f.results.length) { t.setError('Kies minstens één beoogd resultaat.'); return; }
+    if (!f.results.length) { t.setError('Kies minstens één domein.'); return; }
     setBusy(true);
     const body = {
       results: f.results, title: f.title, uitleg: f.uitleg, bron: f.bron, month: f.month, valueType: f.valueType,
@@ -179,7 +179,7 @@ export function MeetpuntModal({ meetpunt, t, onClose }) {
     const ok = await confirm({
       title: 'Meetpunt verwijderen?',
       message: linked.length
-        ? `"${f.title}" wordt definitief verwijderd, samen met:\n• ${linked.join('\n• ')}\n\nDe acties verdwijnen ook uit de actielijst. Dit kan niet ongedaan worden gemaakt. Wil je de historiek bewaren, zet het meetpunt dan op inactief.`
+        ? `"${f.title}" wordt definitief verwijderd, samen met:\n• ${linked.join('\n• ')}\n\nDe acties verdwijnen ook uit Acties. Dit kan niet ongedaan worden gemaakt. Wil je de historiek bewaren, zet het meetpunt dan op inactief.`
         : `"${f.title}" wordt definitief verwijderd.`,
       confirmLabel: linked.length ? 'Meetpunt en gekoppelde gegevens verwijderen' : 'Verwijderen',
     });
@@ -191,9 +191,9 @@ export function MeetpuntModal({ meetpunt, t, onClose }) {
     <Modal title={f._id ? 'Meetpunt bewerken' : 'Nieuw meetpunt'} onClose={onClose} wide>
       <ErrorBanner message={t.error} />
       <form onSubmit={submit}>
-        <div className="field"><label>Hoort bij beoogd(e) resulta(a)t(en)</label>
+        <div className="field"><label>Hoort bij domein(en)</label>
           <ResultPicker results={t.results} value={f.results} onChange={(results) => setF({ ...f, results })} />
-          <div className="hint">Een meetpunt kan bij meerdere beoogde resultaten horen; het verschijnt dan onder elk ervan.</div>
+          <div className="hint">Een meetpunt kan bij meerdere domeinen horen; het verschijnt dan onder elk ervan.</div>
         </div>
         <div className="field"><label>Meetpunt</label><input required value={f.title} onChange={set('title')} placeholder="bv. % leerlingen met AVI-niveau op leeftijd" /></div>
         <div className="field"><label>Uitleg</label><textarea rows={2} value={f.uitleg} onChange={set('uitleg')} /></div>

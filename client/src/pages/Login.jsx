@@ -27,7 +27,7 @@ export default function Login() {
     <div className="login-screen">
       <div className="login-card">
         <h1>IKZ Datatool</h1>
-        <p className="muted">Meld je aan om de vragenlijst, het jaarplan en de trends van je school te bekijken.</p>
+        <p className="muted">Meld je aan om de operationele doelen, meetpunten en acties van je school op te volgen.</p>
         <ErrorBanner message={error} />
         <form onSubmit={submit}>
           <div className="field">

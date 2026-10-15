@@ -1,12 +1,6 @@
-import { STATUS } from '../utils/constants';
 import { useApp } from '../context/AppContext';
 import { Link } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
-
-export function StatusPill({ status }) {
-  const s = STATUS[status];
-  return <span className={`status-pill ${status}`}>{s ? s.label : status}</span>;
-}
 
 export function ErrorBanner({ message }) {
   return message ? <div className="error-banner">{message}</div> : null;

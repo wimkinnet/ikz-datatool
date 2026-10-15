@@ -4,10 +4,7 @@ const fs = require('fs');
 const path = require('path');
 const School = require('../models/School');
 const User = require('../models/User');
-const Answer = require('../models/Answer');
-const PlanItem = require('../models/PlanItem');
 const Document = require('../models/Document');
-const IndicatorScore = require('../models/IndicatorScore');
 const TestGoal = require('../models/test/TestGoal');
 const TestMeetpunt = require('../models/test/TestMeetpunt');
 const TestMeting = require('../models/test/TestMeting');
@@ -16,11 +13,10 @@ const { UPLOAD_ROOT } = require('../middleware/upload');
 const { protect, requireRole, requireStaff } = require('../middleware/auth');
 const { schoolIdsOf, canAccessSchool } = require('../middleware/access');
 const pick = require('../utils/pick');
-const { SECTORS } = require('../utils/constants');
 
 router.use(protect);
 
-const FIELDS = ['name', 'type', 'institutionNumber', 'city', 'contactName', 'contactEmail', 'contactPhone', 'notes', 'active', 'clientCanEditPlanStructure'];
+const FIELDS = ['name', 'institutionNumber', 'city', 'contactName', 'contactEmail', 'contactPhone', 'notes', 'active'];
 
 // GET /api/schools  - only the schools the user may access
 router.get('/', async (req, res) => {
@@ -43,7 +39,6 @@ router.get('/:id', async (req, res) => {
 // POST /api/schools  (admin)
 router.post('/', requireRole('admin'), async (req, res) => {
   try {
-    if (!SECTORS.includes(req.body.type)) return res.status(400).json({ message: 'Kies of dit een school voor basisonderwijs (BO) of secundair onderwijs (SO) is.' });
     const school = await School.create(pick(req.body, FIELDS));
     res.status(201).json(school);
   } catch (err) {
@@ -56,17 +51,6 @@ router.put('/:id', requireStaff, async (req, res) => {
   try {
     if (!canAccessSchool(req.user, req.params.id)) return res.status(403).json({ message: 'Je hebt geen toegang tot deze school.' });
     const fields = pick(req.body, FIELDS);
-    // Only an admin can change BO/SO, and only while the school has no SO data yet
-    if (fields.type !== undefined) {
-      const current = await School.findById(req.params.id).select('type');
-      if (current && fields.type !== current.type) {
-        if (req.user.role !== 'admin') return res.status(403).json({ message: 'Enkel een admin kan het onderwijsniveau van een school wijzigen.' });
-        const id = req.params.id;
-        if ((await Answer.exists({ school: id })) || (await PlanItem.exists({ school: id })) || (await IndicatorScore.exists({ school: id }))) {
-          return res.status(409).json({ message: 'Deze school heeft al gegevens (antwoorden, jaarplan of inschalingen). Het onderwijsniveau kan niet meer gewijzigd worden.' });
-        }
-      }
-    }
     const school = await School.findByIdAndUpdate(req.params.id, fields, { new: true, runValidators: true });
     if (!school) return res.status(404).json({ message: 'School niet gevonden.' });
     res.json(school);
@@ -75,7 +59,7 @@ router.put('/:id', requireStaff, async (req, res) => {
   }
 });
 
-// DELETE /api/schools/:id  (admin) - removes the school with all its answers, plan and documents,
+// DELETE /api/schools/:id  (admin) - removes the school with its goals, meetpunten, metingen, actions and documents,
 // plus the school accounts that were linked to this school only
 router.delete('/:id', requireRole('admin'), async (req, res) => {
   try {
@@ -85,10 +69,7 @@ router.delete('/:id', requireRole('admin'), async (req, res) => {
     const id = school._id;
     const linkedClients = await User.find({ role: 'client', $or: [{ school: id }, { schools: id }] }).select('_id');
     await Promise.all([
-      Answer.deleteMany({ school: id }),
-      PlanItem.deleteMany({ school: id }),
       Document.deleteMany({ school: id }),
-      IndicatorScore.deleteMany({ school: id }),
       TestGoal.deleteMany({ school: id }),
       TestMeetpunt.deleteMany({ school: id }),
       TestMeting.deleteMany({ school: id }),

@@ -39,7 +39,7 @@ export default function Meetpunten() {
       <div className="page-header">
         <div>
           <h1>Meetpunten</h1>
-          <p>De meetpunten van {school?.name} per beoogd resultaat, met de metingen vanaf {FIRST_MEASURE_YEAR}. Klik op een meting om ze in te vullen of acties toe te voegen.</p>
+          <p>De meetpunten van {school?.name} per domein, met de metingen vanaf {FIRST_MEASURE_YEAR}. Klik op een meting om ze in te vullen of acties toe te voegen.</p>
         </div>
         <button className="btn btn-primary" onClick={() => { t.setError(''); setMeetpunt({}); }}>+ Nieuw meetpunt</button>
       </div>
@@ -52,7 +52,7 @@ export default function Meetpunten() {
       <div className="table-wrap" style={{ overflowX: 'auto' }}>
         {t.loading ? <p className="muted" style={{ padding: 20 }}>Laden…</p> : categories.length === 0 ? (
           <div className="empty-state">
-            Nog geen meetpunten. Voeg er een toe met "+ Nieuw meetpunt"{t.year >= FIRST_GOAL_YEAR ? ', of koppel beoogde resultaten aan een operationeel doel' : ''}.
+            Nog geen meetpunten. Voeg er een toe met "+ Nieuw meetpunt"{t.year >= FIRST_GOAL_YEAR ? ', of koppel domeinen aan een operationeel doel' : ''}.
           </div>
         ) : (
           <table className="plan-table so-table">
@@ -91,7 +91,7 @@ function CategoryRows({ cat, col, years, t, inGoals, onAdd, onEdit, onMeting }) 
         <td colSpan={cols}>
           <div className="tree-head">
             <button className="tree-toggle" onClick={() => col.toggle(key)} aria-expanded={open}><Chevron open={open} /> {cat.label}</button>
-            <span className="tally">{cat.results.length} beoogde resultaten · {count} meetpunt{count === 1 ? '' : 'en'}</span>
+            <span className="tally">{cat.results.length} domein{cat.results.length === 1 ? '' : 'en'} · {count} meetpunt{count === 1 ? '' : 'en'}</span>
             <span className="spacer" />
             <ToggleAll c={col} keys={[key, ...cat.results.map((r) => r._id)]} className="btn btn-sm tree-all" />
           </div>

@@ -6,13 +6,12 @@ import { useAuth } from '../context/AuthContext';
 import Modal from '../components/Modal';
 import { useConfirm } from '../components/Confirm';
 import { ErrorBanner } from '../components/Bits';
-import { SECTORS, sectorLabel } from '../utils/constants';
 
-const EMPTY = { name: '', institutionNumber: '', city: '', contactName: '', contactEmail: '', contactPhone: '', notes: '', active: true, clientCanEditPlanStructure: false };
+const EMPTY = { name: '', institutionNumber: '', city: '', contactName: '', contactEmail: '', contactPhone: '', notes: '', active: true };
 
 export default function Scholen() {
   const { user } = useAuth();
-  const { sector, schools, schoolId, setSchoolId, reload } = useApp();
+  const { schools, schoolId, setSchoolId, reload } = useApp();
   const navigate = useNavigate();
   const confirm = useConfirm();
   const [edit, setEdit] = useState(null);
@@ -23,7 +22,7 @@ export default function Scholen() {
     e.preventDefault();
     setBusy(true); setError('');
     try {
-      const { _id, createdAt, updatedAt, __v, ...body } = edit;
+      const { _id, createdAt, updatedAt, __v, type, clientCanEditPlanStructure, ...body } = edit; // eslint-disable-line no-unused-vars
       if (_id) await api.put(`/schools/${_id}`, body); else await api.post('/schools', body);
       await reload();
       setEdit(null);
@@ -33,7 +32,7 @@ export default function Scholen() {
   async function remove() {
     const ok = await confirm({
       title: 'School verwijderen?',
-      message: `"${edit.name}" wordt definitief verwijderd, samen met alle antwoorden, het jaarplan, de inschalingen en alle documenten. Schoolaccounts die enkel aan deze school gekoppeld zijn, worden ook verwijderd.\n\nDit kan niet ongedaan worden gemaakt. Wil je de school enkel verbergen, zet ze dan op inactief.`,
+      message: `"${edit.name}" wordt definitief verwijderd, samen met alle operationele doelen, meetpunten, metingen, acties en documenten. Schoolaccounts die enkel aan deze school gekoppeld zijn, worden ook verwijderd.\n\nDit kan niet ongedaan worden gemaakt. Wil je de school enkel verbergen, zet ze dan op inactief.`,
       confirmLabel: 'School verwijderen',
     });
     if (!ok) return;
@@ -50,21 +49,20 @@ export default function Scholen() {
   return (
     <div>
       <div className="page-header">
-        <div><h1>Scholen</h1><p>{sector === 'TEST' ? 'Alle scholen, basis- en secundair onderwijs.' : `De scholen en scholengroepen in ${sectorLabel(sector).toLowerCase()} die je opvolgt.`}</p></div>
-        {user.role === 'admin' && <button className="btn btn-primary" onClick={() => { setError(''); setEdit({ ...EMPTY, type: sector === 'TEST' ? '' : sector }); }}>+ Nieuwe school</button>}
+        <div><h1>Scholen</h1><p>De scholen en scholengroepen die je opvolgt.</p></div>
+        {user.role === 'admin' && <button className="btn btn-primary" onClick={() => { setError(''); setEdit({ ...EMPTY }); }}>+ Nieuwe school</button>}
       </div>
       <ErrorBanner message={error && !edit ? error : ''} />
       <div className="table-wrap">
         {schools.length === 0 ? <div className="empty-state">Nog geen scholen.</div> : (
           <table>
-            <thead><tr><th>School</th><th>Gemeente</th><th>Contact</th><th>Schoolgebruikers bewerken plan?</th><th></th></tr></thead>
+            <thead><tr><th>School</th><th>Gemeente</th><th>Contact</th><th></th></tr></thead>
             <tbody>
               {schools.map((s) => (
                 <tr key={s._id}>
                   <td><strong>{s.name}</strong>{!s.active && <span className="badge status-inactive" style={{ marginLeft: 8 }}>inactief</span>}{s._id === schoolId && <span className="badge" style={{ marginLeft: 8 }}>actief</span>}</td>
                   <td>{s.city || '—'}</td>
                   <td>{s.contactName || '—'}<div className="muted">{s.contactEmail}</div></td>
-                  <td>{s.clientCanEditPlanStructure ? 'Ja, ook taken toevoegen' : 'Enkel status & acties'}</td>
                   <td style={{ textAlign: 'right', whiteSpace: 'nowrap' }}>
                     <button className="btn btn-sm" onClick={() => { setSchoolId(s._id); navigate('/'); }}>Openen</button>{' '}
                     <button className="btn btn-sm" onClick={() => { setError(''); setEdit({ ...EMPTY, ...s }); }}>Bewerken</button>
@@ -81,12 +79,6 @@ export default function Scholen() {
           <ErrorBanner message={error} />
           <form onSubmit={save}>
             <div className="field"><label>Naam</label><input required value={edit.name} onChange={set('name')} /></div>
-            <div className="field"><label>Onderwijsniveau</label>
-              <select required value={edit.type || ''} onChange={set('type')} disabled={user.role !== 'admin'}>
-                {SECTORS.map((s) => <option key={s.key} value={s.key}>{s.label} ({s.key})</option>)}
-              </select>
-              {edit._id && <div className="hint">Kan enkel gewijzigd worden zolang de school nog geen gegevens (antwoorden, jaarplan of inschalingen) heeft.</div>}
-            </div>
             <div className="field-row">
               <div className="field"><label>Instellingsnummer</label><input value={edit.institutionNumber || ''} onChange={set('institutionNumber')} /></div>
               <div className="field"><label>Gemeente</label><input value={edit.city || ''} onChange={set('city')} /></div>
@@ -97,10 +89,6 @@ export default function Scholen() {
             </div>
             <div className="field"><label>Telefoon</label><input value={edit.contactPhone || ''} onChange={set('contactPhone')} /></div>
             <div className="field"><label>Notities</label><textarea rows={3} value={edit.notes || ''} onChange={set('notes')} /></div>
-            <label className="checkbox-row" style={{ marginBottom: 8 }}>
-              <input type="checkbox" checked={!!edit.clientCanEditPlanStructure} onChange={set('clientCanEditPlanStructure')} />
-              Schoolgebruikers mogen ook taken toevoegen, verwijderen en drempelwaarden aanpassen
-            </label>
             <label className="checkbox-row" style={{ marginBottom: 16 }}>
               <input type="checkbox" checked={!!edit.active} onChange={set('active')} /> School is actief
             </label>
