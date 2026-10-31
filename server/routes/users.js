@@ -5,6 +5,7 @@ const School = require('../models/School');
 const { protect, requireRole, requireStaff } = require('../middleware/auth');
 const { schoolIdsOf, canAccessSchool } = require('../middleware/access');
 const pick = require('../utils/pick');
+const { THEMES } = require('../utils/constants');
 
 router.use(protect, requireStaff);
 
@@ -37,7 +38,7 @@ router.get('/', async (req, res) => {
 // POST /api/users
 router.post('/', async (req, res) => {
   try {
-    const { name, email, password, phone } = req.body || {};
+    const { name, email, password, phone, theme } = req.body || {};
     let { role, schools } = req.body || {};
     if (!name || !email || !password) return res.status(400).json({ message: 'Naam, e-mailadres en wachtwoord zijn verplicht.' });
     if (password.length < 8) return res.status(400).json({ message: 'Het wachtwoord moet minstens 8 tekens hebben.' });
@@ -59,7 +60,8 @@ router.post('/', async (req, res) => {
       return res.status(409).json({ message: 'Er bestaat al een gebruiker met dit e-mailadres.' });
     }
 
-    const user = await User.create({ name, email, password, phone, role, school: null, schools: schools || [] });
+    // Whoever gives access picks the house style; without a choice the new user gets the creator's
+    const user = await User.create({ name, email, password, phone, role, school: null, schools: schools || [], theme: THEMES.includes(theme) ? theme : req.user.theme });
     res.status(201).json(user.toSafeObject());
   } catch (err) {
     res.status(400).json({ message: 'Kon gebruiker niet aanmaken.', error: err.message });
@@ -73,7 +75,8 @@ router.put('/:id', async (req, res) => {
     if (!user) return res.status(404).json({ message: 'Gebruiker niet gevonden.' });
     if (!canManage(req.user, user)) return res.status(403).json({ message: 'Je mag deze gebruiker niet beheren.' });
 
-    const fields = pick(req.body, ['name', 'phone', 'active']);
+    const fields = pick(req.body, ['name', 'phone', 'active', 'theme']);
+    if ('theme' in fields && !THEMES.includes(fields.theme)) return res.status(400).json({ message: 'Ongeldige stijl.' });
     if (req.user.role === 'admin' && ('schools' in req.body || 'school' in req.body)) {
       const role = req.body.role || user.role;
       fields.schools = role === 'admin' ? [] : requestedSchools(req.body);

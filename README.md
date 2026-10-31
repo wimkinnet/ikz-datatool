@@ -48,6 +48,20 @@ because the model started as a "Test" tab next to the former BO and SO parts.
 
 Access is enforced on the server for every route, also for changes by id (`middleware/access.js`, `routes/test.js`).
 
+## House styles
+
+The tool comes in two looks, **Bespreek** (bespreek.be) and **Catalista** (catalista.be), per user (`User.theme`):
+
+- Whoever creates or edits a user picks the style in the user form (*Gebruikers*). Without a choice a new user gets
+  the style of the person who created them; existing users are on Bespreek until someone changes them.
+- Admins can also switch their own style with the *Stijl* select at the bottom of the sidebar. Other users cannot.
+- The login page, shown before we know who is logging in, uses the style last used on that device (default Bespreek).
+
+Colours and fonts are CSS variables: `:root` is Bespreek, `:root[data-theme='catalista']` overrides them
+(`client/src/index.css`); logos are in `client/public/brand/`, the list of styles in `client/src/utils/themes.js`.
+Values were read from the live websites. Futura (Bespreek) is a paid font, so headings use the free look-alike Jost;
+Helvetica falls back to Arial where it isn't installed. Green, amber and red keep their meaning in both styles.
+
 ## Local setup
 
 Needs Node 18+ and a MongoDB connection string (free MongoDB Atlas cluster works).

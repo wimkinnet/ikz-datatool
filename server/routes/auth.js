@@ -4,6 +4,7 @@ const rateLimit = require('express-rate-limit');
 const User = require('../models/User');
 const generateToken = require('../utils/generateToken');
 const { protect } = require('../middleware/auth');
+const { THEMES } = require('../utils/constants');
 
 const loginLimiter = rateLimit({
   windowMs: 15 * 60 * 1000,
@@ -36,10 +37,16 @@ router.get('/me', protect, (req, res) => res.json({ user: req.user.toSafeObject(
 // PUT /api/auth/me  - change own name/phone, or password (requires the current password)
 router.put('/me', protect, async (req, res) => {
   try {
-    const { name, phone, currentPassword, newPassword } = req.body || {};
+    const { name, phone, currentPassword, newPassword, theme } = req.body || {};
     const user = await User.findById(req.user._id);
     if (name) user.name = name;
     if (phone !== undefined) user.phone = phone;
+    // Only admins choose their own house style; everyone else gets the one set when access was given
+    if (theme !== undefined) {
+      if (req.user.role !== 'admin') return res.status(403).json({ message: 'Enkel een admin kan zijn eigen stijl kiezen.' });
+      if (!THEMES.includes(theme)) return res.status(400).json({ message: 'Ongeldige stijl.' });
+      user.theme = theme;
+    }
     if (newPassword) {
       if (newPassword.length < 8) return res.status(400).json({ message: 'Het nieuwe wachtwoord moet minstens 8 tekens hebben.' });
       if (!currentPassword || !(await user.comparePassword(currentPassword))) {

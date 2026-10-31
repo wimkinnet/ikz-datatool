@@ -14,6 +14,7 @@ const thisMonth = () => PLAN_MONTHS[(new Date().getMonth() + 4) % 12].key;
 const short = (s, n = 34) => (s.length > n ? `${s.slice(0, n - 1)}…` : s);
 // Hide a segment label when the segment is empty (Recharts still renders "0")
 const countLabel = (v) => (v ? v : '');
+const legendLabel = (value) => <span className="chart-legend-label">{value}</span>;
 
 const MONTH_SHORT = ['sep', 'okt', 'nov', 'dec', 'jan', 'feb', 'mrt', 'apr', 'mei', 'jun', 'jul', 'aug'];
 
@@ -23,7 +24,7 @@ const MONTH_SERIES = [
   { key: 'ingevuld', label: 'Ingevuld, zonder beoordeling', color: CHART.ingevuld, ink: '#fff' },
   { key: 'rood', label: 'Rood', color: CHART.rood, ink: '#fff' },
   { key: 'late', label: 'Achterstallig', color: CHART.aandacht, ink: '#fff' },
-  { key: 'todo', label: 'Nog in te vullen', color: CHART.none, ink: '#14302f' },
+  { key: 'todo', label: 'Nog in te vullen', color: CHART.none, ink: '#1f2a24' },
 ];
 
 // Test: one overview of the school's operational goals, meetpunten and actions for the active school year
@@ -135,11 +136,11 @@ export default function TestDashboard() {
             <>
               <ResponsiveContainer width="100%" height={280}>
                 <BarChart data={data.perMonth} margin={{ top: 10, right: 10, left: -20, bottom: 0 }} barCategoryGap="22%">
-                  <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#e6eeee" />
+                  <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="var(--chart-grid)" />
                   <XAxis dataKey="name" fontSize={12} tickLine={false} />
                   <YAxis allowDecimals={false} fontSize={12} tickLine={false} />
-                  <Tooltip cursor={{ fill: 'rgba(0,128,125,0.06)' }} labelFormatter={(_, p) => (p?.[0] ? `${p[0].payload.full}${p[0].payload.phase === 'now' ? ' (deze maand)' : ''}` : '')} />
-                  <Legend />
+                  <Tooltip cursor={{ fill: 'var(--chart-hover)' }} labelFormatter={(_, p) => (p?.[0] ? `${p[0].payload.full}${p[0].payload.phase === 'now' ? ' (deze maand)' : ''}` : '')} />
+                  <Legend formatter={legendLabel} />
                   {MONTH_SERIES.map((sr) => (
                     <Bar key={sr.key} dataKey={sr.key} name={sr.label} stackId="m" fill={sr.color} stroke="#fff" strokeWidth={2} maxBarSize={48}>
                       <LabelList dataKey={sr.key} fill={sr.ink} fontSize={11} formatter={countLabel} />
@@ -159,14 +160,14 @@ export default function TestDashboard() {
               <>
                 <ResponsiveContainer width="100%" height={Math.max(180, data.goalBars.length * 46 + 60)}>
                   <BarChart data={data.goalBars} layout="vertical" margin={{ top: 5, right: 20, left: 0, bottom: 0 }} barCategoryGap={10}>
-                    <CartesianGrid strokeDasharray="3 3" horizontal={false} stroke="#e6eeee" />
+                    <CartesianGrid strokeDasharray="3 3" horizontal={false} stroke="var(--chart-grid)" />
                     <XAxis type="number" allowDecimals={false} fontSize={12} tickLine={false} />
                     <YAxis type="category" dataKey="name" width={190} fontSize={12} tickLine={false} />
-                    <Tooltip cursor={{ fill: 'rgba(0,128,125,0.06)' }} labelFormatter={(_, p) => (p?.[0] ? `${p[0].payload.full} · ${p[0].payload.status}` : '')} />
-                    <Legend />
+                    <Tooltip cursor={{ fill: 'var(--chart-hover)' }} labelFormatter={(_, p) => (p?.[0] ? `${p[0].payload.full} · ${p[0].payload.status}` : '')} />
+                    <Legend formatter={legendLabel} />
                     <Bar dataKey="groen" name="Groen" stackId="s" fill={CHART.groen} stroke="#fff" strokeWidth={2}><LabelList dataKey="groen" fill="#fff" fontSize={11} formatter={countLabel} /></Bar>
                     <Bar dataKey="rood" name="Rood" stackId="s" fill={CHART.rood} stroke="#fff" strokeWidth={2}><LabelList dataKey="rood" fill="#fff" fontSize={11} formatter={countLabel} /></Bar>
-                    <Bar dataKey="open" name="Nog niet gemeten" stackId="s" fill={CHART.none} stroke="#fff" strokeWidth={2}><LabelList dataKey="open" fill="#14302f" fontSize={11} formatter={countLabel} /></Bar>
+                    <Bar dataKey="open" name="Nog niet gemeten" stackId="s" fill={CHART.none} stroke="#fff" strokeWidth={2}><LabelList dataKey="open" fill="var(--ink)" fontSize={11} formatter={countLabel} /></Bar>
                   </BarChart>
                 </ResponsiveContainer>
                 <ul className="goal-status-list">
@@ -181,12 +182,12 @@ export default function TestDashboard() {
           {data.trend.every((d) => d.pct === null) ? <ChartEmpty>Nog geen beoordeelde metingen.</ChartEmpty> : (
             <ResponsiveContainer width="100%" height={260}>
               <BarChart data={data.trend} margin={{ top: 20, right: 10, left: -20, bottom: 0 }}>
-                <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#e6eeee" />
+                <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="var(--chart-grid)" />
                 <XAxis dataKey="name" fontSize={12} tickLine={false} />
                 <YAxis domain={[0, 100]} unit="%" fontSize={12} tickLine={false} />
-                <Tooltip cursor={{ fill: 'rgba(0,128,125,0.06)' }} formatter={(v, _, p) => [v === null ? 'geen metingen' : `${v}% (${p.payload.groen} van ${p.payload.total} groen)`, 'Groen']} />
+                <Tooltip cursor={{ fill: 'var(--chart-hover)' }} formatter={(v, _, p) => [v === null ? 'geen metingen' : `${v}% (${p.payload.groen} van ${p.payload.total} groen)`, 'Groen']} />
                 <Bar dataKey="pct" name="Groen" fill={CHART.accent} radius={[4, 4, 0, 0]} maxBarSize={56}>
-                  <LabelList dataKey="pct" position="top" fontSize={12} fill="#14302f" formatter={(v) => (v === null ? '' : `${v}%`)} />
+                  <LabelList dataKey="pct" position="top" fontSize={12} fill="var(--ink)" formatter={(v) => (v === null ? '' : `${v}%`)} />
                 </Bar>
               </BarChart>
             </ResponsiveContainer>
@@ -198,14 +199,14 @@ export default function TestDashboard() {
           {data.perCategory.length === 0 ? <ChartEmpty>Nog geen meetpunten.</ChartEmpty> : (
             <ResponsiveContainer width="100%" height={Math.max(180, data.perCategory.length * 50 + 60)}>
               <BarChart data={data.perCategory} layout="vertical" margin={{ top: 5, right: 20, left: 0, bottom: 0 }} barCategoryGap={12}>
-                <CartesianGrid strokeDasharray="3 3" horizontal={false} stroke="#e6eeee" />
+                <CartesianGrid strokeDasharray="3 3" horizontal={false} stroke="var(--chart-grid)" />
                 <XAxis type="number" allowDecimals={false} fontSize={12} tickLine={false} />
                 <YAxis type="category" dataKey="name" width={90} fontSize={12} tickLine={false} />
-                <Tooltip cursor={{ fill: 'rgba(0,128,125,0.06)' }} />
-                <Legend />
+                <Tooltip cursor={{ fill: 'var(--chart-hover)' }} />
+                <Legend formatter={legendLabel} />
                 <Bar dataKey="groen" name="Groen" stackId="s" fill={CHART.groen} stroke="#fff" strokeWidth={2}><LabelList dataKey="groen" fill="#fff" fontSize={11} formatter={countLabel} /></Bar>
                 <Bar dataKey="rood" name="Rood" stackId="s" fill={CHART.rood} stroke="#fff" strokeWidth={2}><LabelList dataKey="rood" fill="#fff" fontSize={11} formatter={countLabel} /></Bar>
-                <Bar dataKey="open" name="Nog niet gemeten" stackId="s" fill={CHART.none} stroke="#fff" strokeWidth={2}><LabelList dataKey="open" fill="#14302f" fontSize={11} formatter={countLabel} /></Bar>
+                <Bar dataKey="open" name="Nog niet gemeten" stackId="s" fill={CHART.none} stroke="#fff" strokeWidth={2}><LabelList dataKey="open" fill="var(--ink)" fontSize={11} formatter={countLabel} /></Bar>
               </BarChart>
             </ResponsiveContainer>
           )}

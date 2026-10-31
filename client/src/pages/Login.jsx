@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { errMsg } from '../api/axios';
 import { ErrorBanner } from '../components/Bits';
+import { themeOf, storedTheme } from '../utils/themes';
 
 export default function Login() {
   const [email, setEmail] = useState('');
@@ -26,6 +27,7 @@ export default function Login() {
   return (
     <div className="login-screen">
       <div className="login-card">
+        <img className="brand-logo" src={themeOf(storedTheme()).logo} alt={themeOf(storedTheme()).label} />
         <h1>IKZ Datatool</h1>
         <p className="muted">Meld je aan om de operationele doelen, meetpunten en acties van je school op te volgen.</p>
         <ErrorBanner message={error} />

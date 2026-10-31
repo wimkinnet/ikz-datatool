@@ -14,7 +14,7 @@ export const GOAL_STATUS = {
 
 // Chart colours (validated: chroma floor and CVD separation pass; red/green always ship with labels + legend).
 // For the month chart the stack order groen, ingevuld, rood, achterstallig, open keeps red and green apart.
-export const CHART = { groen: '#23875a', aandacht: '#b8892b', rood: '#b3432b', none: '#c3cdcd', accent: '#009089', ingevuld: '#2f6fb0' };
+export const CHART = { groen: '#23875a', aandacht: '#b8892b', rood: '#b3432b', none: '#c3cdcd', accent: 'var(--chart-accent)', ingevuld: '#2f6fb0' };
 
 // Index (0 = september … 11 = augustus) of today's month
 export const todayMonthIdx = () => (new Date().getMonth() + 4) % 12;

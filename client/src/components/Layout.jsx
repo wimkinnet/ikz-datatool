@@ -3,19 +3,24 @@ import { useAuth } from '../context/AuthContext';
 import { useApp } from '../context/AppContext';
 import { yearOptions } from '../utils/constants';
 import { SchoolSwitcher } from './SchoolPicker';
+import api from '../api/axios';
+import { THEMES, themeOf } from '../utils/themes';
 
 const link = ({ isActive }) => 'nav-link' + (isActive ? ' active' : '');
 
 export default function Layout() {
-  const { user, logout } = useAuth();
+  const { user, logout, updateUser } = useAuth();
   const { schools, school, schoolId, setSchoolId, year, setYear, ready } = useApp();
   const navigate = useNavigate();
   const isStaff = user.role !== 'client';
+  const theme = themeOf(user.theme);
+  const chooseTheme = (key) => api.put('/auth/me', { theme: key }).then(({ data }) => updateUser(data.user)).catch(() => {});
 
   return (
     <div className="app-shell">
       <aside className="sidebar">
         <div className="brand">
+          <img className="brand-logo" src={theme.logo} alt={theme.label} />
           IKZ Datatool
           <span>Interne kwaliteitszorg</span>
         </div>
@@ -49,6 +54,13 @@ export default function Layout() {
             {user.name}
             <small>{user.role === 'admin' ? 'Admin' : user.role === 'consultant' ? 'Consultant' : 'School'}</small>
           </div>
+          {user.role === 'admin' && (
+            <label className="theme-pick">Stijl
+              <select value={theme.key} onChange={(e) => chooseTheme(e.target.value)}>
+                {THEMES.map((t) => <option key={t.key} value={t.key}>{t.label}</option>)}
+              </select>
+            </label>
+          )}
           <button className="logout-btn" onClick={() => navigate('/profiel')}>Mijn profiel</button>
           <button className="logout-btn" onClick={() => { logout(); navigate('/login'); }}>Afmelden</button>
         </div>

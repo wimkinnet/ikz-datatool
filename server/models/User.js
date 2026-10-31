@@ -1,5 +1,6 @@
 const mongoose = require('mongoose');
 const bcrypt = require('bcryptjs');
+const { THEMES } = require('../utils/constants');
 
 const userSchema = new mongoose.Schema(
   {
@@ -11,6 +12,7 @@ const userSchema = new mongoose.Schema(
     school: { type: mongoose.Schema.Types.ObjectId, ref: 'School', default: null }, // legacy: single school of older school accounts
     schools: [{ type: mongoose.Schema.Types.ObjectId, ref: 'School' }], // role=consultant or client: the schools they may access
     active: { type: Boolean, default: true },
+    theme: { type: String, enum: THEMES, default: 'bespreek' }, // which house style this user sees
     phone: { type: String, trim: true },
   },
   { timestamps: true }
@@ -35,6 +37,7 @@ userSchema.methods.toSafeObject = function () {
     // older school accounts only have `school`; expose everything as one list
     schools: this.role === 'client' && this.school && !this.schools.some((s) => String(s) === String(this.school)) ? [this.school, ...this.schools] : this.schools,
     active: this.active,
+    theme: this.theme,
     phone: this.phone,
     createdAt: this.createdAt,
   };

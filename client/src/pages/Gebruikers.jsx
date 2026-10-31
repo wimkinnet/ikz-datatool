@@ -7,6 +7,7 @@ import { useConfirm } from '../components/Confirm';
 import { SchoolMultiSelect } from '../components/SchoolPicker';
 import { ErrorBanner } from '../components/Bits';
 import { ROLE_LABELS } from '../utils/constants';
+import { THEMES, themeOf } from '../utils/themes';
 
 const EMPTY = { name: '', email: '', password: '', phone: '', role: 'client', schools: [], active: true };
 
@@ -32,7 +33,7 @@ export default function Gebruikers() {
     if (edit.role === 'client' && !edit.schools.length) { setBusy(false); setError('Vink minstens één school aan.'); return; }
     try {
       if (edit.id) {
-        const body = { name: edit.name, phone: edit.phone, active: edit.active };
+        const body = { name: edit.name, phone: edit.phone, active: edit.active, theme: edit.theme };
         if (edit.password) body.password = edit.password;
         if (isAdmin) Object.assign(body, { role: edit.role, schools: edit.schools });
         await api.put(`/users/${edit.id}`, body);
@@ -64,12 +65,12 @@ export default function Gebruikers() {
           <h1>Gebruikers</h1>
           <p>{isAdmin ? 'Beheer admins, consultants en schoolaccounts.' : 'Nodig gebruikers van je scholen uit voor het klantenportaal.'}</p>
         </div>
-        <button className="btn btn-primary" onClick={() => { setError(''); setEdit({ ...EMPTY, schools: schools.length === 1 ? [schools[0]._id] : [] }); }}>+ Nieuwe gebruiker</button>
+        <button className="btn btn-primary" onClick={() => { setError(''); setEdit({ ...EMPTY, theme: me.theme || THEMES[0].key, schools: schools.length === 1 ? [schools[0]._id] : [] }); }}>+ Nieuwe gebruiker</button>
       </div>
       <ErrorBanner message={error && !edit ? error : ''} />
       <div className="table-wrap">
         <table>
-          <thead><tr><th>Naam</th><th>E-mail</th><th>Rol</th><th>School(en)</th><th>Status</th><th></th></tr></thead>
+          <thead><tr><th>Naam</th><th>E-mail</th><th>Rol</th><th>School(en)</th><th>Stijl</th><th>Status</th><th></th></tr></thead>
           <tbody>
             {users.map((u) => (
               <tr key={u.id}>
@@ -77,6 +78,7 @@ export default function Gebruikers() {
                 <td>{u.email}</td>
                 <td><span className="role-tag">{ROLE_LABELS[u.role]}</span></td>
                 <td>{u.role === 'admin' ? 'Alle' : (u.schools.map(schoolName).join(', ') || 'Geen')}</td>
+                <td>{themeOf(u.theme).label}</td>
                 <td>{u.active ? <span className="badge status-active">Actief</span> : <span className="badge status-inactive">Gedeactiveerd</span>}</td>
                 <td style={{ textAlign: 'right' }}><button className="btn btn-sm" onClick={() => { setError(''); setEdit({ ...EMPTY, ...u, password: '' }); }}>Bewerken</button></td>
               </tr>
@@ -111,6 +113,17 @@ export default function Gebruikers() {
                 {edit.role === 'client' && <div className="hint">Dit account ziet enkel de gegevens van de aangevinkte scholen.</div>}
               </div>
             )}
+            <div className="field"><label>Stijl van de tool</label>
+              <div className="theme-options">
+                {THEMES.map((t) => (
+                  <label key={t.key} className={`theme-option ${edit.theme === t.key ? 'picked' : ''}`}>
+                    <input type="radio" name="theme" checked={edit.theme === t.key} onChange={() => setEdit({ ...edit, theme: t.key })} />
+                    <img src={t.logo} alt="" /> {t.label}
+                  </label>
+                ))}
+              </div>
+              <div className="hint">Deze gebruiker ziet de tool in deze huisstijl.</div>
+            </div>
             {edit.id && (
               <label className="checkbox-row" style={{ marginBottom: 16 }}>
                 <input type="checkbox" checked={edit.active} onChange={(e) => setEdit({ ...edit, active: e.target.checked })} /> Account is actief
