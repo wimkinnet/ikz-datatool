@@ -2,6 +2,7 @@ import { useState } from 'react';
 import api, { errMsg } from '../api/axios';
 import { useAuth } from '../context/AuthContext';
 import { ErrorBanner } from '../components/Bits';
+import { THEMES, themeOf } from '../utils/themes';
 
 export default function Profiel() {
   const { user, updateUser } = useAuth();
@@ -24,6 +25,15 @@ export default function Profiel() {
     } catch (err) { setError(errMsg(err, 'Opslaan mislukt.')); }
   }
 
+  // Admins choose their own house style; it applies right away, separately from the form below
+  async function chooseTheme(key) {
+    setMsg(''); setError('');
+    try {
+      const { data } = await api.put('/auth/me', { theme: key });
+      updateUser(data.user);
+    } catch (err) { setError(errMsg(err, 'Stijl wijzigen mislukt.')); }
+  }
+
   return (
     <div style={{ maxWidth: 520 }}>
       <div className="page-header"><div><h1>Mijn profiel</h1><p>{user.email}</p></div></div>
@@ -39,6 +49,20 @@ export default function Profiel() {
           <button className="btn btn-primary" type="submit">Opslaan</button>
         </form>
       </div>
+      {user.role === 'admin' && (
+        <div className="card">
+          <div className="field" style={{ marginBottom: 0 }}><label>Stijl van de tool</label>
+            <div className="theme-options">
+              {THEMES.map((t) => (
+                <label key={t.key} className={`theme-option ${themeOf(user.theme).key === t.key ? 'picked' : ''}`}>
+                  <input type="radio" name="theme" checked={themeOf(user.theme).key === t.key} onChange={() => chooseTheme(t.key)} />
+                  <img src={t.logo} alt="" /> {t.label}
+                </label>
+              ))}
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

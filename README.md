@@ -50,16 +50,16 @@ Access is enforced on the server for every route, also for changes by id (`middl
 
 ## House styles
 
-The tool comes in two looks, **Bespreek** (bespreek.be) and **Catalista** (catalista.be), per user (`User.theme`):
+The tool comes in two looks, **bespreek** (bespreek.be) and **Catalista** (catalista.be), per user (`User.theme`):
 
 - Whoever creates or edits a user picks the style in the user form (*Gebruikers*). Without a choice a new user gets
-  the style of the person who created them; existing users are on Bespreek until someone changes them.
-- Admins can also switch their own style with the *Stijl* select at the bottom of the sidebar. Other users cannot.
-- The login page, shown before we know who is logging in, uses the style last used on that device (default Bespreek).
+  the style of the person who created them; existing users are on bespreek until someone changes them.
+- Admins can also switch their own style under *Mijn profiel*. Other users cannot.
+- The login page, shown before we know who is logging in, uses the style last used on that device (default bespreek).
 
-Colours and fonts are CSS variables: `:root` is Bespreek, `:root[data-theme='catalista']` overrides them
+Colours and fonts are CSS variables: `:root` is bespreek, `:root[data-theme='catalista']` overrides them
 (`client/src/index.css`); logos are in `client/public/brand/`, the list of styles in `client/src/utils/themes.js`.
-Values were read from the live websites. Futura (Bespreek) is a paid font, so headings use the free look-alike Jost;
+Values were read from the live websites. Futura (bespreek) is a paid font, so headings use the free look-alike Jost;
 Helvetica falls back to Arial where it isn't installed. Green, amber and red keep their meaning in both styles.
 
 ## Local setup

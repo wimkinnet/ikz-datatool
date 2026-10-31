@@ -1018,10 +1018,7 @@ td.late { color: var(--st-actie); font-weight: 600; }
 .rok-item-body p { margin: 0 0 10px; max-width: 900px; }
 .rok-goals ul { margin: 4px 0 0; padding-left: 18px; display: grid; gap: 3px; }
 
-/* House-style choice: sidebar select (admins) and the option cards in the user form */
-.theme-pick { display: block; padding: 0 8px 8px; font-size: 12px; color: var(--sidebar-muted); }
-.theme-pick select { display: block; width: 100%; margin-top: 3px; padding: 5px 6px; border: 0; border-radius: var(--radius); background: rgba(255, 255, 255, 0.14); color: var(--sidebar-text-strong); font-size: 13px; }
-.theme-pick option { color: #000; }
+/* House-style choice: the option cards in the user form and on the profile page */
 .theme-options { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
 .field .theme-option { display: flex; margin: 0; font-weight: 400; align-items: center; gap: 8px; padding: 8px 10px; border: 1px solid var(--border); border-radius: var(--radius); cursor: pointer; font-size: 13.5px; }
 .field .theme-option input { width: auto; flex: none; padding: 0; }

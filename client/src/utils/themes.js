@@ -1,7 +1,7 @@
 // The two house styles of the tool. Colours and fonts live in index.css (:root and :root[data-theme=…]);
 // the server stores which one a user sees (User.theme).
 export const THEMES = [
-  { key: 'bespreek', label: 'Bespreek', logo: '/brand/bespreek.png', barColor: '#034242' },
+  { key: 'bespreek', label: 'bespreek', logo: '/brand/bespreek.png', barColor: '#034242' },
   { key: 'catalista', label: 'Catalista', logo: '/brand/catalista.png', barColor: '#3f587e' },
 ];
 export const DEFAULT_THEME = 'bespreek';
