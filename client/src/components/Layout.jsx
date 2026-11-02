@@ -27,10 +27,10 @@ export default function Layout() {
           <NavLink to="/" end className={link}>Dashboard</NavLink>
           <NavLink to="/signalen" className={link}>Signalen</NavLink>
           <NavLink to="/strategische-doelen" className={link}>Strategische doelen</NavLink>
+          <NavLink to="/rok" className={link}>ROK</NavLink>
           <NavLink to="/doelen" className={link}>Operationele doelen</NavLink>
           <NavLink to="/acties" className={link}>Acties</NavLink>
           <NavLink to="/kalender" className={link}>Kalender</NavLink>
-          <NavLink to="/rok" className={link}>ROK</NavLink>
           <NavLink to="/documenten" className={link}>Documenten</NavLink>
 
           {isStaff && (

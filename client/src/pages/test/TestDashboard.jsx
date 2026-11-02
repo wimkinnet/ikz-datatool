@@ -6,11 +6,12 @@ import { NoSchool, ErrorBanner, ChartEmpty } from '../../components/Bits';
 import { useTest } from '../../test/useTest';
 import { GoalStatus, IndicatorModal, formatValue } from '../../test/TestBits';
 import { assessGoal, CHART, GOAL_STATUS, goalDomains, monthPhase, tally } from '../../test/assess';
-import { FIRST_GOAL_YEAR, PLAN_MONTHS, TEST_ACTION_STATUSES, TEST_CATEGORIES, yearsBetween } from '../../utils/constants';
+import { FIRST_GOAL_YEAR, PLAN_MONTHS, TEST_ACTION_STATUSES, TEST_CATEGORIES } from '../../utils/constants';
 import { formatDate } from '../../utils/format';
 
 const today = () => new Date().toISOString().slice(0, 10);
-const short = (s, n = 34) => (s.length > n ? `${s.slice(0, n - 1)}…` : s);
+// Room for the longest label of a horizontal chart, so names are shown in full
+const labelWidth = (rows) => Math.min(460, Math.max(...rows.map((r) => String(r.name).length), 10) * 6.6 + 16);
 // Hide a segment label when the segment is empty (Recharts still renders "0")
 const countLabel = (v) => (v ? v : '');
 const legendLabel = (value) => <span className="chart-legend-label">{value}</span>;
@@ -35,7 +36,14 @@ const stackBars = (series) => series.map((sr) => (
   </Bar>
 ));
 
-// One stacked column per month of the school year
+// One stacked column per month of the school year; the tooltip shows how a month is made up
+const monthTooltip = (_, p) => {
+  const r = p?.[0]?.payload;
+  if (!r) return '';
+  const parts = [r.indicators && `${r.indicators} indicator${r.indicators === 1 ? '' : 'en'}`, r.actionPoints && `${r.actionPoints} meetpunt${r.actionPoints === 1 ? '' : 'en'} bij acties`].filter(Boolean);
+  return `${r.full}${r.phase === 'now' ? ' (deze maand)' : ''}${parts.length ? `: ${parts.join(' en ')}` : ''}`;
+};
+
 function MonthChart({ rows, series }) {
   return (
     <ResponsiveContainer width="100%" height={260}>
@@ -43,7 +51,7 @@ function MonthChart({ rows, series }) {
         <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="var(--chart-grid)" />
         <XAxis dataKey="name" fontSize={12} tickLine={false} interval={0} />
         <YAxis allowDecimals={false} fontSize={12} tickLine={false} />
-        <Tooltip cursor={{ fill: 'var(--chart-hover)' }} labelFormatter={(_, p) => (p?.[0] ? `${p[0].payload.full}${p[0].payload.phase === 'now' ? ' (deze maand)' : ''}` : '')} />
+        <Tooltip cursor={{ fill: 'var(--chart-hover)' }} labelFormatter={monthTooltip} />
         <Legend formatter={legendLabel} />
         {stackBars(series)}
       </BarChart>
@@ -61,19 +69,12 @@ export default function TestDashboard() {
   const data = useMemo(() => {
     const goals = t.goals.map((g) => ({ g, a: assessGoal(g, t) }));
     const goalStatusCount = Object.fromEntries(Object.keys(GOAL_STATUS).map((k) => [k, goals.filter((x) => x.a.key === k).length]));
-    const goalBars = goals.map(({ g, a }) => ({ name: short(g.title), full: g.title, groen: a.groen, zonder: a.zonder, rood: a.rood, status: a.label }));
+    const goalBars = goals.map(({ g, a }) => ({ name: g.title, full: g.title, groen: a.groen, zonder: a.zonder, rood: a.rood, status: a.label }));
 
-    // Invulstatus covers everything to measure this year; the result KPI is about the goals, so about their indicators
-    const all = tally(t.yearMeetpunten, year);
+    // Goal success comes from the indicators, action success from the meetpunten of the actions
     const indicators = t.yearMeetpunten.filter((m) => m.kind === 'indicator');
     const ind = tally(indicators, year);
-
-    const lastYear = year > FIRST_GOAL_YEAR ? year : FIRST_GOAL_YEAR;
-    const trend = yearsBetween(FIRST_GOAL_YEAR, lastYear).map((y) => {
-      const n = tally(t.meetpunten.filter((m) => m.kind === 'indicator' && t.goalById[m.goal]?.schoolYear === y), y);
-      const assessed = n.groen + n.rood;
-      return { name: y, pct: assessed ? Math.round((n.groen / assessed) * 100) : null, groen: n.groen, total: assessed };
-    });
+    const act = tally(t.yearMeetpunten.filter((m) => m.kind === 'actie'), year);
 
     // A goal's indicators count in the category of each domein its signals are based on
     const perCategory = TEST_CATEGORIES.map((c) => {
@@ -82,7 +83,16 @@ export default function TestDashboard() {
       return { ...n, name: `${c.label} (${n.done}/${n.total})`, full: c.label };
     }).filter((c) => c.total > 0);
 
+    // A goal's indicators count in each ROK-domein its ROK expectations belong to
+    const rokDomains = [...new Set(t.rok.map((r) => r.domain))];
+    const perRok = rokDomains.map((domain) => {
+      const inDomain = goals.filter(({ g }) => (g.rok || []).some((code) => t.rokByCode[code]?.domain === domain));
+      const n = tally(inDomain.flatMap(({ g }) => t.indicatorsOf(g._id)), year);
+      return { ...n, name: `${domain} (${n.done}/${n.total})`, full: domain };
+    }).filter((c) => c.total > 0);
+
     const openActions = t.yearActions.filter((a) => a.status !== 'uitgevoerd');
+    const actionTotal = t.yearActions.length;
     const late = openActions.filter((a) => a.dueDate && a.dueDate.slice(0, 10) < today());
     const actionStatus = TEST_ACTION_STATUSES.map((s) => ({ name: s.label, count: t.yearActions.filter((a) => a.status === s.key).length }));
     // Indicators below level whose goal has no action in progress or still to do
@@ -90,17 +100,19 @@ export default function TestDashboard() {
 
     // Everything to measure, per month of the active school year
     const perMonth = PLAN_MONTHS.map((mo, idx) => {
-      const n = tally(t.yearMeetpunten.filter((x) => x.month === mo.key), year);
-      return { ...n, todo: n.now + n.planned, name: MONTH_SHORT[idx], full: mo.label, phase: monthPhase(year, idx) };
+      const list = t.yearMeetpunten.filter((x) => x.month === mo.key);
+      const n = tally(list, year);
+      const indicators = list.filter((x) => x.kind === 'indicator').length;
+      return { ...n, indicators, actionPoints: list.length - indicators, todo: n.now + n.planned, name: MONTH_SHORT[idx], full: mo.label, phase: monthPhase(year, idx) };
     });
 
-    return { perMonth, goals, goalStatusCount, goalBars, all, ind, trend, perCategory, openActions, late, actionStatus, belowWithoutAction };
+    return { perMonth, goals, goalStatusCount, goalBars, ind, act, perCategory, perRok, actionTotal, late, actionStatus, belowWithoutAction };
   }, [t, year]);
 
   if (!t.schoolId) return <NoSchool />;
-  const { all, ind } = data;
-  const measured = ind.groen + ind.rood;
-  const pctGroen = measured ? Math.round((ind.groen / measured) * 100) : null;
+  const { ind, act } = data;
+  const pct = (n) => (n.groen + n.rood ? `${Math.round((n.groen / (n.groen + n.rood)) * 100)}%` : '—');
+  const resultLine = (n, none) => (n.total === 0 ? none : `${n.groen} op niveau · ${n.rood} onder niveau · ${n.total - n.groen - n.rood} nog zonder resultaat`);
 
   return (
     <div>
@@ -117,45 +129,33 @@ export default function TestDashboard() {
           <div className="label">Operationele doelen</div>
           <div className="value">{year < FIRST_GOAL_YEAR ? '—' : data.goals.length}</div>
           {data.goals.length > 0 && (
-            <div className="stat-sub">{data.goalStatusCount.ok} op koers · {data.goalStatusCount.aandacht} aandacht · {data.goalStatusCount.niet} niet op koers</div>
+            <div className="stat-sub">{data.goalStatusCount.ok} op koers · {data.goalStatusCount.aandacht} aandacht · {data.goalStatusCount.niet} niet op koers · {data.goalStatusCount.onbekend + data.goalStatusCount.geen} nog geen resultaat</div>
           )}
         </div>
-        <Link to="/kalender" className="stat stat-link">
-          <div className="label">Ingevuld</div>
-          <div className="value">{all.done}<small> / {all.total}</small></div>
+        <div className="stat">
+          <div className="label">Indicatoren bij operationele doelen op niveau</div>
+          <div className="value st-ok">{pct(ind)}</div>
+          <div className="stat-sub">{resultLine(ind, 'nog geen indicatoren')}</div>
+        </div>
+        <Link to="/acties" className="stat stat-link">
+          <div className="label">Acties</div>
+          <div className="value">{data.actionTotal}</div>
           <div className="stat-sub">
-            {all.total === 0 ? 'nog niets te meten' : <><span className={all.late ? 'st-actie' : ''}>{all.late} te laat</span> · {all.now} deze maand</>}
+            {data.actionStatus.map((x) => `${x.count} ${x.name.toLowerCase()}`).join(' · ')}
+            {data.late.length > 0 && <div className="st-actie">{data.late.length} te laat</div>}
           </div>
         </Link>
         <div className="stat">
-          <div className="label">Indicatoren op niveau</div>
-          <div className="value st-ok">{pctGroen === null ? '—' : `${pctGroen}%`}</div>
-          <div className="stat-sub">{ind.groen} op niveau · {ind.rood} onder niveau{ind.zonder > 0 && ` · ${ind.zonder} zonder beoordeling`}</div>
+          <div className="label">Meetpunten bij acties op niveau</div>
+          <div className="value st-ok">{pct(act)}</div>
+          <div className="stat-sub">{resultLine(act, 'nog geen meetpunten bij acties')}</div>
         </div>
-        <Link to="/acties" className="stat stat-link">
-          <div className="label">Acties nog niet uitgevoerd</div>
-          <div className="value">{data.openActions.length}</div>
-          <div className={`stat-sub ${data.late.length ? 'st-actie' : ''}`}>{data.late.length} te laat</div>
-        </Link>
       </div>
 
       <div className="chart-grid">
-        <div className="chart-card">
-          <h3>Invulstatus per maand ({year})</h3>
-          {data.perMonth.every((r) => !r.total) ? <ChartEmpty>Nog niets te meten in {year}.</ChartEmpty> : (
-            <>
-              <MonthChart rows={data.perMonth} series={FILL_SERIES} />
-            </>
-          )}
-        </div>
-
-        <div className="chart-card">
-          <h3>Resultaat per maand ({year})</h3>
-          {data.perMonth.every((r) => !r.done) ? <ChartEmpty>Nog niets ingevuld in {year}.</ChartEmpty> : <MonthChart rows={data.perMonth} series={RESULT_SERIES} />}
-        </div>
-
-        <div className="chart-card">
+        <div className="chart-card chart-wide">
           <h3>Inschatting per operationeel doel</h3>
+          <p className="muted chart-note">Op basis van de indicatoren met een resultaat: minstens 75 % op niveau is <strong>op koers</strong>, 50 tot 75 % is <strong>aandacht</strong>, minder is <strong>niet op koers</strong>. Zonder resultaat is er nog geen inschatting.</p>
           {year < FIRST_GOAL_YEAR ? <ChartEmpty>Operationele doelen starten in {FIRST_GOAL_YEAR}.</ChartEmpty>
             : data.goalBars.length === 0 ? <ChartEmpty>Nog geen operationele doelen voor {year}.</ChartEmpty> : (
               <>
@@ -164,7 +164,7 @@ export default function TestDashboard() {
                     <BarChart data={data.goalBars} layout="vertical" margin={{ top: 5, right: 20, left: 0, bottom: 0 }} barCategoryGap={10}>
                       <CartesianGrid strokeDasharray="3 3" horizontal={false} stroke="var(--chart-grid)" />
                       <XAxis type="number" allowDecimals={false} fontSize={12} tickLine={false} />
-                      <YAxis type="category" dataKey="name" width={190} fontSize={12} tickLine={false} />
+                      <YAxis type="category" dataKey="name" width={labelWidth(data.goalBars)} fontSize={12} tickLine={false} />
                       <Tooltip cursor={{ fill: 'var(--chart-hover)' }} labelFormatter={(_, p) => (p?.[0] ? `${p[0].payload.full} · ${p[0].payload.status}` : '')} />
                       <Legend formatter={legendLabel} />
                       {stackBars(RESULT_SERIES)}
@@ -178,24 +178,7 @@ export default function TestDashboard() {
             )}
         </div>
 
-        <div className="chart-card">
-          <h3>Indicatoren op niveau per schooljaar</h3>
-          {data.trend.every((d) => d.pct === null) ? <ChartEmpty>Nog geen indicatoren met een resultaat.</ChartEmpty> : (
-            <ResponsiveContainer width="100%" height={260}>
-              <BarChart data={data.trend} margin={{ top: 20, right: 10, left: -20, bottom: 0 }}>
-                <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="var(--chart-grid)" />
-                <XAxis dataKey="name" fontSize={12} tickLine={false} />
-                <YAxis domain={[0, 100]} unit="%" fontSize={12} tickLine={false} />
-                <Tooltip cursor={{ fill: 'var(--chart-hover)' }} formatter={(v, _, p) => [v === null ? 'geen metingen' : `${v}% (${p.payload.groen} van ${p.payload.total} op niveau)`, 'Op niveau']} />
-                <Bar dataKey="pct" name="Op niveau" fill={CHART.accent} radius={[4, 4, 0, 0]} maxBarSize={56}>
-                  <LabelList dataKey="pct" position="top" fontSize={12} fill="var(--ink)" formatter={(v) => (v === null ? '' : `${v}%`)} />
-                </Bar>
-              </BarChart>
-            </ResponsiveContainer>
-          )}
-        </div>
-
-        <div className="chart-card">
+        <div className="chart-card chart-wide">
           <h3>Indicatoren per categorie ({year})</h3>
           {data.perCategory.every((c) => !c.done) ? <ChartEmpty>Nog geen ingevulde indicatoren bij doelen met een signaal in {year}.</ChartEmpty> : (
             <>
@@ -203,7 +186,7 @@ export default function TestDashboard() {
                 <BarChart data={data.perCategory} layout="vertical" margin={{ top: 5, right: 20, left: 0, bottom: 0 }} barCategoryGap={12}>
                   <CartesianGrid strokeDasharray="3 3" horizontal={false} stroke="var(--chart-grid)" />
                   <XAxis type="number" allowDecimals={false} fontSize={12} tickLine={false} />
-                  <YAxis type="category" dataKey="name" width={110} fontSize={12} tickLine={false} />
+                  <YAxis type="category" dataKey="name" width={labelWidth(data.perCategory)} fontSize={12} tickLine={false} />
                   <Tooltip cursor={{ fill: 'var(--chart-hover)' }} />
                   <Legend formatter={legendLabel} />
                   {stackBars(RESULT_SERIES)}
@@ -214,7 +197,26 @@ export default function TestDashboard() {
           )}
         </div>
 
-        <div className="chart-card">
+        <div className="chart-card chart-wide">
+          <h3>Indicatoren per ROK-categorie ({year})</h3>
+          {data.perRok.every((c) => !c.done) ? <ChartEmpty>Nog geen ingevulde indicatoren bij doelen met een ROK-koppeling in {year}.</ChartEmpty> : (
+            <>
+              <ResponsiveContainer width="100%" height={Math.max(180, data.perRok.length * 50 + 60)}>
+                <BarChart data={data.perRok} layout="vertical" margin={{ top: 5, right: 20, left: 0, bottom: 0 }} barCategoryGap={12}>
+                  <CartesianGrid strokeDasharray="3 3" horizontal={false} stroke="var(--chart-grid)" />
+                  <XAxis type="number" allowDecimals={false} fontSize={12} tickLine={false} />
+                  <YAxis type="category" dataKey="name" width={labelWidth(data.perRok)} fontSize={12} tickLine={false} />
+                  <Tooltip cursor={{ fill: 'var(--chart-hover)' }} labelFormatter={(_, p) => (p?.[0] ? p[0].payload.full : '')} />
+                  <Legend formatter={legendLabel} />
+                  {stackBars(RESULT_SERIES)}
+                </BarChart>
+              </ResponsiveContainer>
+              <p className="muted" style={{ fontSize: 12.5, marginBottom: 6 }}>De ROK-categorie volgt uit de ROK-koppelingen van het doel. Tussen haakjes: ingevulde / alle indicatoren.</p>
+            </>
+          )}
+        </div>
+
+        <div className="chart-card chart-wide">
           <h3>Acties per status ({year})</h3>
           {data.actionStatus.every((d) => !d.count) ? <ChartEmpty>Nog geen acties in {year}.</ChartEmpty> : (
             <ResponsiveContainer width="100%" height={220}>
@@ -232,6 +234,22 @@ export default function TestDashboard() {
         </div>
 
         <div className="chart-card">
+          <h3>Invulstatus per maand ({year})</h3>
+          <p className="muted chart-note">Indicatoren en meetpunten bij acties samen.</p>
+          {data.perMonth.every((r) => !r.total) ? <ChartEmpty>Nog niets te meten in {year}.</ChartEmpty> : (
+            <>
+              <MonthChart rows={data.perMonth} series={FILL_SERIES} />
+            </>
+          )}
+        </div>
+
+        <div className="chart-card">
+          <h3>Resultaat per maand ({year})</h3>
+          <p className="muted chart-note">Indicatoren en meetpunten bij acties samen, zodra ze ingevuld zijn.</p>
+          {data.perMonth.every((r) => !r.done) ? <ChartEmpty>Nog niets ingevuld in {year}.</ChartEmpty> : <MonthChart rows={data.perMonth} series={RESULT_SERIES} />}
+        </div>
+
+        <div className="chart-card chart-wide">
           <h3>Aandachtspunten</h3>
           <h4 className="dash-sub">Indicatoren onder niveau, zonder actie die nog loopt</h4>
           {data.belowWithoutAction.length === 0 ? <p className="muted">Geen.</p> : (

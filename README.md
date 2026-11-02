@@ -17,9 +17,9 @@ Operationeel doel (per school, per school year, from 2026-2027)
        └─ optional meetpunt → measures the success of the action, at one month: value + resultaat
 ```
 
-Menu: **Dashboard** · **Signalen** · **Strategische doelen** · **Operationele doelen** · **Acties** · **Kalender** · **ROK** · Documenten.
+Menu: **Dashboard** · **Signalen** · **Strategische doelen** · **ROK** · **Operationele doelen** · **Acties** · **Kalender** · Documenten.
 
-- **Dashboard** (start page) — KPIs, invulstatus and resultaat per month (two separate questions: is it filled in, and if so what is the result), the assessment per operational goal, indicators per school year and category, actions per status, indicators below level without a running action, overdue actions.
+- **Dashboard** (start page) — tiles for goals, indicators op niveau, actions not yet carried out and action meetpunten op niveau; the assessment per operational goal, indicators per category and ROK-domein, actions per status, invulstatus and resultaat per month, and indicators below level without a running action plus overdue actions.
 - **Signalen** — defined by consultants and admins (school users read along): title, description, domein, what is measured and its start value. The code is Sign- + the domein's category letter (C, P, R) + a number per school and category; a school's Sign-P1 is unrelated to another school's Sign-P1. Shows the operational goals of every school year that contribute.
 - **Strategische doelen** — Strat-1, Strat-2, … per school, also defined by consultants and admins: title and description.
 - **Operationele doelen** — per school year, with their indicators and actions. A goal links to ROK expectations and, optionally, to signals and strategic goals; its domeinen follow from its signals. Its overall assessment comes from its indicators: ≥ 75% op niveau *op koers*, ≥ 50% *aandacht*, otherwise *niet op koers*; *voorlopig* while not every indicator is assessed (`client/src/test/assess.js`). Deleting a goal deletes its indicators and actions.
