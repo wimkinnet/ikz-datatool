@@ -1059,3 +1059,55 @@ td.late { color: var(--st-actie); font-weight: 600; }
 .kind-tag { display: inline-block; margin-right: 5px; padding: 0 6px; border-radius: 3px; font-size: 10.5px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.03em; background: var(--neutral-tint); color: var(--ink-soft); vertical-align: 1px; }
 
 .chart-note { margin: -4px 0 10px; font-size: 12.5px; }
+
+.new-domain { margin-top: 8px; padding: 10px 12px; background: var(--paper); border-radius: var(--radius); }
+.new-domain .field { margin-bottom: 8px; }
+.new-domain-actions { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; font-size: 12.5px; }
+
+/* Flow: the diagram of the tool, left to right */
+.flow-heads, .flow { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr) minmax(0, 1fr); column-gap: 64px; }
+.flow-heads { margin-bottom: 10px; }
+.flow-heads div { display: flex; flex-direction: column; font-size: 13px; }
+.flow-heads strong { font-family: var(--font-display); font-size: 15px; font-weight: var(--subheading-weight); color: var(--heading-ink); }
+.flow-heads span { color: var(--ink-soft); }
+.flow { position: relative; margin-bottom: 22px; }
+.flow-arrows { position: absolute; inset: 0; pointer-events: none; overflow: visible; }
+.flow-arrow { fill: none; stroke: var(--accent); stroke-width: 2; }
+.flow-arrow-head { fill: var(--accent); }
+.flow-col { display: flex; flex-direction: column; gap: 14px; min-width: 0; }
+.flow-col-center { justify-content: center; }
+.flow-box { display: flex; flex-direction: column; flex: 1; padding: 14px 16px; background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); font-size: 13px; }
+.flow-col-center .flow-box { flex: 0 1 auto; }
+.flow-box header { display: flex; justify-content: space-between; align-items: flex-start; gap: 8px; margin-bottom: 6px; }
+.flow-box h3 { margin: 4px 0 0; }
+.flow-box p { margin: 0 0 8px; }
+.flow-box ul { margin: 0 0 8px; padding-left: 17px; }
+.flow-box li { margin-bottom: 3px; }
+.flow-box dl { display: grid; grid-template-columns: 62px 1fr; gap: 2px 8px; margin: auto 0 8px; padding-top: 8px; border-top: 1px solid var(--border); font-size: 12px; }
+.flow-box dt { color: var(--ink-soft); }
+.flow-box dd { margin: 0; }
+.flow-count { flex: none; min-width: 26px; padding: 1px 8px; border-radius: 100px; background: var(--accent-tint); color: var(--accent-dark); font-weight: 600; text-align: center; }
+.flow-open { font-size: 12.5px; font-weight: 600; }
+.flow-goal { border: 2px solid var(--accent); }
+.flow-indicator { border-left: 4px solid var(--st-ok); }
+.flow-action { border-left: 4px solid var(--st-monitoren); }
+.flow-cats { display: flex; flex-wrap: wrap; gap: 4px 10px; margin: 3px 0; }
+.flow-rule { margin-bottom: 10px; padding: 10px 12px; background: var(--paper); border-radius: var(--radius); }
+.flow-rule strong { display: block; margin-bottom: 6px; }
+.flow-rule-grid { display: grid; grid-template-columns: auto 1fr; gap: 6px 8px; align-items: center; }
+.flow-rule-grid .status-pill { justify-self: start; }
+.flow-rule small { display: block; margin-top: 8px; color: var(--ink-soft); line-height: 1.4; }
+.flow-statuses { display: flex; flex-wrap: wrap; gap: 4px; margin-bottom: 8px; }
+.flow-note { margin: 0; font-size: 12.5px; color: var(--ink-soft); }
+.flow-example { margin-bottom: 22px; }
+.flow-example ol { margin: 8px 0 0; padding-left: 20px; display: grid; gap: 5px; font-size: 13.5px; }
+.flow-example-goal { padding: 4px 8px; margin-left: -8px; background: var(--accent-tint); border-radius: var(--radius); }
+.flow-after > div { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 12px; margin-top: 8px; }
+.flow-tile { display: flex; flex-direction: column; gap: 3px; padding: 12px 14px; background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); color: inherit; text-decoration: none; font-size: 13px; }
+.flow-tile:hover { border-color: var(--accent); }
+.flow-tile span { color: var(--ink-soft); }
+@media (max-width: 1000px) {
+  .flow-heads { display: none; }
+  .flow { grid-template-columns: minmax(0, 1fr); row-gap: 14px; }
+  .flow-arrows { display: none; }
+}

@@ -17,9 +17,10 @@ Operationeel doel (per school, per school year, from 2026-2027)
        └─ optional meetpunt → measures the success of the action, at one month: value + resultaat
 ```
 
-Menu: **Dashboard** · **Signalen** · **Strategische doelen** · **ROK** · **Operationele doelen** · **Acties** · **Kalender** · Documenten.
+Menu: **Flow** · **Dashboard** · **Signalen** · **Strategische doelen** · **ROK** · **Operationele doelen** · **Acties** · **Kalender** · Documenten.
 
-- **Dashboard** (start page) — tiles for goals, indicators op niveau, actions not yet carried out and action meetpunten op niveau; the assessment per operational goal, indicators per category and ROK-domein, actions per status, invulstatus and resultaat per month, and indicators below level without a running action plus overdue actions.
+- **Flow** — a diagram of the tool: signals, strategic goals and the ROK lead to an operational goal, from which indicators and actions follow; with the current counts of the school.
+- **Dashboard** (start page) — tiles for goals, indicators op niveau, actions not yet carried out and action meetpunten op niveau; the assessment per operational goal, indicators per domein and ROK-domein, actions per status, invulstatus and resultaat per month, and indicators below level without a running action plus overdue actions.
 - **Signalen** — defined by consultants and admins (school users read along): title, description, domein, what is measured and its start value. The code is Sign- + the domein's category letter (C, P, R) + a number per school and category; a school's Sign-P1 is unrelated to another school's Sign-P1. Shows the operational goals of every school year that contribute.
 - **Strategische doelen** — Strat-1, Strat-2, … per school, also defined by consultants and admins: title and description.
 - **Operationele doelen** — per school year, with their indicators and actions. A goal links to ROK expectations and, optionally, to signals and strategic goals; its domeinen follow from its signals. Its overall assessment comes from its indicators: ≥ 75% op niveau *op koers*, ≥ 50% *aandacht*, otherwise *niet op koers*; *voorlopig* while not every indicator is assessed (`client/src/test/assess.js`). Deleting a goal deletes its indicators and actions.
@@ -27,7 +28,7 @@ Menu: **Dashboard** · **Signalen** · **Strategische doelen** · **ROK** · **O
 - **Kalender** — per month, the indicators and action meetpunten to measure: done / this month / te laat / planned.
 - **ROK** — every ROK-domein and quality expectation with its explanation, and the school's goals per expectation.
 - **Sjablonen → Domeinen** (admins) — the shared list of domeinen, initially the 19 themes of the former BO year plan.
-  Their category (proces / resultaten / context) was an initial assessment; admins can change it.
+  Their category (proces / resultaten / context) was an initial assessment; admins can change it. Consultants and admins can also add a domein while creating a signal; only admins edit or delete them.
 
 Internally the data still lives under `server/models/test/` and `/api/test` (a domein is stored as `TestResult`),
 because the model started as a "Test" tab next to the former BO and SO parts.

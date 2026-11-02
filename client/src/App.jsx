@@ -10,6 +10,7 @@ import Scholen from './pages/Scholen';
 import Gebruikers from './pages/Gebruikers';
 import Profiel from './pages/Profiel';
 import Rok from './pages/Rok';
+import Flow from './pages/Flow';
 import Dashboard from './pages/test/TestDashboard';
 import Signalen from './pages/test/Signalen';
 import StrategischeDoelen from './pages/test/StrategischeDoelen';
@@ -29,6 +30,7 @@ export default function App() {
             <Route path="/login" element={<Login />} />
             <Route path="/" element={<PrivateRoute><Layout /></PrivateRoute>}>
               <Route index element={<Dashboard />} />
+              <Route path="flow" element={<Flow />} />
               <Route path="signalen" element={<Signalen />} />
               <Route path="strategische-doelen" element={<StrategischeDoelen />} />
               <Route path="rok" element={<Rok />} />

@@ -143,14 +143,34 @@ export function GoalModal({ goal, t, onClose }) {
 }
 
 // ---------------------------------------------------------------- signaal (consultants and admins)
+const NEW_DOMAIN = '__new';
+
 export function SignalModal({ signal, t, onClose }) {
   const confirm = useConfirm();
   const [f, setF] = useState({ title: '', description: '', domain: '', measure: '', valueType: 'percentage', startYear: currentSchoolYear(), ...signal, startValue: signal.startValue ?? '' });
   const [busy, setBusy] = useState(false);
   const set = (k) => (e) => setF({ ...f, [k]: e.target.value });
+  const [newDomain, setNewDomain] = useState(null); // { name, category } while adding a domein
+
+  function chooseDomain(e) {
+    if (e.target.value === NEW_DOMAIN) { t.setError(''); setNewDomain({ name: '', category: '' }); return; }
+    setNewDomain(null);
+    setF({ ...f, domain: e.target.value });
+  }
+
+  async function addDomain() {
+    if (!newDomain.name.trim() || !newDomain.category) { t.setError('Geef het nieuwe domein een naam en een categorie.'); return; }
+    let created;
+    const ok = await t.run(async () => { created = (await api.post('/test/results', newDomain)).data; });
+    if (!ok) return;
+    t.addResult(created);
+    setF((prev) => ({ ...prev, domain: created._id }));
+    setNewDomain(null);
+  }
 
   async function submit(e) {
     e.preventDefault();
+    if (newDomain) { t.setError('Voeg het nieuwe domein eerst toe, of kies een bestaand domein.'); return; }
     setBusy(true);
     const body = { title: f.title, description: f.description, domain: f.domain, measure: f.measure, valueType: f.valueType, startValue: f.startValue, startYear: f.startYear };
     const ok = await t.run(() => (f._id ? api.put(`/test/signals/${f._id}`, body) : api.post('/test/signals', { ...body, school: t.schoolId })));
@@ -174,14 +194,36 @@ export function SignalModal({ signal, t, onClose }) {
         <div className="field"><label>Titel</label><input required value={f.title} onChange={(e) => setF({ ...f, title: e.target.value })} /></div>
         <div className="field"><label>Beschrijving</label><textarea rows={3} value={f.description} onChange={(e) => setF({ ...f, description: e.target.value })} /></div>
         <div className="field"><label>Domein</label>
-          <select required value={f.domain} onChange={set('domain')}>
+          <select required value={newDomain ? NEW_DOMAIN : f.domain} onChange={chooseDomain}>
             <option value="">Kies een domein…</option>
             {TEST_CATEGORIES.map((c) => (
               <optgroup key={c.key} label={c.label}>
                 {t.results.filter((r) => r.category === c.key).map((r) => <option key={r._id} value={r._id}>{r.name}</option>)}
               </optgroup>
             ))}
+            <option value={NEW_DOMAIN}>+ Nieuw domein…</option>
           </select>
+          {newDomain && (
+            <div className="new-domain">
+              <div className="field-row">
+                <div className="field"><label>Naam van het nieuwe domein</label>
+                  <input autoFocus value={newDomain.name} onChange={(e) => setNewDomain({ ...newDomain, name: e.target.value })}
+                    onKeyDown={(e) => { if (e.key === 'Enter') { e.preventDefault(); addDomain(); } }} />
+                </div>
+                <div className="field"><label>Categorie</label>
+                  <select value={newDomain.category} onChange={(e) => setNewDomain({ ...newDomain, category: e.target.value })}>
+                    <option value="">Kies een categorie…</option>
+                    {TEST_CATEGORIES.map((c) => <option key={c.key} value={c.key}>{c.label}</option>)}
+                  </select>
+                </div>
+              </div>
+              <div className="new-domain-actions">
+                <button type="button" className="btn btn-sm" onClick={addDomain}>Domein toevoegen</button>
+                <button type="button" className="link-btn" onClick={() => setNewDomain(null)}>Annuleren</button>
+                <span className="muted">Het domein wordt zichtbaar voor alle scholen.</span>
+              </div>
+            </div>
+          )}
           <div className="hint">De categorie van het domein bepaalt de code: C (context), P (proces) of R (resultaten).{f._id && ' Kies je een domein uit een andere categorie, dan krijgt het signaal een nieuwe code.'}</div>
         </div>
         <div className="field"><label>Wat wordt gemeten?</label><input required value={f.measure} onChange={set('measure')} placeholder="bv. aantal leerlingen met ongewettigde afwezigheid" /></div>

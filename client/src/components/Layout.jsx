@@ -24,6 +24,7 @@ export default function Layout() {
         </div>
 
         <nav>
+          <NavLink to="/flow" className={link}>Flow</NavLink>
           <NavLink to="/" end className={link}>Dashboard</NavLink>
           <NavLink to="/signalen" className={link}>Signalen</NavLink>
           <NavLink to="/strategische-doelen" className={link}>Strategische doelen</NavLink>

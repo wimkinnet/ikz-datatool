@@ -60,6 +60,9 @@ export function useTest() {
   const yearActions = useMemo(() => actions.filter((a) => goalById[a.goal]?.schoolYear === year), [actions, goalById, year]);
   const yearMeetpunten = useMemo(() => meetpunten.filter((m) => goalById[m.goal]?.schoolYear === year), [meetpunten, goalById, year]);
 
+  // A domein added from a form: the shared list is loaded once, so add it here
+  const addResult = useCallback((r) => setResults((prev) => [...prev, r]), []);
+
   // Runs an API call, shows its error and refreshes the school data; returns true when it worked
   const run = useCallback(async (fn) => {
     setError('');
@@ -68,7 +71,7 @@ export function useTest() {
 
   return {
     schoolId, year, loading, error, setError, run, reload,
-    results, resultById, rok, rokByCode, goals, allGoals, goalById, signals, strategic,
+    results, addResult, resultById, rok, rokByCode, goals, allGoals, goalById, signals, strategic,
     meetpunten, actions, indicatorsOf, actionsOf, meetpuntOfAction, yearActions, yearMeetpunten,
   };
 }

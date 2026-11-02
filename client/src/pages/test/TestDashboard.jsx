@@ -76,11 +76,13 @@ export default function TestDashboard() {
     const ind = tally(indicators, year);
     const act = tally(t.yearMeetpunten.filter((m) => m.kind === 'actie'), year);
 
-    // A goal's indicators count in the category of each domein its signals are based on
-    const perCategory = TEST_CATEGORIES.map((c) => {
-      const inCat = goals.filter(({ g }) => goalDomains(g, t.signals).some((id) => t.resultById[id]?.category === c.key));
-      const n = tally(inCat.flatMap(({ g }) => t.indicatorsOf(g._id)), year);
-      return { ...n, name: `${c.label} (${n.done}/${n.total})`, full: c.label };
+    // A goal's domeinen follow from its signals; its indicators count in each of them
+    const domainIds = [...new Set(goals.flatMap(({ g }) => goalDomains(g, t.signals)))];
+    const categoryOrder = (id) => TEST_CATEGORIES.findIndex((c) => c.key === t.resultById[id]?.category);
+    const perDomain = domainIds.filter((id) => t.resultById[id]).sort((a, b) => categoryOrder(a) - categoryOrder(b)).map((id) => {
+      const inDomain = goals.filter(({ g }) => goalDomains(g, t.signals).includes(id));
+      const n = tally(inDomain.flatMap(({ g }) => t.indicatorsOf(g._id)), year);
+      return { ...n, name: `${t.resultById[id].name} (${n.done}/${n.total})`, full: t.resultById[id].name };
     }).filter((c) => c.total > 0);
 
     // A goal's indicators count in each ROK-domein its ROK expectations belong to
@@ -106,7 +108,7 @@ export default function TestDashboard() {
       return { ...n, indicators, actionPoints: list.length - indicators, todo: n.now + n.planned, name: MONTH_SHORT[idx], full: mo.label, phase: monthPhase(year, idx) };
     });
 
-    return { perMonth, goals, goalStatusCount, goalBars, ind, act, perCategory, perRok, actionTotal, late, actionStatus, belowWithoutAction };
+    return { perMonth, goals, goalStatusCount, goalBars, ind, act, perDomain, perRok, actionTotal, late, actionStatus, belowWithoutAction };
   }, [t, year]);
 
   if (!t.schoolId) return <NoSchool />;
@@ -179,20 +181,20 @@ export default function TestDashboard() {
         </div>
 
         <div className="chart-card chart-wide">
-          <h3>Indicatoren per categorie ({year})</h3>
-          {data.perCategory.every((c) => !c.done) ? <ChartEmpty>Nog geen ingevulde indicatoren bij doelen met een signaal in {year}.</ChartEmpty> : (
+          <h3>Indicatoren per domein ({year})</h3>
+          {data.perDomain.every((c) => !c.done) ? <ChartEmpty>Nog geen ingevulde indicatoren bij doelen met een signaal in {year}.</ChartEmpty> : (
             <>
-              <ResponsiveContainer width="100%" height={Math.max(180, data.perCategory.length * 50 + 60)}>
-                <BarChart data={data.perCategory} layout="vertical" margin={{ top: 5, right: 20, left: 0, bottom: 0 }} barCategoryGap={12}>
+              <ResponsiveContainer width="100%" height={Math.max(180, data.perDomain.length * 50 + 60)}>
+                <BarChart data={data.perDomain} layout="vertical" margin={{ top: 5, right: 20, left: 0, bottom: 0 }} barCategoryGap={12}>
                   <CartesianGrid strokeDasharray="3 3" horizontal={false} stroke="var(--chart-grid)" />
                   <XAxis type="number" allowDecimals={false} fontSize={12} tickLine={false} />
-                  <YAxis type="category" dataKey="name" width={labelWidth(data.perCategory)} fontSize={12} tickLine={false} />
+                  <YAxis type="category" dataKey="name" width={labelWidth(data.perDomain)} fontSize={12} tickLine={false} />
                   <Tooltip cursor={{ fill: 'var(--chart-hover)' }} />
                   <Legend formatter={legendLabel} />
                   {stackBars(RESULT_SERIES)}
                 </BarChart>
               </ResponsiveContainer>
-              <p className="muted" style={{ fontSize: 12.5, marginBottom: 6 }}>De categorie volgt uit de signalen van het doel. Tussen haakjes: ingevulde / alle indicatoren.</p>
+              <p className="muted" style={{ fontSize: 12.5, marginBottom: 6 }}>Het domein volgt uit de signalen van het doel; een doel met signalen in meerdere domeinen telt in elk ervan mee. Tussen haakjes: ingevulde / alle indicatoren.</p>
             </>
           )}
         </div>

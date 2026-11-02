@@ -15,7 +15,8 @@ const pick = require('../utils/pick');
 // The quality model: an operationeel doel (per school year, from 2026-2027) has indicatoren and acties; an actie has
 // an optional meetpunt (indicatoren and actiemeetpunten are both TestMeetpunt). A doel can contribute to signalen
 // (each based on a domein, the shared list stored as TestResult) and strategische doelen; consultants and admins
-// maintain those. Everyone works on the schools they have access to (admins: all); only admins maintain the domeinen.
+// maintain those. Everyone works on the schools they have access to (admins: all).
+// Consultants and admins can add domeinen to the shared list; only admins edit or delete them.
 router.use(protect);
 const adminOnly = requireRole('admin');
 
@@ -75,10 +76,16 @@ router.get('/results', async (req, res) => {
   res.json(await TestResult.find(filter).sort({ order: 1, name: 1 }).lean());
 });
 
-router.post('/results', adminOnly, async (req, res) => {
+router.post('/results', requireStaff, async (req, res) => {
   try {
+    const name = String(req.body.name || '').trim();
+    if (!name) throw new Error('Geef het domein een naam.');
+    const duplicate = await TestResult.findOne({ name }).collation({ locale: 'nl', strength: 2 });
+    if (duplicate) {
+      return res.status(409).json({ message: `Het domein "${duplicate.name}" bestaat al${duplicate.active ? '' : ' (inactief)'}.` });
+    }
     const last = await TestResult.findOne().sort({ order: -1 });
-    const body = pick(req.body, ['name', 'category', 'description', 'active']);
+    const body = { ...pick(req.body, ['category', 'description', 'active']), name };
     res.status(201).json(await TestResult.create({ ...body, order: last ? last.order + 1 : 1 }));
   } catch (err) { fail(res, err, 'Kon domein niet aanmaken.'); }
 });
