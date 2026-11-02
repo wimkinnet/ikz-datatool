@@ -60,7 +60,7 @@ export default function Scholen() {
             <tbody>
               {schools.map((s) => (
                 <tr key={s._id}>
-                  <td><strong>{s.name}</strong>{!s.active && <span className="badge status-inactive" style={{ marginLeft: 8 }}>inactief</span>}{s._id === schoolId && <span className="badge" style={{ marginLeft: 8 }}>actief</span>}</td>
+                  <td><strong>{s.name}</strong>{!s.active && <span className="badge status-inactive" style={{ marginLeft: 8 }}>inactief</span>}{s.readOnly && <span className="badge" style={{ marginLeft: 8 }}>voorbeeldschool</span>}{s._id === schoolId && <span className="badge" style={{ marginLeft: 8 }}>actief</span>}</td>
                   <td>{s.city || '—'}</td>
                   <td>{s.contactName || '—'}<div className="muted">{s.contactEmail}</div></td>
                   <td style={{ textAlign: 'right', whiteSpace: 'nowrap' }}>
@@ -92,6 +92,11 @@ export default function Scholen() {
             <label className="checkbox-row" style={{ marginBottom: 16 }}>
               <input type="checkbox" checked={!!edit.active} onChange={set('active')} /> School is actief
             </label>
+            {user.role === 'admin' && (
+              <label className="checkbox-row" style={{ marginBottom: 16 }}>
+                <input type="checkbox" checked={!!edit.readOnly} onChange={set('readOnly')} /> Voorbeeldschool: schoolgebruikers kunnen kijken maar niets wijzigen
+              </label>
+            )}
             <div className="modal-actions">
               <button className="btn btn-primary" type="submit" disabled={busy}>{busy ? 'Bezig…' : 'Opslaan'}</button>
               {edit._id && user.role === 'admin' && <button type="button" className="btn btn-danger" disabled={busy} onClick={remove}>Verwijderen</button>}

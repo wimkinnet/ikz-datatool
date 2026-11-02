@@ -38,7 +38,7 @@ export default function Doelen() {
           <h1>Operationele doelen</h1>
           <p>De operationele doelen van {school?.name} voor {t.year}, met hun indicatoren en acties.</p>
         </div>
-        {!tooEarly && <button className="btn btn-primary" onClick={() => { t.setError(''); setGoal({}); }}>+ Nieuw operationeel doel</button>}
+        {!tooEarly && !t.readOnly && <button className="btn btn-primary" onClick={() => { t.setError(''); setGoal({}); }}>+ Nieuw operationeel doel</button>}
       </div>
       <ErrorBanner message={!goal && !indicator && !action ? t.error : ''} />
       {!tooEarly && t.goals.length > 1 && (
@@ -68,7 +68,7 @@ export default function Doelen() {
                 {a.total > 0 && <span>{a.done} van {a.total} indicatoren ingevuld{a.done > 0 && ` · ${a.groen} op niveau · ${a.rood} onder niveau`}</span>}
                 {goalActions.length > 0 && <span>· {openActions} van {goalActions.length} {goalActions.length === 1 ? 'actie' : 'acties'} nog niet uitgevoerd</span>}
               </span>
-              <button className="btn btn-sm" onClick={() => { t.setError(''); setGoal(g); }}>Bewerken</button>
+              <button className="btn btn-sm" onClick={() => { t.setError(''); setGoal(g); }}>{t.readOnly ? 'Bekijken' : 'Bewerken'}</button>
             </div>
             {open && g.description && <p className="muted">{g.description}</p>}
             {open && (g.rok.length > 0 || g.signals?.length > 0 || g.strategic?.length > 0) && (
@@ -92,7 +92,7 @@ export default function Doelen() {
                   <h3>Indicatoren</h3>
                   <span className="muted" style={{ fontSize: 12.5 }}>meten het succes van dit doel</span>
                   <span className="spacer" />
-                  <button className="link-btn" onClick={() => { t.setError(''); setIndicator({ goal: g }); }}>+ indicator</button>
+                  {!t.readOnly && <button className="link-btn" onClick={() => { t.setError(''); setIndicator({ goal: g }); }}>+ indicator</button>}
                 </div>
                 {indicators.length === 0 ? <p className="muted goal-empty">Nog geen indicatoren.</p> : (
                   <table className="so-table goal-mps">
@@ -118,7 +118,7 @@ export default function Doelen() {
                 <div className="tree-head">
                   <h3>Acties</h3>
                   <span className="spacer" />
-                  <button className="link-btn" onClick={() => { t.setError(''); setAction({ goal: g._id }); }}>+ actie</button>
+                  {!t.readOnly && <button className="link-btn" onClick={() => { t.setError(''); setAction({ goal: g._id }); }}>+ actie</button>}
                 </div>
                 {goalActions.length === 0 ? <p className="muted goal-empty">Nog geen acties.</p> : (
                   <table className="so-table goal-mps">

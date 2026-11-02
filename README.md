@@ -19,10 +19,10 @@ Operationeel doel (per school, per school year, from 2026-2027)
 
 Menu: **Flow** · **Dashboard** · **Signalen** · **Strategische doelen** · **ROK** · **Operationele doelen** · **Acties** · **Kalender** · Documenten.
 
-- **Flow** — a diagram of the tool: signals, strategic goals and the ROK lead to an operational goal, from which indicators and actions follow; with the current counts of the school.
+- **Flow** — a diagram of the tool: signals, strategic goals and the ROK lead to an operational goal, from which indicators and actions follow; with the current counts of the school. School users see a version without who does what; consultants and admins can switch to it.
 - **Dashboard** (start page) — tiles for goals, indicators op niveau, actions not yet carried out and action meetpunten op niveau; the assessment per operational goal, indicators per domein and ROK-domein, actions per status, invulstatus and resultaat per month, and indicators below level without a running action plus overdue actions.
-- **Signalen** — defined by consultants and admins (school users read along): title, description, domein, what is measured and its start value. The code is Sign- + the domein's category letter (C, P, R) + a number per school and category; a school's Sign-P1 is unrelated to another school's Sign-P1. Shows the operational goals of every school year that contribute.
-- **Strategische doelen** — Strat-1, Strat-2, … per school, also defined by consultants and admins: title and description.
+- **Signalen** — title, description, domein, what is measured and its start value. The code is Sign- + the domein's category letter (C, P, R) + a number per school and category; a school's Sign-P1 is unrelated to another school's Sign-P1. Shows the operational goals of every school year that contribute.
+- **Strategische doelen** — Strat-1, Strat-2, … per school: title and description.
 - **Operationele doelen** — per school year, with their indicators and actions. A goal links to ROK expectations and, optionally, to signals and strategic goals; its domeinen follow from its signals. Its overall assessment comes from its indicators: ≥ 75% op niveau *op koers*, ≥ 50% *aandacht*, otherwise *niet op koers*; *voorlopig* while not every indicator is assessed (`client/src/test/assess.js`). Deleting a goal deletes its indicators and actions.
 - **Acties** — all actions of the school year, with status, owner, deadline and optional meetpunt; overdue actions are flagged.
 - **Kalender** — per month, the indicators and action meetpunten to measure: done / this month / te laat / planned.
@@ -38,8 +38,10 @@ because the model started as a "Test" tab next to the former BO and SO parts.
 | Role | Can do |
 |---|---|
 | **admin** | Everything, on every school: schools, users, the list of domeinen |
-| **consultant** | Works in the schools assigned to them: goals, indicators, actions, documents; manages school users of their schools |
-| **client** (school) | Works only in the school(s) linked to their account (switch top left): goals, indicators, actions, documents |
+| **consultant** | Works in the schools assigned to them: signals, strategic goals, goals, indicators, actions, documents; adds domeinen; manages school users of their schools |
+| **client** (school) | Works only in the school(s) linked to their account (switch top left): signals, strategic goals, goals, indicators, actions, documents |
+
+A school can be marked as **voorbeeldschool** (admin, in the school form): school users linked to it can look around, read-only, while consultants and admins work as usual. Give each interested school its own account of role *School* linked to it.
 
 Access is enforced on the server for every route, also for changes by id (`middleware/access.js`, `routes/test.js`).
 

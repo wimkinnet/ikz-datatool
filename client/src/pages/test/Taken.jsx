@@ -48,7 +48,7 @@ export default function Acties() {
           <h1>Acties</h1>
           <p>De acties bij de operationele doelen van {school?.name} in {t.year}. Een actie kan een meetpunt hebben om haar succes te meten.</p>
         </div>
-        {t.goals.length > 0 && <button className="btn btn-primary" onClick={() => { t.setError(''); setEdit({ goal: fGoal }); }}>+ Nieuwe actie</button>}
+        {t.goals.length > 0 && !t.readOnly && <button className="btn btn-primary" onClick={() => { t.setError(''); setEdit({ goal: fGoal }); }}>+ Nieuwe actie</button>}
       </div>
       <ErrorBanner message={!edit ? t.error : ''} />
 
@@ -87,7 +87,7 @@ export default function Acties() {
                 return (
                   <tr key={a._id}>
                     <td style={{ width: 150 }}>
-                      <select className={`status-select task-${a.status}`} value={a.status} onChange={(e) => setStatus(a, e.target.value)} aria-label="Status">
+                      <select className={`status-select task-${a.status}`} value={a.status} disabled={t.readOnly} onChange={(e) => setStatus(a, e.target.value)} aria-label="Status">
                         {TEST_ACTION_STATUSES.map((s) => <option key={s.key} value={s.key}>{s.label}</option>)}
                       </select>
                     </td>

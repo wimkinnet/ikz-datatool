@@ -3,12 +3,16 @@ import api from '../api/axios';
 import Modal from '../components/Modal';
 import { ErrorBanner } from '../components/Bits';
 import { useConfirm } from '../components/Confirm';
+import { useAuth } from '../context/AuthContext';
 import { RESULT_LABEL, rokCode, signalCode, strategicCode } from './assess';
 import {
   PLAN_MONTHS, TEST_CATEGORIES, currentSchoolYear, yearOptions, TEST_VALUE_TYPES, TEST_ACTION_STATUSES, testCategoryLabel,
 } from '../utils/constants';
 
 // ---------------------------------------------------------------- small display helpers
+// In a voorbeeldschool school users only look: dialogs are read-only and say so
+const viewTitle = (t, title) => (t.readOnly ? title.replace(' bewerken', '') : title);
+
 export function Beoordeling({ value, empty = '—' }) {
   if (RESULT_LABEL[value]) return <span className={`verdict ${value}`}>{RESULT_LABEL[value]}</span>;
   return <span className="muted">{empty}</span>;
@@ -119,9 +123,10 @@ export function GoalModal({ goal, t, onClose }) {
   }
 
   return (
-    <Modal title={f._id ? 'Operationeel doel bewerken' : `Nieuw operationeel doel (${t.year})`} onClose={onClose} wide>
+    <Modal title={viewTitle(t, f._id ? 'Operationeel doel bewerken' : `Nieuw operationeel doel (${t.year})`)} onClose={onClose} wide>
       <ErrorBanner message={t.error} />
       <form onSubmit={submit}>
+        <fieldset className="plain-fieldset" disabled={t.readOnly}>
         <div className="field"><label>Operationeel doel</label><input required value={f.title} onChange={(e) => setF({ ...f, title: e.target.value })} /></div>
         <div className="field"><label>Toelichting</label><textarea rows={2} value={f.description} onChange={(e) => setF({ ...f, description: e.target.value })} /></div>
         <div className="field"><label>Draagt bij aan (ROK)</label><RokPicker rok={t.rok} value={f.rok} onChange={(rok) => setF({ ...f, rok })} /></div>
@@ -137,6 +142,7 @@ export function GoalModal({ goal, t, onClose }) {
           <button className="btn btn-primary" type="submit" disabled={busy}>{busy ? 'Bezig…' : 'Opslaan'}</button>
           {f._id && <button type="button" className="btn btn-danger" onClick={remove}>Verwijderen</button>}
         </div>
+        </fieldset>
       </form>
     </Modal>
   );
@@ -151,6 +157,8 @@ export function SignalModal({ signal, t, onClose }) {
   const [busy, setBusy] = useState(false);
   const set = (k) => (e) => setF({ ...f, [k]: e.target.value });
   const [newDomain, setNewDomain] = useState(null); // { name, category } while adding a domein
+  const { user } = useAuth();
+  const canAddDomain = user.role !== 'client'; // the list is shared by all schools
 
   function chooseDomain(e) {
     if (e.target.value === NEW_DOMAIN) { t.setError(''); setNewDomain({ name: '', category: '' }); return; }
@@ -188,20 +196,21 @@ export function SignalModal({ signal, t, onClose }) {
   }
 
   return (
-    <Modal title={f._id ? `${signalCode(f)} bewerken` : 'Nieuw signaal'} onClose={onClose} wide>
+    <Modal title={viewTitle(t, f._id ? `${signalCode(f)} bewerken` : 'Nieuw signaal')} onClose={onClose} wide>
       <ErrorBanner message={t.error} />
       <form onSubmit={submit}>
+        <fieldset className="plain-fieldset" disabled={t.readOnly}>
         <div className="field"><label>Titel</label><input required value={f.title} onChange={(e) => setF({ ...f, title: e.target.value })} /></div>
         <div className="field"><label>Beschrijving</label><textarea rows={3} value={f.description} onChange={(e) => setF({ ...f, description: e.target.value })} /></div>
         <div className="field"><label>Domein</label>
           <select required value={newDomain ? NEW_DOMAIN : f.domain} onChange={chooseDomain}>
             <option value="">Kies een domein…</option>
+            {canAddDomain && <option value={NEW_DOMAIN}>+ Nieuw domein…</option>}
             {TEST_CATEGORIES.map((c) => (
               <optgroup key={c.key} label={c.label}>
                 {t.results.filter((r) => r.category === c.key).map((r) => <option key={r._id} value={r._id}>{r.name}</option>)}
               </optgroup>
             ))}
-            <option value={NEW_DOMAIN}>+ Nieuw domein…</option>
           </select>
           {newDomain && (
             <div className="new-domain">
@@ -247,6 +256,7 @@ export function SignalModal({ signal, t, onClose }) {
           <button className="btn btn-primary" type="submit" disabled={busy}>{busy ? 'Bezig…' : 'Opslaan'}</button>
           {f._id && <button type="button" className="btn btn-danger" onClick={remove}>Verwijderen</button>}
         </div>
+        </fieldset>
       </form>
     </Modal>
   );
@@ -277,15 +287,17 @@ export function StrategicModal({ goal, t, onClose }) {
   }
 
   return (
-    <Modal title={f._id ? `${strategicCode(f)} bewerken` : 'Nieuw strategisch doel'} onClose={onClose}>
+    <Modal title={viewTitle(t, f._id ? `${strategicCode(f)} bewerken` : 'Nieuw strategisch doel')} onClose={onClose}>
       <ErrorBanner message={t.error} />
       <form onSubmit={submit}>
+        <fieldset className="plain-fieldset" disabled={t.readOnly}>
         <div className="field"><label>Titel</label><input required value={f.title} onChange={(e) => setF({ ...f, title: e.target.value })} /></div>
         <div className="field"><label>Beschrijving</label><textarea rows={4} value={f.description} onChange={(e) => setF({ ...f, description: e.target.value })} /></div>
         <div className="modal-actions">
           <button className="btn btn-primary" type="submit" disabled={busy}>{busy ? 'Bezig…' : 'Opslaan'}</button>
           {f._id && <button type="button" className="btn btn-danger" onClick={remove}>Verwijderen</button>}
         </div>
+        </fieldset>
       </form>
     </Modal>
   );
@@ -386,15 +398,17 @@ export function IndicatorModal({ indicator, goal, t, onClose }) {
   }
 
   return (
-    <Modal title={f._id ? 'Indicator bewerken' : 'Nieuwe indicator'} onClose={onClose} wide>
+    <Modal title={viewTitle(t, f._id ? 'Indicator bewerken' : 'Nieuwe indicator')} onClose={onClose} wide>
       <ErrorBanner message={t.error} />
       <p className="muted" style={{ marginTop: 0 }}>Meet het succes van "{goal.title}" ({goal.schoolYear})</p>
       <form onSubmit={submit}>
+        <fieldset className="plain-fieldset" disabled={t.readOnly}>
         <MeetpuntFields f={f} setF={setF} nameLabel="Indicator" namePlaceholder="bv. aantal leerlingen met ongewettigde afwezigheid" />
         <div className="modal-actions">
           <button className="btn btn-primary" type="submit" disabled={busy}>{busy ? 'Bezig…' : 'Opslaan'}</button>
           {f._id && <button type="button" className="btn btn-danger" onClick={remove}>Verwijderen</button>}
         </div>
+        </fieldset>
       </form>
     </Modal>
   );
@@ -428,9 +442,10 @@ export function ActionModal({ action, t, onClose }) {
   }
 
   return (
-    <Modal title={f._id ? 'Actie bewerken' : 'Nieuwe actie'} onClose={onClose} wide>
+    <Modal title={viewTitle(t, f._id ? 'Actie bewerken' : 'Nieuwe actie')} onClose={onClose} wide>
       <ErrorBanner message={t.error} />
       <form onSubmit={submit}>
+        <fieldset className="plain-fieldset" disabled={t.readOnly}>
         <div className="field"><label>Operationeel doel</label>
           <select required value={f.goal} onChange={set('goal')}>
             <option value="">Kies een operationeel doel…</option>
@@ -458,6 +473,7 @@ export function ActionModal({ action, t, onClose }) {
           <button className="btn btn-primary" type="submit" disabled={busy}>{busy ? 'Bezig…' : 'Opslaan'}</button>
           {f._id && <button type="button" className="btn btn-danger" onClick={remove}>Verwijderen</button>}
         </div>
+        </fieldset>
       </form>
     </Modal>
   );

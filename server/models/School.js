@@ -10,6 +10,8 @@ const schoolSchema = new mongoose.Schema(
     contactPhone: { type: String, trim: true },
     notes: { type: String },
     active: { type: Boolean, default: true },
+    // Voorbeeldschool: school users can look around but not change anything; consultants and admins work as usual
+    readOnly: { type: Boolean, default: false },
   },
   { timestamps: true }
 );

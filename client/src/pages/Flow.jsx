@@ -1,6 +1,7 @@
 import { useLayoutEffect, useRef, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { useApp } from '../context/AppContext';
+import { useAuth } from '../context/AuthContext';
 import { useTest } from '../test/useTest';
 import { CategoryTag } from '../test/TestBits';
 import { GOAL_RULE } from '../test/assess';
@@ -21,7 +22,7 @@ function Box({ boxRef, code, title, to, linkText, count, kind, who, span, childr
       </header>
       {children}
       <dl>
-        <dt>Wie</dt><dd>{who}</dd>
+        {who && <><dt>Wie</dt><dd>{who}</dd></>}
         <dt>Looptijd</dt><dd>{span}</dd>
       </dl>
       <Link to={to} className="flow-open">{linkText} →</Link>
@@ -31,8 +32,13 @@ function Box({ boxRef, code, title, to, linkText, count, kind, who, span, childr
 
 // The flow of the tool, left to right: signals, strategic goals and the ROK lead to an operational goal,
 // and indicators and actions come from it. Arrows are drawn from the measured positions of the boxes.
+// School users get a version that doesn't say who does what; consultants and admins can switch to it.
 export default function Flow() {
   const { school, year } = useApp();
+  const { user } = useAuth();
+  const isStaff = user.role !== 'client';
+  const [schoolView, setSchoolView] = useState(false);
+  const showWho = isStaff && !schoolView;
   const t = useTest();
   const has = !!t.schoolId && !t.loading;
   const wrap = useRef(null);
@@ -69,6 +75,8 @@ export default function Flow() {
     const ro = new ResizeObserver(draw);
     ro.observe(wrap.current);
     window.addEventListener('resize', draw);
+    // The boxes change height with the version, and with the counts once they are loaded
+    [...sources, goal, ...results].forEach((r) => r.current && ro.observe(r.current));
     return () => { ro.disconnect(); window.removeEventListener('resize', draw); };
   }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
@@ -79,6 +87,12 @@ export default function Flow() {
           <h1>Flow</h1>
           <p>Hoe de tool werkt: drie vertrekpunten leiden tot een operationeel doel, en daar komen indicatoren en acties uit voort.{has && ` De cijfers zijn die van ${school?.name} (${year}).`}</p>
         </div>
+        {isStaff && (
+          <div className="flow-switch" role="group" aria-label="Versie van het schema">
+            <button type="button" className={`btn btn-sm ${schoolView ? '' : 'active'}`} aria-pressed={!schoolView} onClick={() => setSchoolView(false)}>Volledig</button>
+            <button type="button" className={`btn btn-sm ${schoolView ? 'active' : ''}`} aria-pressed={schoolView} onClick={() => setSchoolView(true)}>Voor de school</button>
+          </div>
+        )}
       </div>
 
       <div className="flow-heads">
@@ -98,7 +112,7 @@ export default function Flow() {
         </svg>
 
         <div className="flow-col">
-          <Box boxRef={sources[0]} code="Sign-C1, Sign-P1, Sign-R1" title="Signalen" to="/signalen" linkText="Open signalen" count={has ? t.signals.length : undefined} who="Consultant of admin; school leest mee" span="Over de schooljaren heen">
+          <Box boxRef={sources[0]} code="Sign-C1, Sign-P1, Sign-R1" title="Signalen" to="/signalen" linkText="Open signalen" count={has ? t.signals.length : undefined} who={showWho && 'Iedereen met toegang tot de school'} span="Over de schooljaren heen">
             <p>Wat valt op bij deze school? Elk signaal is gebaseerd op één domein en vertrekt van een startwaarde.</p>
             <ul>
               <li>Titel en beschrijving</li>
@@ -109,24 +123,24 @@ export default function Flow() {
                   <span><strong>P</strong> <CategoryTag category="proces" /></span>
                   <span><strong>R</strong> <CategoryTag category="resultaten" /></span>
                 </span>
-                Een consultant of admin kan hier ook een nieuw domein aanmaken.
+                {showWho && 'Een consultant of admin kan hier ook een nieuw domein aanmaken.'}
               </li>
               <li>Wat gemeten wordt en de soort waarde</li>
               <li>Startwaarde en haar schooljaar</li>
             </ul>
           </Box>
-          <Box boxRef={sources[1]} code="Strat-1, Strat-2" title="Strategische doelen" to="/strategische-doelen" linkText="Open strategische doelen" count={has ? t.strategic.length : undefined} who="Consultant of admin; school leest mee" span="Over de schooljaren heen">
+          <Box boxRef={sources[1]} code="Strat-1, Strat-2" title="Strategische doelen" to="/strategische-doelen" linkText="Open strategische doelen" count={has ? t.strategic.length : undefined} who={showWho && 'Iedereen met toegang tot de school'} span="Over de schooljaren heen">
             <p>Waar wil de school op lange termijn naartoe?</p>
             <ul><li>Titel en beschrijving</li></ul>
           </Box>
-          <Box boxRef={sources[2]} code="ROK-R1 … ROK-BL12" title="ROK" to="/rok" linkText="Open ROK" count={has ? t.rok.length : undefined} who="Vast referentiekader, voor iedereen hetzelfde" span="Blijft gelijk">
+          <Box boxRef={sources[2]} code="ROK-R1 … ROK-BL12" title="ROK" to="/rok" linkText="Open ROK" who={showWho && 'Vast referentiekader, voor iedereen hetzelfde'} span="Blijft gelijk">
             <p>Het referentiekader voor onderwijskwaliteit: kwaliteitsverwachtingen, gegroepeerd in ROK-domeinen.</p>
           </Box>
           <p className="flow-note">Een operationeel doel kan aan <strong>geen, één of meerdere</strong> van elk bijdragen.</p>
         </div>
 
         <div className="flow-col flow-col-center">
-          <Box boxRef={goal} kind="flow-goal" title="Operationele doelen" to="/doelen" linkText="Open operationele doelen" count={has ? t.goals.length : undefined} who="Iedereen met toegang tot de school" span="Eén schooljaar, vanaf 2026-2027">
+          <Box boxRef={goal} kind="flow-goal" title="Operationele doelen" to="/doelen" linkText="Open operationele doelen" count={has ? t.goals.length : undefined} who={showWho && 'Iedereen met toegang tot de school'} span="Eén schooljaar, vanaf 2026-2027">
             <p>Wat wil de school dit schooljaar concreet bereiken?</p>
             <ul>
               <li>Titel en toelichting</li>
@@ -146,7 +160,7 @@ export default function Flow() {
         </div>
 
         <div className="flow-col flow-col-center">
-          <Box boxRef={results[0]} kind="flow-indicator" title="Indicatoren" to="/doelen" linkText="Beheren bij de operationele doelen" count={has ? t.yearMeetpunten.filter((m) => m.kind === 'indicator').length : undefined} who="Iedereen met toegang tot de school" span="Het schooljaar van het doel">
+          <Box boxRef={results[0]} kind="flow-indicator" title="Indicatoren" to="/doelen" linkText="Beheren bij de operationele doelen" count={has ? t.yearMeetpunten.filter((m) => m.kind === 'indicator').length : undefined} who={showWho && 'Iedereen met toegang tot de school'} span="Het schooljaar van het doel">
             <p><strong>Meten het succes van het doel.</strong> Een doel heeft er geen, één of meerdere.</p>
             <ul>
               <li>Naam, uitleg en bron</li>
@@ -155,7 +169,7 @@ export default function Flow() {
               <li>Gemeten waarde en resultaat: op of onder niveau</li>
             </ul>
           </Box>
-          <Box boxRef={results[1]} kind="flow-action" title="Acties" to="/acties" linkText="Open acties" count={has ? t.yearActions.length : undefined} who="Iedereen met toegang tot de school" span="Het schooljaar van het doel">
+          <Box boxRef={results[1]} kind="flow-action" title="Acties" to="/acties" linkText="Open acties" count={has ? t.yearActions.length : undefined} who={showWho && 'Iedereen met toegang tot de school'} span="Het schooljaar van het doel">
             <p><strong>Wat de school doet om het doel te bereiken.</strong> Elke actie hoort bij één doel.</p>
             <div className="flow-statuses">
               {TEST_ACTION_STATUSES.map((s) => <span key={s.key} className={`status-pill task-${s.key}`}>{s.label}</span>)}

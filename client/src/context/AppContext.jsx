@@ -33,6 +33,9 @@ export function AppProvider({ children }) {
 
   const school = schools.find((s) => s._id === schoolId) || null;
 
+  // Voorbeeldschool: school users can look around but not change anything
+  const readOnly = !!school?.readOnly && user?.role === 'client';
+
   const setSchoolId = (id) => {
     localStorage.setItem('schoolId', id);
     setStoredSchool(id);
@@ -43,7 +46,7 @@ export function AppProvider({ children }) {
   };
 
   return (
-    <AppContext.Provider value={{ schools, school, schoolId, setSchoolId, year, setYear, ready, reload: load }}>
+    <AppContext.Provider value={{ readOnly, schools, school, schoolId, setSchoolId, year, setYear, ready, reload: load }}>
       {children}
     </AppContext.Provider>
   );

@@ -4,7 +4,7 @@ const path = require('path');
 const fs = require('fs');
 const Document = require('../models/Document');
 const { protect } = require('../middleware/auth');
-const { canAccessSchool, schoolScope } = require('../middleware/access');
+const { canAccessSchool, schoolScope, isReadOnlyFor, READ_ONLY_MESSAGE } = require('../middleware/access');
 const { upload, UPLOAD_ROOT } = require('../middleware/upload');
 const { SCHOOL_YEAR_RE } = require('../utils/constants');
 
@@ -33,6 +33,7 @@ router.post('/', upload.single('file'), async (req, res) => {
     if (!req.file) return res.status(400).json({ message: 'Er is geen bestand meegestuurd.' });
     const schoolId = req.body.school;
     if (!canAccessSchool(req.user, schoolId)) { discard(); return res.status(403).json({ message: 'Je hebt geen toegang tot deze school.' }); }
+    if (await isReadOnlyFor(req.user, schoolId)) { discard(); return res.status(403).json({ message: READ_ONLY_MESSAGE }); }
     const schoolYear = req.body.schoolYear || '';
     if (schoolYear && !SCHOOL_YEAR_RE.test(schoolYear)) { discard(); return res.status(400).json({ message: 'Ongeldig schooljaar.' }); }
 
@@ -75,6 +76,7 @@ router.delete('/:id', async (req, res) => {
     const doc = await Document.findById(req.params.id);
     if (!doc) return res.status(404).json({ message: 'Document niet gevonden.' });
     if (!canAccessSchool(req.user, doc.school)) return res.status(403).json({ message: 'Je hebt geen toegang tot dit document.' });
+    if (await isReadOnlyFor(req.user, doc.school)) return res.status(403).json({ message: READ_ONLY_MESSAGE });
     const isOwn = doc.uploadedBy && String(doc.uploadedBy) === String(req.user._id);
     if (req.user.role === 'client' && !isOwn) return res.status(403).json({ message: 'Je kan enkel bestanden verwijderen die je zelf uploadde.' });
     fs.unlink(filePathFor(doc), () => {});

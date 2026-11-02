@@ -7,7 +7,7 @@ import { FIRST_GOAL_YEAR, PLAN_MONTHS } from '../utils/constants';
 // its goals with their indicators and actions, and which of those belong to the active school year.
 // `reload` refetches the school data after a change.
 export function useTest() {
-  const { schoolId, year } = useApp();
+  const { schoolId, year, readOnly } = useApp();
   const [results, setResults] = useState([]);
   const [rok, setRok] = useState([]);
   const [allGoals, setAllGoals] = useState([]);
@@ -70,7 +70,7 @@ export function useTest() {
   }, [reload]);
 
   return {
-    schoolId, year, loading, error, setError, run, reload,
+    schoolId, year, readOnly, loading, error, setError, run, reload,
     results, addResult, resultById, rok, rokByCode, goals, allGoals, goalById, signals, strategic,
     meetpunten, actions, indicatorsOf, actionsOf, meetpuntOfAction, yearActions, yearMeetpunten,
   };

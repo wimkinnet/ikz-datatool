@@ -20,6 +20,14 @@ function canAccessSchool(user, schoolId) {
   return schoolIdsOf(user).includes(id);
 }
 
+const READ_ONLY_MESSAGE = 'Dit is een voorbeeldschool: je kan hier rondkijken, maar niets wijzigen.';
+
+// School users cannot change anything in a voorbeeldschool
+async function isReadOnlyFor(user, schoolId) {
+  if (user.role !== 'client') return false;
+  return !!(await School.exists({ _id: schoolId, readOnly: true }));
+}
+
 // Resolves req.schoolId from ?school= / body.school and enforces access.
 async function schoolScope(req, res, next) {
   try {
@@ -31,6 +39,9 @@ async function schoolScope(req, res, next) {
     }
     const school = await School.findById(id);
     if (!school) return res.status(404).json({ message: 'School niet gevonden.' });
+    if (req.method !== 'GET' && req.user.role === 'client' && school.readOnly) {
+      return res.status(403).json({ message: READ_ONLY_MESSAGE });
+    }
     req.schoolId = String(school._id);
     req.school = school;
     next();
@@ -39,4 +50,4 @@ async function schoolScope(req, res, next) {
   }
 }
 
-module.exports = { schoolIdsOf, canAccessSchool, schoolScope };
+module.exports = { schoolIdsOf, canAccessSchool, schoolScope, isReadOnlyFor, READ_ONLY_MESSAGE };

@@ -1111,3 +1111,13 @@ td.late { color: var(--st-actie); font-weight: 600; }
   .flow { grid-template-columns: minmax(0, 1fr); row-gap: 14px; }
   .flow-arrows { display: none; }
 }
+
+.flow-switch { display: flex; gap: 4px; flex: none; }
+.flow-switch .btn.active { background: var(--accent); border-color: var(--accent); color: #fff; }
+
+/* Voorbeeldschool: school users look around, read-only */
+.read-only-banner { margin-bottom: 18px; padding: 10px 14px; background: var(--accent-tint); color: var(--accent-dark); border-radius: var(--radius); font-size: 13.5px; }
+.plain-fieldset { border: 0; margin: 0; padding: 0; min-width: 0; }
+.plain-fieldset:disabled .modal-actions, .plain-fieldset:disabled .link-btn { display: none; }
+.plain-fieldset:disabled input, .plain-fieldset:disabled select, .plain-fieldset:disabled textarea { background: var(--paper); color: var(--ink); opacity: 1; }
+.plain-fieldset:disabled .verdict { cursor: default; }

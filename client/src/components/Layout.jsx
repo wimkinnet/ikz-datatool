@@ -9,7 +9,7 @@ const link = ({ isActive }) => 'nav-link' + (isActive ? ' active' : '');
 
 export default function Layout() {
   const { user, logout } = useAuth();
-  const { schools, school, schoolId, setSchoolId, year, setYear, ready } = useApp();
+  const { readOnly, schools, school, schoolId, setSchoolId, year, setYear, ready } = useApp();
   const navigate = useNavigate();
   const isStaff = user.role !== 'client';
   const theme = themeOf(user.theme);
@@ -79,6 +79,7 @@ export default function Layout() {
             </select>
           </div>
         </div>
+        {readOnly && <div className="read-only-banner"><strong>Voorbeeldschool.</strong> Kijk gerust rond: je ziet hoe de tool werkt met voorbeeldgegevens, maar je kan hier niets wijzigen.</div>}
         <Outlet />
       </main>
     </div>

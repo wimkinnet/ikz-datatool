@@ -106,7 +106,7 @@ async function run() {
   const missing = SIGNALS.map((x) => x[0]).filter((n) => !domainOf(n));
   if (missing.length) throw new Error(`Niets gewijzigd. Deze domeinen bestaan niet (meer): ${missing.join(', ')}. Pas SIGNALS in dit script aan.`);
 
-  const sch = school || (await School.create({ name: SCHOOL, city: 'Voorbeeldgem', notes: 'Dummy school met voorbeeldgegevens.' }));
+  const sch = school || (await School.create({ name: SCHOOL, city: 'Voorbeeldgem', notes: 'Dummy school met voorbeeldgegevens.', readOnly: true }));
   const id = sch._id;
   const titles = GOALS.map((g) => g.title);
   const scripted = await TestGoal.find({ school: id, title: { $in: titles } }).select('_id');

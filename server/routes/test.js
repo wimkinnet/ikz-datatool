@@ -8,14 +8,14 @@ const TestAction = require('../models/test/TestAction');
 const TestSignal = require('../models/test/TestSignal');
 const TestStrategicGoal = require('../models/test/TestStrategicGoal');
 const { protect, requireRole, requireStaff } = require('../middleware/auth');
-const { schoolScope, canAccessSchool } = require('../middleware/access');
+const { schoolScope, canAccessSchool, isReadOnlyFor, READ_ONLY_MESSAGE } = require('../middleware/access');
 const { PLAN_MONTHS, SCHOOL_YEAR_RE } = require('../utils/constants');
 const pick = require('../utils/pick');
 
 // The quality model: an operationeel doel (per school year, from 2026-2027) has indicatoren and acties; an actie has
 // an optional meetpunt (indicatoren and actiemeetpunten are both TestMeetpunt). A doel can contribute to signalen
-// (each based on a domein, the shared list stored as TestResult) and strategische doelen; consultants and admins
-// maintain those. Everyone works on the schools they have access to (admins: all).
+// (each based on a domein, the shared list stored as TestResult) and strategische doelen.
+// Everyone works on the schools they have access to (admins: all).
 // Consultants and admins can add domeinen to the shared list; only admins edit or delete them.
 router.use(protect);
 const adminOnly = requireRole('admin');
@@ -27,6 +27,7 @@ const owned = (Model, what) => async (req, res, next) => {
     const doc = await Model.findById(req.params.id);
     if (!doc) return res.status(404).json({ message: `${what} niet gevonden.` });
     if (!canAccessSchool(req.user, doc.school)) return res.status(403).json({ message: 'Je hebt geen toegang tot deze school.' });
+    if (await isReadOnlyFor(req.user, doc.school)) return res.status(403).json({ message: READ_ONLY_MESSAGE });
     req.doc = doc;
     next();
   } catch (err) { res.status(500).json({ message: 'Er ging iets mis.', error: err.message }); }
@@ -176,14 +177,14 @@ router.get('/signals', schoolScope, async (req, res) => {
   res.json(await TestSignal.find({ school: req.schoolId }).sort({ category: 1, number: 1 }).lean());
 });
 
-router.post('/signals', requireStaff, schoolScope, async (req, res) => {
+router.post('/signals', schoolScope, async (req, res) => {
   try {
     const { category, ...fields } = await signalFields(req.body);
     res.status(201).json(await createNumbered(TestSignal, { school: req.schoolId, category }, fields));
   } catch (err) { fail(res, err, 'Kon signaal niet aanmaken.'); }
 });
 
-router.put('/signals/:id', requireStaff, owned(TestSignal, 'Signaal'), async (req, res) => {
+router.put('/signals/:id', owned(TestSignal, 'Signaal'), async (req, res) => {
   try {
     const { category, ...fields } = await signalFields(req.body);
     // A signal that moves to a domein of another category gets a new code in that category
@@ -195,7 +196,7 @@ router.put('/signals/:id', requireStaff, owned(TestSignal, 'Signaal'), async (re
   } catch (err) { fail(res, err, 'Kon signaal niet bijwerken.'); }
 });
 
-router.delete('/signals/:id', requireStaff, owned(TestSignal, 'Signaal'), async (req, res) => {
+router.delete('/signals/:id', owned(TestSignal, 'Signaal'), async (req, res) => {
   try {
     await TestGoal.updateMany({ signals: req.params.id }, { $pull: { signals: req.params.id } });
     await req.doc.deleteOne();
@@ -208,19 +209,19 @@ router.get('/strategic', schoolScope, async (req, res) => {
   res.json(await TestStrategicGoal.find({ school: req.schoolId }).sort({ number: 1 }).lean());
 });
 
-router.post('/strategic', requireStaff, schoolScope, async (req, res) => {
+router.post('/strategic', schoolScope, async (req, res) => {
   try {
     res.status(201).json(await createNumbered(TestStrategicGoal, { school: req.schoolId }, pick(req.body, ['title', 'description'])));
   } catch (err) { fail(res, err, 'Kon strategisch doel niet aanmaken.'); }
 });
 
-router.put('/strategic/:id', requireStaff, owned(TestStrategicGoal, 'Strategisch doel'), async (req, res) => {
+router.put('/strategic/:id', owned(TestStrategicGoal, 'Strategisch doel'), async (req, res) => {
   try {
     res.json(await TestStrategicGoal.findByIdAndUpdate(req.params.id, pick(req.body, ['title', 'description']), { new: true, runValidators: true }));
   } catch (err) { fail(res, err, 'Kon strategisch doel niet bijwerken.'); }
 });
 
-router.delete('/strategic/:id', requireStaff, owned(TestStrategicGoal, 'Strategisch doel'), async (req, res) => {
+router.delete('/strategic/:id', owned(TestStrategicGoal, 'Strategisch doel'), async (req, res) => {
   try {
     await TestGoal.updateMany({ strategic: req.params.id }, { $pull: { strategic: req.params.id } });
     await req.doc.deleteOne();

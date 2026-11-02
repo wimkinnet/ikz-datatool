@@ -40,7 +40,7 @@ router.get('/:id', async (req, res) => {
 // POST /api/schools  (admin)
 router.post('/', requireRole('admin'), async (req, res) => {
   try {
-    const school = await School.create(pick(req.body, FIELDS));
+    const school = await School.create(pick(req.body, [...FIELDS, 'readOnly']));
     res.status(201).json(school);
   } catch (err) {
     res.status(400).json({ message: 'Kon school niet aanmaken.', error: err.message });
@@ -51,7 +51,8 @@ router.post('/', requireRole('admin'), async (req, res) => {
 router.put('/:id', requireStaff, async (req, res) => {
   try {
     if (!canAccessSchool(req.user, req.params.id)) return res.status(403).json({ message: 'Je hebt geen toegang tot deze school.' });
-    const fields = pick(req.body, FIELDS);
+    // Only an admin decides whether a school is a voorbeeldschool
+    const fields = pick(req.body, req.user.role === 'admin' ? [...FIELDS, 'readOnly'] : FIELDS);
     const school = await School.findByIdAndUpdate(req.params.id, fields, { new: true, runValidators: true });
     if (!school) return res.status(404).json({ message: 'School niet gevonden.' });
     res.json(school);

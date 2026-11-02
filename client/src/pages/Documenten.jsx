@@ -11,7 +11,7 @@ const CAT = { bijlage: 'Bijlage', rapport: 'Rapport', overig: 'Overig' };
 
 export default function Documenten() {
   const { user } = useAuth();
-  const { schoolId, year } = useApp();
+  const { schoolId, year, readOnly } = useApp();
   const confirm = useConfirm();
   const [docs, setDocs] = useState([]);
   const [filterYear, setFilterYear] = useState('');
@@ -75,6 +75,7 @@ export default function Documenten() {
       </div>
       <ErrorBanner message={error} />
 
+      {!readOnly && (
       <div className="card" style={{ marginBottom: 16 }}>
         <h3>Document toevoegen</h3>
         <form onSubmit={upload} style={{ display: 'flex', gap: 10, alignItems: 'flex-end', flexWrap: 'wrap' }}>
@@ -89,6 +90,7 @@ export default function Documenten() {
           <button className="btn btn-primary" type="submit" disabled={!file || busy}>{busy ? 'Uploaden…' : 'Uploaden'}</button>
         </form>
       </div>
+      )}
 
       <div className="toolbar">
         <select className="select-inline" value={filterYear} onChange={(e) => setFilterYear(e.target.value)}>
@@ -103,7 +105,7 @@ export default function Documenten() {
             <thead><tr><th>Bestand</th><th>Type</th><th>Schooljaar</th><th>Toegevoegd</th><th></th></tr></thead>
             <tbody>
               {docs.map((d) => {
-                const canDelete = user.role !== 'client' || d.uploadedBy?._id === user.id;
+                const canDelete = !readOnly && (user.role !== 'client' || d.uploadedBy?._id === user.id);
                 return (
                   <tr key={d._id}>
                     <td><button className="link-btn" onClick={() => download(d)}>{d.originalName}</button><div className="muted">{formatSize(d.size)}{d.notes ? ` · ${d.notes}` : ''}</div></td>

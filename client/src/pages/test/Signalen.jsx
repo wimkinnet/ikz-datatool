@@ -1,7 +1,6 @@
 import { useEffect, useMemo, useState } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import { useApp } from '../../context/AppContext';
-import { useAuth } from '../../context/AuthContext';
 import { NoSchool, ErrorBanner } from '../../components/Bits';
 import GoalLinks from '../../components/GoalLinks';
 import { useCollapse, Chevron, ToggleAll } from '../../components/Collapse';
@@ -17,12 +16,10 @@ const GROUPS = [
 ];
 
 // The signals of a school: where it starts from, based on a domein and one meetpunt, and which operational goals
-// (of any school year) contribute. Consultants and admins maintain them; school users read along.
+// (of any school year) contribute. Everyone with access to the school can maintain them.
 export default function Signalen() {
   const { school } = useApp();
-  const { user } = useAuth();
   const t = useTest();
-  const isStaff = user.role !== 'client';
   const [params] = useSearchParams();
   const focus = params.get('signal') || '';
   const [edit, setEdit] = useState(null);
@@ -45,13 +42,13 @@ export default function Signalen() {
           <h1>Signalen</h1>
           <p>De signalen van {school?.name}, elk gebaseerd op een domein, met hun startwaarde en de operationele doelen die eraan bijdragen.</p>
         </div>
-        {isStaff && <button className="btn btn-primary" onClick={() => { t.setError(''); setEdit({}); }}>+ Nieuw signaal</button>}
+        {!t.readOnly && <button className="btn btn-primary" onClick={() => { t.setError(''); setEdit({}); }}>+ Nieuw signaal</button>}
       </div>
       <ErrorBanner message={!edit ? t.error : ''} />
       {t.signals.length > 1 && <div className="toolbar"><span className="spacer" /><ToggleAll c={c} keys={t.signals.map((s) => s._id)} /></div>}
 
       {t.loading ? <p className="muted">Laden…</p> : t.signals.length === 0 ? (
-        <div className="card empty-state">{isStaff ? 'Nog geen signalen. Voeg het eerste signaal toe.' : 'Er zijn nog geen signalen voor deze school.'}</div>
+        <div className="card empty-state">{'Nog geen signalen. Voeg het eerste signaal toe.'}</div>
       ) : groups.map((g) => (
         <section key={g.key} className="signal-group">
           <h2>{g.label}</h2>
@@ -67,7 +64,7 @@ export default function Signalen() {
                   <span className="tally">{t.resultById[s.domain]?.name}</span>
                   <span className="spacer" />
                   <span className="tally">{goals.length} {goals.length === 1 ? 'operationeel doel' : 'operationele doelen'}</span>
-                  {isStaff && <button className="btn btn-sm" onClick={() => { t.setError(''); setEdit(s); }}>Bewerken</button>}
+                  <button className="btn btn-sm" onClick={() => { t.setError(''); setEdit(s); }}>{t.readOnly ? 'Bekijken' : 'Bewerken'}</button>
                 </div>
                 {open && (
                   <div className="signal-body">
