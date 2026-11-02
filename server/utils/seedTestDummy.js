@@ -62,7 +62,10 @@ const GOALS = [
     title: 'Ouders sterker betrekken bij het leren', description: 'Duidelijke communicatie en een hoge opkomst op oudercontacten.',
     rok: ['R2', 'BL6', 'B4'], signals: ['Opkomst op oudercontacten daalt', 'Meer leerlingen met een andere thuistaal'], strategic: ['Welbevinden en aanwezigheid versterken'],
     indicators: [
-      IND('Tevredenheid ouders over de communicatie', 'november', 'percentage', 75, 'min', 'ouderbevraging'),
+      // Two of the three results on level: 67%, an example of the assessment "aandacht"
+      IND('% ouders aanwezig op de infoavond', 'september', 'percentage', 60, 'min', 'aanwezigheidslijsten', 72, 'groen'),
+      IND('% ouders dat de nieuwsbrief leest', 'oktober', 'percentage', 60, 'min', 'Smartschool', 52, 'rood'),
+      IND('Tevredenheid ouders over de communicatie', 'november', 'percentage', 75, 'min', 'ouderbevraging', 78, 'groen'),
       IND('% ouders aanwezig op het oudercontact', 'december', 'percentage', 85, 'min', 'aanwezigheidslijsten'),
     ],
     actions: [

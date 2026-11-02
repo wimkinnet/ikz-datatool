@@ -125,13 +125,13 @@ export default function TestDashboard() {
       <ErrorBanner message={!indicator ? t.error : ''} />
 
       <div className="stat-grid">
-        <div className="stat">
+        <Link to="/doelen" className="stat stat-link">
           <div className="label">Operationele doelen</div>
           <div className="value">{year < FIRST_GOAL_YEAR ? '—' : data.goals.length}</div>
           {data.goals.length > 0 && (
             <div className="stat-sub">{data.goalStatusCount.ok} op koers · {data.goalStatusCount.aandacht} aandacht · {data.goalStatusCount.niet} niet op koers · {data.goalStatusCount.onbekend + data.goalStatusCount.geen} nog geen resultaat</div>
           )}
-        </div>
+        </Link>
         <div className="stat">
           <div className="label">Indicatoren bij operationele doelen op niveau</div>
           <div className="value st-ok">{pct(ind)}</div>
