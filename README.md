@@ -17,7 +17,7 @@ Operationeel doel (per school, per school year, from 2026-2027)
        └─ optional meetpunt → measures the success of the action, at one month: value + resultaat
 ```
 
-Menu: **Flow** · **Dashboard** · **Signalen** · **Strategische doelen** · **ROK** · **Operationele doelen** · **Acties** · **Kalender** · Documenten.
+Menu: **Flow** · **Dashboard** · **Signalen** · **Strategische doelen** · **ROK** · **Operationele doelen** · **Acties** · **Kalender** · Documenten · **Help**.
 
 - **Flow** — a diagram of the tool: signals, strategic goals and the ROK lead to an operational goal, from which indicators and actions follow; with the current counts of the school. School users see a version without who does what; consultants and admins can switch to it.
 - **Dashboard** (start page) — tiles for goals, indicators op niveau, actions not yet carried out and action meetpunten op niveau; the assessment per operational goal, indicators per domein and ROK-domein, actions per status, invulstatus and resultaat per month, and indicators below level without a running action plus overdue actions.
@@ -26,6 +26,7 @@ Menu: **Flow** · **Dashboard** · **Signalen** · **Strategische doelen** · **
 - **Operationele doelen** — per school year, with their indicators and actions. A goal links to ROK expectations and, optionally, to signals and strategic goals; its domeinen follow from its signals. Its overall assessment comes from its indicators: ≥ 75% op niveau *op koers*, ≥ 50% *aandacht*, otherwise *niet op koers*; *voorlopig* while not every indicator is assessed (`client/src/test/assess.js`). Deleting a goal deletes its indicators and actions.
 - **Acties** — all actions of the school year, with status, owner, deadline and optional meetpunt; overdue actions are flagged.
 - **Kalender** — per month, the indicators and action meetpunten to measure: done / this month / te laat / planned.
+- **Help** — searchable documentation per role, with a clickable overview, the school's progress and a try-out of the goal assessment (`client/src/help/articles.jsx`; articles can be linked as `/help#id`). Keep it up to date when the tool changes. The contact address follows the user's house style (`client/src/utils/themes.js`).
 - **ROK** — every ROK-domein and quality expectation with its explanation, and the school's goals per expectation.
 - **Sjablonen → Domeinen** (admins) — the shared list of domeinen, initially the 19 themes of the former BO year plan.
   Their category (proces / resultaten / context) was an initial assessment; admins can change it. Consultants and admins can also add a domein while creating a signal; only admins edit or delete them.

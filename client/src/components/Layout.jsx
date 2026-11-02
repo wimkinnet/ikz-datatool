@@ -33,6 +33,7 @@ export default function Layout() {
           <NavLink to="/acties" className={link}>Acties</NavLink>
           <NavLink to="/kalender" className={link}>Kalender</NavLink>
           <NavLink to="/documenten" className={link}>Documenten</NavLink>
+          <NavLink to="/help" className={link}>Help</NavLink>
 
           {isStaff && (
             <>

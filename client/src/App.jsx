@@ -9,6 +9,7 @@ import Documenten from './pages/Documenten';
 import Scholen from './pages/Scholen';
 import Gebruikers from './pages/Gebruikers';
 import Logboek from './pages/Logboek';
+import Help from './pages/Help';
 import Profiel from './pages/Profiel';
 import Rok from './pages/Rok';
 import Flow from './pages/Flow';
@@ -39,6 +40,7 @@ export default function App() {
               <Route path="kalender" element={<Kalender />} />
               <Route path="acties" element={<Acties />} />
               <Route path="documenten" element={<Documenten />} />
+              <Route path="help" element={<Help />} />
               <Route path="profiel" element={<Profiel />} />
               <Route path="scholen" element={<RoleRoute roles={staff}><Scholen /></RoleRoute>} />
               <Route path="gebruikers" element={<RoleRoute roles={staff}><Gebruikers /></RoleRoute>} />

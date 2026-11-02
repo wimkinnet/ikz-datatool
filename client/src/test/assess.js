@@ -67,12 +67,16 @@ export function tally(meetpunten, schoolYear) {
 export const goalSignals = (goal, signals) => signals.filter((s) => (goal.signals || []).includes(s._id));
 export const goalDomains = (goal, signals) => [...new Set(goalSignals(goal, signals).map((s) => String(s.domain)))];
 
-export function assessGoal(goal, t) {
-  const c = tally(t.indicatorsOf(goal._id), goal.schoolYear);
-  const { groen, rood, total } = c;
+// The assessment for a number of indicators op niveau, onder niveau and in total
+export function goalVerdict(groen, rood, total) {
   const measured = groen + rood;
   const ratio = measured ? groen / measured : null;
   let key = 'geen';
   if (total) key = !measured ? 'onbekend' : ratio >= GOAL_RULE.opKoers ? 'ok' : ratio >= GOAL_RULE.aandacht ? 'aandacht' : 'niet';
-  return { key, ...GOAL_STATUS[key], ...c, measured, ratio, provisional: measured > 0 && measured < total };
+  return { key, ...GOAL_STATUS[key], measured, ratio, provisional: measured > 0 && measured < total };
+}
+
+export function assessGoal(goal, t) {
+  const c = tally(t.indicatorsOf(goal._id), goal.schoolYear);
+  return { ...c, ...goalVerdict(c.groen, c.rood, c.total) };
 }
