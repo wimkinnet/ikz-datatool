@@ -117,8 +117,8 @@ function ResultRows({ r, open, toggle, cols, years, t, linked, onAdd, onEdit, on
             <button className="tree-toggle" onClick={toggle} aria-expanded={open}><Chevron open={open} /> <strong>{r.name}</strong></button>
             <span className="tally">
               <span>{r.meetpunten.length} meetpunt{r.meetpunten.length === 1 ? '' : 'en'}</span>
-              {groen > 0 && <span className="tally-dot ok" title={`Groen in ${t.year}`}>{groen}</span>}
-              {rood > 0 && <span className="tally-dot actie" title={`Rood in ${t.year}`}>{rood}</span>}
+              {groen > 0 && <span className="tally-dot ok" title={`Op niveau in ${t.year}`}>{groen}</span>}
+              {rood > 0 && <span className="tally-dot actie" title={`Onder niveau in ${t.year}`}>{rood}</span>}
             </span>
             {linked && <span className="muted" style={{ fontSize: 12 }}>in een operationeel doel van {t.year}</span>}
             <span className="spacer" />

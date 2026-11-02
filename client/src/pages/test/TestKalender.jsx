@@ -53,7 +53,7 @@ export default function TestKalender() {
       <div className="stat-grid">
         <div className="stat"><div className="label">Deze maand in te vullen</div><div className="value st-monitoren">{count('now')}</div></div>
         <div className="stat"><div className="label">Achterstallig</div><div className="value st-actie">{count('late')}</div></div>
-        <div className="stat"><div className="label">Ingevuld</div><div className="value st-ok">{count('done')}</div></div>
+        <div className="stat"><div className="label">Ingevuld</div><div className="value">{count('done')}</div></div>
         <div className="stat"><div className="label">Nog gepland</div><div className="value">{count('planned')}</div></div>
       </div>
       <div className="toolbar">
@@ -85,9 +85,13 @@ export default function TestKalender() {
                         <span className="cal-title">{m.title}</span>
                         <span className="muted cal-sub">{resultName(m)}{m.bron && ` · ${m.bron}`}</span>
                         <span className="cal-state">
-                          {state === 'done' ? <>{formatValue(m, mt.value)} <Beoordeling value={mt.beoordeling} empty="" /></>
-                            : state === 'late' ? 'achterstallig' : state === 'now' ? 'in te vullen' : 'gepland'}
+                          {state === 'done' ? 'ingevuld' : state === 'late' ? 'achterstallig' : state === 'now' ? 'in te vullen' : 'gepland'}
                         </span>
+                        {state === 'done' && (
+                          <span className="cal-result">
+                            {formatValue(m, mt.value)} <Beoordeling value={mt.beoordeling} empty="" />
+                          </span>
+                        )}
                       </button>
                     </li>
                   ))}
@@ -109,7 +113,7 @@ function MonthTally({ items }) {
   if (!items.length) return null;
   return (
     <span className="tally cal-tally">
-      {n('done') > 0 && <span className="tally-dot ok" title="Ingevuld">{n('done')}</span>}
+      {n('done') > 0 && <span className="tally-dot filled" title="Ingevuld">{n('done')}</span>}
       {n('late') > 0 && <span className="tally-dot actie" title="Achterstallig">{n('late')}</span>}
       {n('now') > 0 && <span className="tally-dot monitoren" title="Deze maand in te vullen">{n('now')}</span>}
       {n('planned') > 0 && <span className="tally-dot none" title="Gepland">{n('planned')}</span>}

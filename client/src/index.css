@@ -985,7 +985,10 @@ td.late { color: var(--st-actie); font-weight: 600; }
 .cal-title { font-weight: 600; font-size: 13.5px; }
 .cal-sub { grid-column: 1; font-size: 12px; }
 .cal-state { grid-column: 2; grid-row: 1 / span 2; align-self: center; font-size: 12px; font-weight: 600; white-space: nowrap; }
-.cal-item.done .cal-btn { border-left-color: var(--st-ok); }
+.cal-item.done .cal-btn { border-left-color: var(--accent); }
+.cal-item.done .cal-state { color: var(--accent-dark); }
+.cal-result { grid-column: 1 / -1; margin-top: 4px; font-size: 13px; font-weight: 600; }
+.tally-dot.filled { background: var(--accent-tint); color: var(--accent-dark); }
 .cal-item.now .cal-btn { border-left-color: var(--st-monitoren); }
 .cal-item.now .cal-state { color: var(--st-monitoren); }
 .cal-item.late .cal-btn { border-left-color: var(--st-actie); }

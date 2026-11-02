@@ -4,22 +4,22 @@ import Modal from '../components/Modal';
 import { ErrorBanner } from '../components/Bits';
 import { useConfirm } from '../components/Confirm';
 import { formatDate } from '../utils/format';
+import { RESULT_LABEL } from './assess';
 import {
   PLAN_MONTHS, TEST_CATEGORIES, TEST_VALUE_TYPES, TEST_ACTION_STATUSES, testCategoryLabel, monthLabel,
 } from '../utils/constants';
 
 // ---------------------------------------------------------------- small display helpers
 export function Beoordeling({ value, empty = '—' }) {
-  if (value === 'groen') return <span className="verdict groen" title="Groen">groen</span>;
-  if (value === 'rood') return <span className="verdict rood" title="Rood">rood</span>;
+  if (RESULT_LABEL[value]) return <span className={`verdict ${value}`}>{RESULT_LABEL[value]}</span>;
   return <span className="muted">{empty}</span>;
 }
 
 // Overall assessment of an operational goal (see test/assess.js)
 export function GoalStatus({ a }) {
-  const pct = a.ratio === null ? '' : ` · ${Math.round(a.ratio * 100)}% groen`;
+  const pct = a.ratio === null ? '' : ` · ${Math.round(a.ratio * 100)}% op niveau`;
   const title = a.total
-    ? `${a.measured} van ${a.total} meetpunten beoordeeld (${a.groen} groen, ${a.rood} rood)${a.provisional ? ' - voorlopig' : ''}`
+    ? `${a.done} van ${a.total} meetpunten ingevuld; resultaat: ${a.groen} op niveau, ${a.rood} onder niveau${a.zonder ? `, ${a.zonder} zonder beoordeling` : ''}${a.provisional ? ' (voorlopig)' : ''}`
     : 'Koppel meetpunten aan de domeinen van dit doel';
   return (
     <span className={`status-pill ${a.cls}`} title={title}>
@@ -219,7 +219,7 @@ export function MeetpuntModal({ meetpunt, t, onClose }) {
                 </select>
                 <input inputMode="decimal" value={f.threshold} onChange={set('threshold')} placeholder={f.valueType === 'percentage' ? 'bv. 80' : 'bv. 25'} />
               </div>
-              <div className="hint">Met een drempelwaarde stelt de tool groen of rood voor.</div>
+              <div className="hint">Met een drempelwaarde stelt de tool het resultaat voor.</div>
             </div>
           ) : (
             <div className="field"><label>Drempelwaarde (optioneel)</label><input value={f.thresholdText} onChange={set('thresholdText')} /></div>
@@ -273,13 +273,13 @@ export function MetingModal({ meetpunt: mp, schoolYear, t, onClose }) {
               ? <textarea rows={2} value={f.value} onChange={(e) => setValue(e.target.value)} />
               : <input inputMode="decimal" value={f.value} onChange={(e) => setValue(e.target.value)} />}
           </div>
-          <div className="field"><label>Beoordeling</label>
+          <div className="field"><label>Resultaat</label>
             <div className="verdict-pick">
               {['groen', 'rood'].map((v) => (
-                <button type="button" key={v} className={`verdict ${v} ${f.beoordeling === v ? 'picked' : ''}`} onClick={() => setF({ ...f, beoordeling: f.beoordeling === v ? '' : v })}>{v}</button>
+                <button type="button" key={v} className={`verdict ${v} ${f.beoordeling === v ? 'picked' : ''}`} onClick={() => setF({ ...f, beoordeling: f.beoordeling === v ? '' : v })}>{RESULT_LABEL[v]}</button>
               ))}
             </div>
-            {suggestion && <div className="hint">Volgens de drempelwaarde: {suggestion}.</div>}
+            {suggestion && <div className="hint">Volgens de drempelwaarde: {RESULT_LABEL[suggestion].toLowerCase()}.</div>}
           </div>
         </div>
         <div className="field"><label>Opmerking / analyse</label><textarea rows={2} value={f.comment} onChange={(e) => setF({ ...f, comment: e.target.value })} /></div>

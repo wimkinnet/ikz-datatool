@@ -63,7 +63,7 @@ export default function Doelen() {
               <span className="spacer" />
               <GoalStatus a={a} />
               <span className="tally">
-                {a.total > 0 && <span>{a.groen} groen · {a.rood} rood · {a.open} nog niet gemeten</span>}
+                {a.total > 0 && <span>{a.done} van {a.total} ingevuld{a.done > 0 && ` · ${a.groen} op niveau · ${a.rood} onder niveau`}</span>}
                 {openActions > 0 && <span>· {openActions} open actie{openActions === 1 ? '' : 's'}</span>}
               </span>
               <button className="btn btn-sm" onClick={() => { t.setError(''); setGoal(g); }}>Bewerken</button>
@@ -94,8 +94,8 @@ export default function Doelen() {
                           return (
                             <tr key={m._id}>
                               <td><button className="link-btn strong" onClick={() => setMeting(m)}>{m.title}</button>{m.bron && <div className="muted">{m.bron}</div>}</td>
-                              <td style={{ width: 140 }}>{mt ? formatValue(m, mt.value) || <span className="muted">—</span> : <span className="muted">niet gemeten</span>}</td>
-                              <td style={{ width: 80 }}><Beoordeling value={mt?.beoordeling} /></td>
+                              <td style={{ width: 140 }}>{mt ? formatValue(m, mt.value) || <span className="muted">—</span> : <span className="muted">nog niet ingevuld</span>}</td>
+                              <td style={{ width: 120 }}><Beoordeling value={mt?.beoordeling} /></td>
                             </tr>
                           );
                         })}

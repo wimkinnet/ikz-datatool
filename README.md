@@ -13,23 +13,23 @@ Operationeel doel (per school, per school year, from 2026-2027)
   ├─ draagt bij aan → ROK-verwachtingen (R1 … BL12)
   └─ gekoppeld aan → domeinen (shared list; each is proces, resultaten or context)
                          └─ meetpunten (per school; one meetpunt can serve several domeinen)
-                              └─ metingen per school year (from 2024-2025): value + groen/rood
+                              └─ metingen per school year (from 2024-2025): value + resultaat (op niveau / onder niveau)
                                    └─ acties (owner, deadline, status)
 ```
 
 Menu: **Dashboard** · **ROK** · **Operationele doelen** · **Meetpunten** · **Kalender** · **Acties** · Documenten.
 
-- **Dashboard** (start page) — KPIs, meetpunten per month and their status, the assessment per operational goal,
-  share of green per school year, meetpunten per category, red meetpunten without an open action, overdue actions.
+- **Dashboard** (start page) — KPIs, invulstatus and resultaat per month (two separate questions: is it filled in, and if so what is the result), the assessment per operational goal,
+  share op niveau per school year, results per category, meetpunten onder niveau without an open action, overdue actions.
 - **ROK** — every ROK-domein and quality expectation with its explanation, and per expectation the school's
   operational goals that contribute to it (codes on a goal link here, and back).
 - **Operationele doelen** — per school year; each links to ROK expectations and to one or more domeinen. Its overall
-  assessment comes from the red/green verdicts of its meetpunten that year: ≥ 75% green *op koers*, ≥ 50% *aandacht*,
+  assessment comes from the results of its meetpunten that year: ≥ 75% op niveau *op koers*, ≥ 50% *aandacht*,
   otherwise *niet op koers*; *voorlopig* while not every meetpunt is assessed (`client/src/test/assess.js`).
 - **Kalender** — per month of the school year, the meetpunten to evaluate: done / this month / overdue / planned.
 - **Meetpunten** — per domein, with uitleg, bron, month of evaluation, value type (percentage, absolute number or
   free text) and an optional threshold; one column per school year so history sits next to this year. The threshold
-  suggests groen/rood, but the assessment is always the user's choice.
+  suggests the result, but the assessment is always the user's choice.
 - **Acties** — every action linked to a measuring result (meetpunt + school year), with owner, deadline and status
   (open / bezig / afgerond); overdue actions are flagged.
 - **Sjablonen → Domeinen** (admins) — the shared list of domeinen, initially the 19 themes of the former BO year plan.
