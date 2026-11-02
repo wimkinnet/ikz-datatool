@@ -2,12 +2,15 @@ const express = require('express');
 const router = express.Router();
 const User = require('../models/User');
 const School = require('../models/School');
+const Visit = require('../models/Visit');
 const { protect, requireRole, requireStaff } = require('../middleware/auth');
 const { schoolIdsOf, canAccessSchool } = require('../middleware/access');
 const pick = require('../utils/pick');
 const { THEMES } = require('../utils/constants');
 
 router.use(protect, requireStaff);
+
+const VISITS_SHOWN = 500;
 
 // A consultant may only manage school users (role=client) whose schools are all among their own schools.
 function canManage(actor, target) {
@@ -32,6 +35,31 @@ router.get('/', async (req, res) => {
     res.json(users.map((u) => u.toSafeObject()));
   } catch (err) {
     res.status(500).json({ message: 'Kon gebruikers niet laden.', error: err.message });
+  }
+});
+
+// GET /api/users/visits?school=  - the log of school users' visits, newest first, for the users this person may see
+router.get('/visits', async (req, res) => {
+  try {
+    const { school } = req.query;
+    if (school && !canAccessSchool(req.user, school)) return res.status(403).json({ message: 'Je hebt geen toegang tot deze school.' });
+    const scope = school ? [school] : req.user.role === 'admin' ? null : schoolIdsOf(req.user);
+    const users = await User.find({ role: 'client', ...(scope && { $or: [{ schools: { $in: scope } }, { school: { $in: scope } }] }) });
+    const byId = new Map(users.map((u) => [String(u._id), u]));
+    const filter = { user: { $in: users.map((u) => u._id) } };
+    const [visits, total] = await Promise.all([
+      Visit.find(filter).sort({ startedAt: -1 }).limit(VISITS_SHOWN).lean(),
+      Visit.countDocuments(filter),
+    ]);
+    res.json({
+      total,
+      visits: visits.map((v) => {
+        const u = byId.get(String(v.user));
+        return { _id: v._id, startedAt: v.startedAt, lastSeenAt: v.lastSeenAt, name: u.name, email: u.email, schools: schoolIdsOf(u) };
+      }),
+    });
+  } catch (err) {
+    res.status(500).json({ message: 'Kon het logboek niet laden.', error: err.message });
   }
 });
 
@@ -107,6 +135,7 @@ router.delete('/:id', requireRole('admin'), async (req, res) => {
     const user = await User.findById(req.params.id);
     if (!user) return res.status(404).json({ message: 'Gebruiker niet gevonden.' });
     await user.deleteOne();
+    await Visit.deleteMany({ user: user._id });
     res.json({ message: 'Gebruiker verwijderd.' });
   } catch (err) {
     res.status(400).json({ message: 'Kon gebruiker niet verwijderen.', error: err.message });

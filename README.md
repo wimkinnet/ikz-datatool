@@ -43,6 +43,8 @@ because the model started as a "Test" tab next to the former BO and SO parts.
 
 A school can be marked as **voorbeeldschool** (admin, in the school form): school users linked to it can look around, read-only, while consultants and admins work as usual. Give each interested school its own account of role *School* linked to it.
 
+**Logboek** (admins and consultants, under Beheer): when school users were on the site. A visit runs from their first request to their last, and ends after 30 minutes without activity (`utils/visits.js`). Consultants see the school users of their own schools. Visits are removed automatically after a year, and when the user is deleted.
+
 Access is enforced on the server for every route, also for changes by id (`middleware/access.js`, `routes/test.js`).
 
 ## House styles

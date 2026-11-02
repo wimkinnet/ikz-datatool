@@ -39,6 +39,7 @@ export default function Layout() {
               <div className="nav-heading">Beheer</div>
               <NavLink to="/scholen" className={link}>Scholen</NavLink>
               <NavLink to="/gebruikers" className={link}>Gebruikers</NavLink>
+              <NavLink to="/logboek" className={link}>Logboek</NavLink>
             </>
           )}
           {user.role === 'admin' && (

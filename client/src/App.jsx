@@ -8,6 +8,7 @@ import Login from './pages/Login';
 import Documenten from './pages/Documenten';
 import Scholen from './pages/Scholen';
 import Gebruikers from './pages/Gebruikers';
+import Logboek from './pages/Logboek';
 import Profiel from './pages/Profiel';
 import Rok from './pages/Rok';
 import Flow from './pages/Flow';
@@ -41,6 +42,7 @@ export default function App() {
               <Route path="profiel" element={<Profiel />} />
               <Route path="scholen" element={<RoleRoute roles={staff}><Scholen /></RoleRoute>} />
               <Route path="gebruikers" element={<RoleRoute roles={staff}><Gebruikers /></RoleRoute>} />
+              <Route path="logboek" element={<RoleRoute roles={staff}><Logboek /></RoleRoute>} />
               <Route path="sjablonen/domeinen" element={<RoleRoute roles={['admin']}><Domeinen /></RoleRoute>} />
               {/* Older addresses */}
               <Route path="dashboard" element={<Navigate to="/" replace />} />

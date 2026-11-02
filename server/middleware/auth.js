@@ -1,5 +1,6 @@
 const jwt = require('jsonwebtoken');
 const User = require('../models/User');
+const { recordVisit } = require('../utils/visits');
 
 async function protect(req, res, next) {
   try {
@@ -13,6 +14,7 @@ async function protect(req, res, next) {
       return res.status(401).json({ message: 'Account niet gevonden of gedeactiveerd.' });
     }
     req.user = user;
+    recordVisit(user);
     next();
   } catch (err) {
     return res.status(401).json({ message: 'Sessie verlopen of ongeldig. Log opnieuw in.' });
