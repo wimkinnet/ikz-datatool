@@ -1,13 +1,19 @@
 import { currentSchoolYear, PLAN_MONTHS } from '../utils/constants';
 
-// Two separate questions per meetpunt and school year:
-//  - invulstatus: has it been filled in? (ingevuld / achterstallig / nog in te vullen)
+// Two separate questions per meetpunt (an indicator or the meetpunt of an action):
+//  - invulstatus: has it been filled in? (ingevuld / te laat / nog in te vullen)
 //  - resultaat, only once filled in: op niveau / onder niveau / zonder beoordeling
 // (stored as beoordeling 'groen' / 'rood' / empty).
 export const RESULT_LABEL = { groen: 'Op niveau', rood: 'Onder niveau' };
 
-// Overall assessment of an operational goal from the results of its meetpunten in one school year.
-// Share op niveau among the assessed meetpunten: >= 75% op koers, >= 50% aandacht, otherwise niet op koers.
+// Codes as shown: ROK-R1, Sign-P2 (category letter + number per school and category) and Strat-1
+const SIGNAL_LETTER = { context: 'C', proces: 'P', resultaten: 'R' };
+export const signalCode = (s) => `Sign-${SIGNAL_LETTER[s.category] || '?'}${s.number}`;
+export const strategicCode = (s) => `Strat-${s.number}`;
+export const rokCode = (code) => `ROK-${code}`;
+
+// Overall assessment of an operational goal from the results of its indicators.
+// Share op niveau among the assessed indicators: >= 75% op koers, >= 50% aandacht, otherwise niet op koers.
 export const GOAL_RULE = { opKoers: 0.75, aandacht: 0.5 };
 
 export const GOAL_STATUS = {
@@ -15,7 +21,7 @@ export const GOAL_STATUS = {
   aandacht: { label: 'Aandacht', cls: 'monitoren' },
   niet: { label: 'Niet op koers', cls: 'actie' },
   onbekend: { label: 'Nog geen resultaat', cls: 'none' },
-  geen: { label: 'Geen meetpunten', cls: 'none' },
+  geen: { label: 'Geen indicatoren', cls: 'none' },
 };
 
 // Chart colours (validated: chroma floor and CVD separation pass; results always ship with labels + legend).
@@ -33,49 +39,40 @@ export function monthPhase(schoolYear, idx) {
   return idx < todayMonthIdx() ? 'past' : idx === todayMonthIdx() ? 'now' : 'future';
 }
 
-export const isFilled = (mt) => !!mt && ((mt.value !== null && mt.value !== '') || !!mt.beoordeling);
+export const isFilled = (m) => (m.value !== null && m.value !== undefined && m.value !== '') || !!m.beoordeling;
 
-// Invulstatus: 'done' | 'late' | 'now' | 'planned'. A meetpunt without an evaluation month is never overdue.
-export function fillState(m, mt, schoolYear) {
-  if (isFilled(mt)) return 'done';
+// Invulstatus in the school year of its goal: 'done' | 'late' | 'now' | 'planned'
+export function fillState(m, schoolYear) {
+  if (isFilled(m)) return 'done';
   const idx = PLAN_MONTHS.findIndex((x) => x.key === m.month);
   const phase = idx === -1 ? 'future' : monthPhase(schoolYear, idx);
   return phase === 'past' ? 'late' : phase === 'now' ? 'now' : 'planned';
 }
 
 // Resultaat: 'groen' | 'rood' | 'zonder' (filled in, not assessed) | null (not filled in yet)
-export const resultOf = (mt) => (isFilled(mt) ? mt.beoordeling || 'zonder' : null);
+export const resultOf = (m) => (isFilled(m) ? m.beoordeling || 'zonder' : null);
 
-// Counts for a list of meetpunten: invulstatus (done, late, now, planned) and resultaat (groen, rood, zonder)
-export function tally(meetpunten, t, schoolYear) {
+// Counts for a list of meetpunten of one school year: invulstatus and resultaat
+export function tally(meetpunten, schoolYear) {
   const c = { total: meetpunten.length, done: 0, late: 0, now: 0, planned: 0, groen: 0, rood: 0, zonder: 0 };
   for (const m of meetpunten) {
-    const mt = t.metingOf(m._id, schoolYear);
-    c[fillState(m, mt, schoolYear)]++;
-    const r = resultOf(mt);
+    c[fillState(m, schoolYear)]++;
+    const r = resultOf(m);
     if (r) c[r]++;
   }
   return c;
 }
 
-// A meetpunt can belong to several beoogde resultaten
-export const resultsOf = (m) => (m.results || []).map(String);
-export const inResult = (m, resultId) => resultsOf(m).includes(String(resultId));
-export const resultNames = (m, resultById) => resultsOf(m).map((id) => resultById[id]?.name).filter(Boolean).join(', ');
+// A goal's domeinen follow from its signals
+export const goalSignals = (goal, signals) => signals.filter((s) => (goal.signals || []).includes(s._id));
+export const goalDomains = (goal, signals) => [...new Set(goalSignals(goal, signals).map((s) => String(s.domain)))];
 
-// The active meetpunten under a goal's beoogde resultaten (each counted once, also when it serves several)
-export function goalMeetpunten(goal, meetpunten) {
-  const ids = new Set(goal.results.map(String));
-  return meetpunten.filter((m) => m.active && resultsOf(m).some((id) => ids.has(id)));
-}
-
-export function assessGoal(goal, t, schoolYear) {
-  const mps = goalMeetpunten(goal, t.meetpunten);
-  const c = tally(mps, t, schoolYear);
-  const { groen, rood } = c;
+export function assessGoal(goal, t) {
+  const c = tally(t.indicatorsOf(goal._id), goal.schoolYear);
+  const { groen, rood, total } = c;
   const measured = groen + rood;
   const ratio = measured ? groen / measured : null;
   let key = 'geen';
-  if (mps.length) key = !measured ? 'onbekend' : ratio >= GOAL_RULE.opKoers ? 'ok' : ratio >= GOAL_RULE.aandacht ? 'aandacht' : 'niet';
-  return { key, ...GOAL_STATUS[key], ...c, measured, ratio, provisional: measured > 0 && measured < mps.length };
+  if (total) key = !measured ? 'onbekend' : ratio >= GOAL_RULE.opKoers ? 'ok' : ratio >= GOAL_RULE.aandacht ? 'aandacht' : 'niet';
+  return { key, ...GOAL_STATUS[key], ...c, measured, ratio, provisional: measured > 0 && measured < total };
 }

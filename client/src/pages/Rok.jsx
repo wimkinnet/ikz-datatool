@@ -5,6 +5,7 @@ import { useApp } from '../context/AppContext';
 import { ErrorBanner } from '../components/Bits';
 import { useCollapse, Chevron, ToggleAll } from '../components/Collapse';
 import { FIRST_GOAL_YEAR } from '../utils/constants';
+import { rokCode } from '../test/assess';
 
 // The ROK (referentiekader voor onderwijskwaliteit): every domain and quality expectation with its explanation.
 // It also lists the active school's operational goals per expectation. ?code=R1 opens one.
@@ -37,7 +38,7 @@ export default function Rok() {
     const term = q.trim().toLowerCase();
     const out = [];
     for (const r of rok) {
-      if (term && ![r.code, r.title, r.description].join(' ').toLowerCase().includes(term)) continue;
+      if (term && ![rokCode(r.code), r.title, r.description].join(' ').toLowerCase().includes(term)) continue;
       let d = out.find((x) => x.domain === r.domain);
       if (!d) out.push((d = { domain: r.domain, items: [] }));
       d.items.push(r);
@@ -103,7 +104,7 @@ export default function Rok() {
               return (
                 <article key={r.code} id={`rok-${r.code}`} ref={r.code === focus ? focusRef : null} className={`rok-item ${r.code === focus ? 'focus' : ''}`}>
                   <button className="tree-toggle rok-item-head" onClick={() => c.toggle(r.code)} aria-expanded={open}>
-                    <Chevron open={open} /> <span className="tag">{r.code}</span> <strong>{r.title}</strong>
+                    <Chevron open={open} /> <span className="tag">{rokCode(r.code)}</span> <strong>{r.title}</strong>
                     {withGoals && linked.length > 0 && <span className="rok-goal-count">{linked.length} doel{linked.length === 1 ? '' : 'en'}</span>}
                   </button>
                   {open && (

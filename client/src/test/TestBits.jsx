@@ -3,10 +3,9 @@ import api from '../api/axios';
 import Modal from '../components/Modal';
 import { ErrorBanner } from '../components/Bits';
 import { useConfirm } from '../components/Confirm';
-import { formatDate } from '../utils/format';
-import { RESULT_LABEL } from './assess';
+import { RESULT_LABEL, rokCode, signalCode, strategicCode } from './assess';
 import {
-  PLAN_MONTHS, TEST_CATEGORIES, TEST_VALUE_TYPES, TEST_ACTION_STATUSES, testCategoryLabel, monthLabel,
+  PLAN_MONTHS, TEST_CATEGORIES, currentSchoolYear, yearOptions, TEST_VALUE_TYPES, TEST_ACTION_STATUSES, testCategoryLabel,
 } from '../utils/constants';
 
 // ---------------------------------------------------------------- small display helpers
@@ -19,8 +18,8 @@ export function Beoordeling({ value, empty = '—' }) {
 export function GoalStatus({ a }) {
   const pct = a.ratio === null ? '' : ` · ${Math.round(a.ratio * 100)}% op niveau`;
   const title = a.total
-    ? `${a.done} van ${a.total} meetpunten ingevuld; resultaat: ${a.groen} op niveau, ${a.rood} onder niveau${a.zonder ? `, ${a.zonder} zonder beoordeling` : ''}${a.provisional ? ' (voorlopig)' : ''}`
-    : 'Koppel meetpunten aan de domeinen van dit doel';
+    ? `${a.done} van ${a.total} indicatoren ingevuld; resultaat: ${a.groen} op niveau, ${a.rood} onder niveau${a.zonder ? `, ${a.zonder} zonder beoordeling` : ''}${a.provisional ? ' (voorlopig)' : ''}`
+    : 'Voeg indicatoren toe om het succes van dit doel te meten';
   return (
     <span className={`status-pill ${a.cls}`} title={title}>
       {a.label}{pct}{a.provisional && <span className="provisional"> · voorlopig</span>}
@@ -66,7 +65,7 @@ export function RokPicker({ rok, value, onChange }) {
           <div className="muted rok-domain">{d}</div>
           {rok.filter((r) => r.domain === d).map((r) => (
             <label key={r.code} className="checkbox-row" title={r.title}>
-              <input type="checkbox" checked={value.includes(r.code)} onChange={() => toggle(r.code)} /> <strong>{r.code}</strong> <span className="muted">{r.title}</span>
+              <input type="checkbox" checked={value.includes(r.code)} onChange={() => toggle(r.code)} /> <strong>{rokCode(r.code)}</strong> <span className="muted">{r.title}</span>
             </label>
           ))}
         </div>
@@ -75,44 +74,38 @@ export function RokPicker({ rok, value, onChange }) {
   );
 }
 
-export function ResultPicker({ results, value, onChange }) {
-  const [q, setQ] = useState('');
-  const term = q.trim().toLowerCase();
+// Optional links from an operational goal to signals or strategic goals
+function CodePicker({ items, codeOf, value, onChange, empty }) {
   const toggle = (id) => onChange(value.includes(id) ? value.filter((x) => x !== id) : [...value, id]);
+  if (!items.length) return <p className="muted" style={{ margin: 0, fontSize: 13 }}>{empty}</p>;
   return (
-    <div>
-      <input type="search" placeholder="Zoek een domein…" value={q} onChange={(e) => setQ(e.target.value)} style={{ marginBottom: 6 }} />
-      <div className="rok-picker">
-        {TEST_CATEGORIES.map((c) => {
-          const list = results.filter((r) => r.category === c.key && (!term || r.name.toLowerCase().includes(term)));
-          if (!list.length) return null;
-          return (
-            <div key={c.key}>
-              <div className="muted rok-domain">{c.label}</div>
-              {list.map((r) => (
-                <label key={r._id} className="checkbox-row">
-                  <input type="checkbox" checked={value.includes(r._id)} onChange={() => toggle(r._id)} /> {r.name}
-                </label>
-              ))}
-            </div>
-          );
-        })}
-      </div>
+    <div className="rok-picker">
+      {items.map((i) => (
+        <label key={i._id} className="checkbox-row">
+          <input type="checkbox" checked={value.includes(i._id)} onChange={() => toggle(i._id)} /> <strong>{codeOf(i)}</strong> {i.title}
+        </label>
+      ))}
     </div>
   );
 }
 
 // ---------------------------------------------------------------- operationeel doel
+function linkedText(t, goal) {
+  const ind = t.indicatorsOf(goal._id).length;
+  const act = t.actionsOf(goal._id).length;
+  const with_ = [ind && `${ind} indicator${ind === 1 ? '' : 'en'}`, act && `${act} actie${act === 1 ? '' : 's'}`].filter(Boolean);
+  return `"${goal.title}" wordt definitief verwijderd${with_.length ? `, samen met ${with_.join(' en ')}` : ''}. Dit kan niet ongedaan worden gemaakt.`;
+}
+
 export function GoalModal({ goal, t, onClose }) {
   const confirm = useConfirm();
-  const [f, setF] = useState({ title: '', description: '', rok: [], results: [], ...goal });
+  const [f, setF] = useState({ title: '', description: '', rok: [], signals: [], strategic: [], ...goal });
   const [busy, setBusy] = useState(false);
 
   async function submit(e) {
     e.preventDefault();
-    if (!f.results.length) { t.setError('Koppel minstens één domein.'); return; }
     setBusy(true);
-    const body = { title: f.title, description: f.description, rok: f.rok, results: f.results };
+    const body = { title: f.title, description: f.description, rok: f.rok, signals: f.signals, strategic: f.strategic };
     const ok = await t.run(() => (f._id
       ? api.put(`/test/goals/${f._id}`, body)
       : api.post('/test/goals', { ...body, school: t.schoolId, schoolYear: t.year })));
@@ -121,7 +114,7 @@ export function GoalModal({ goal, t, onClose }) {
   }
 
   async function remove() {
-    if (!(await confirm({ title: 'Doel verwijderen?', message: `"${f.title}" wordt verwijderd. De meetpunten, metingen en acties van de school blijven bewaard.` }))) return;
+    if (!(await confirm({ title: 'Doel verwijderen?', message: linkedText(t, f) }))) return;
     if (await t.run(() => api.delete(`/test/goals/${f._id}`))) onClose();
   }
 
@@ -131,9 +124,14 @@ export function GoalModal({ goal, t, onClose }) {
       <form onSubmit={submit}>
         <div className="field"><label>Operationeel doel</label><input required value={f.title} onChange={(e) => setF({ ...f, title: e.target.value })} /></div>
         <div className="field"><label>Toelichting</label><textarea rows={2} value={f.description} onChange={(e) => setF({ ...f, description: e.target.value })} /></div>
+        <div className="field"><label>Draagt bij aan (ROK)</label><RokPicker rok={t.rok} value={f.rok} onChange={(rok) => setF({ ...f, rok })} /></div>
         <div className="field-row">
-          <div className="field"><label>Draagt bij aan (ROK)</label><RokPicker rok={t.rok} value={f.rok} onChange={(rok) => setF({ ...f, rok })} /></div>
-          <div className="field"><label>Domeinen</label><ResultPicker results={t.results} value={f.results} onChange={(results) => setF({ ...f, results })} /></div>
+          <div className="field"><label>Draagt bij aan signalen (optioneel)</label>
+            <CodePicker items={t.signals} codeOf={signalCode} value={f.signals} onChange={(signals) => setF({ ...f, signals })} empty="Nog geen signalen voor deze school." />
+          </div>
+          <div className="field"><label>Draagt bij aan strategische doelen (optioneel)</label>
+            <CodePicker items={t.strategic} codeOf={strategicCode} value={f.strategic} onChange={(strategic) => setF({ ...f, strategic })} empty="Nog geen strategische doelen voor deze school." />
+          </div>
         </div>
         <div className="modal-actions">
           <button className="btn btn-primary" type="submit" disabled={busy}>{busy ? 'Bezig…' : 'Opslaan'}</button>
@@ -144,209 +142,276 @@ export function GoalModal({ goal, t, onClose }) {
   );
 }
 
-// ---------------------------------------------------------------- meetpunt (definition)
-export function MeetpuntModal({ meetpunt, t, onClose }) {
+// ---------------------------------------------------------------- signaal (consultants and admins)
+export function SignalModal({ signal, t, onClose }) {
   const confirm = useConfirm();
-  const [f, setF] = useState({
-    title: '', uitleg: '', bron: '', month: '', valueType: 'percentage', thresholdDirection: 'min', thresholdText: '', active: true,
-    ...meetpunt, results: (meetpunt.results || []).map(String), threshold: meetpunt.threshold ?? '',
-  });
-  const [busy, setBusy] = useState(false);
-  const set = (k) => (e) => setF({ ...f, [k]: e.target.type === 'checkbox' ? e.target.checked : e.target.value });
-  const numeric = f.valueType !== 'tekst';
-
-  async function submit(e) {
-    e.preventDefault();
-    if (!f.results.length) { t.setError('Kies minstens één domein.'); return; }
-    setBusy(true);
-    const body = {
-      results: f.results, title: f.title, uitleg: f.uitleg, bron: f.bron, month: f.month, valueType: f.valueType,
-      threshold: numeric ? f.threshold : '', thresholdDirection: f.thresholdDirection, thresholdText: f.thresholdText, active: f.active,
-    };
-    const ok = await t.run(() => (f._id ? api.put(`/test/meetpunten/${f._id}`, body) : api.post('/test/meetpunten', { ...body, school: t.schoolId })));
-    setBusy(false);
-    if (ok) onClose();
-  }
-
-  async function remove() {
-    const metingen = t.metingen.filter((m) => m.meetpunt === f._id);
-    const acties = t.actions.filter((a) => a.meetpunt === f._id);
-    const open = acties.filter((a) => a.status !== 'afgerond').length;
-    const linked = [
-      metingen.length && `${metingen.length} meting${metingen.length === 1 ? '' : 'en'} (${metingen.map((m) => m.schoolYear).sort().join(', ')})`,
-      acties.length && `${acties.length} actie${acties.length === 1 ? '' : 's'}${open ? `, waarvan ${open} nog niet afgerond` : ''}`,
-    ].filter(Boolean);
-    const ok = await confirm({
-      title: 'Meetpunt verwijderen?',
-      message: linked.length
-        ? `"${f.title}" wordt definitief verwijderd, samen met:\n• ${linked.join('\n• ')}\n\nDe acties verdwijnen ook uit Acties. Dit kan niet ongedaan worden gemaakt. Wil je de historiek bewaren, zet het meetpunt dan op inactief.`
-        : `"${f.title}" wordt definitief verwijderd.`,
-      confirmLabel: linked.length ? 'Meetpunt en gekoppelde gegevens verwijderen' : 'Verwijderen',
-    });
-    if (!ok) return;
-    if (await t.run(() => api.delete(`/test/meetpunten/${f._id}`, { params: { cascade: 1 } }))) onClose();
-  }
-
-  return (
-    <Modal title={f._id ? 'Meetpunt bewerken' : 'Nieuw meetpunt'} onClose={onClose} wide>
-      <ErrorBanner message={t.error} />
-      <form onSubmit={submit}>
-        <div className="field"><label>Hoort bij domein(en)</label>
-          <ResultPicker results={t.results} value={f.results} onChange={(results) => setF({ ...f, results })} />
-          <div className="hint">Een meetpunt kan bij meerdere domeinen horen; het verschijnt dan onder elk ervan.</div>
-        </div>
-        <div className="field"><label>Meetpunt</label><input required value={f.title} onChange={set('title')} placeholder="bv. % leerlingen met AVI-niveau op leeftijd" /></div>
-        <div className="field"><label>Uitleg</label><textarea rows={2} value={f.uitleg} onChange={set('uitleg')} /></div>
-        <div className="field-row">
-          <div className="field"><label>Bron</label><input value={f.bron} onChange={set('bron')} placeholder="bv. LVS, datawijzer, eigen bevraging" /></div>
-          <div className="field"><label>Maand van evaluatie</label>
-            <select value={f.month} onChange={set('month')}>
-              <option value="">Geen maand</option>
-              {PLAN_MONTHS.map((m) => <option key={m.key} value={m.key}>{m.label}</option>)}
-            </select>
-          </div>
-        </div>
-        <div className="field-row">
-          <div className="field"><label>Soort waarde</label>
-            <select value={f.valueType} onChange={set('valueType')}>{TEST_VALUE_TYPES.map((v) => <option key={v.key} value={v.key}>{v.label}</option>)}</select>
-          </div>
-          {numeric ? (
-            <div className="field"><label>Drempelwaarde (optioneel)</label>
-              <div style={{ display: 'flex', gap: 6 }}>
-                <select value={f.thresholdDirection} onChange={set('thresholdDirection')} style={{ width: 'auto' }} aria-label="Richting">
-                  <option value="min">minstens</option>
-                  <option value="max">hoogstens</option>
-                </select>
-                <input inputMode="decimal" value={f.threshold} onChange={set('threshold')} placeholder={f.valueType === 'percentage' ? 'bv. 80' : 'bv. 25'} />
-              </div>
-              <div className="hint">Met een drempelwaarde stelt de tool het resultaat voor.</div>
-            </div>
-          ) : (
-            <div className="field"><label>Drempelwaarde (optioneel)</label><input value={f.thresholdText} onChange={set('thresholdText')} /></div>
-          )}
-        </div>
-        {f._id && <label className="checkbox-row" style={{ marginBottom: 14 }}><input type="checkbox" checked={f.active} onChange={set('active')} /> Actief (inactieve meetpunten bewaren hun historiek)</label>}
-        <div className="modal-actions">
-          <button className="btn btn-primary" type="submit" disabled={busy}>{busy ? 'Bezig…' : 'Opslaan'}</button>
-          {f._id && <button type="button" className="btn btn-danger" onClick={remove}>Verwijderen</button>}
-        </div>
-      </form>
-    </Modal>
-  );
-}
-
-// ---------------------------------------------------------------- meting (one school year) + its actions
-export function MetingModal({ meetpunt: mp, schoolYear, t, onClose }) {
-  const existing = t.metingOf(mp._id, schoolYear);
-  const [f, setF] = useState({ value: existing?.value ?? '', beoordeling: existing?.beoordeling || '', comment: existing?.comment || '' });
-  const [busy, setBusy] = useState(false);
-  const [action, setAction] = useState(null);
-  const suggestion = suggestBeoordeling(mp, f.value);
-  const actions = t.actionsOf(mp._id, schoolYear);
-
-  function setValue(value) {
-    // Follow the threshold's suggestion until the user picks green/red differently
-    const prev = suggestBeoordeling(mp, f.value);
-    const next = suggestBeoordeling(mp, value);
-    setF({ ...f, value, beoordeling: !f.beoordeling || f.beoordeling === prev ? next || f.beoordeling : f.beoordeling });
-  }
-
-  async function submit(e) {
-    e.preventDefault();
-    setBusy(true);
-    const ok = await t.run(() => api.put('/test/metingen', { school: t.schoolId, meetpunt: mp._id, schoolYear, ...f }));
-    setBusy(false);
-    if (ok) onClose();
-  }
-
-  return (
-    <Modal title={`${mp.title} · ${schoolYear}`} onClose={onClose} wide>
-      <ErrorBanner message={t.error} />
-      {mp.uitleg && <p className="muted" style={{ marginTop: 0 }}>{mp.uitleg}</p>}
-      <p className="muted" style={{ marginTop: 0 }}>
-        Bron: {mp.bron || '—'} · Evaluatie: {mp.month ? monthLabel(mp.month) : '—'}{thresholdLabel(mp) && ` · Drempelwaarde: ${thresholdLabel(mp)}`}
-      </p>
-      <form onSubmit={submit}>
-        <div className="field-row">
-          <div className="field"><label>Waarde{mp.valueType === 'percentage' ? ' (%)' : ''}</label>
-            {mp.valueType === 'tekst'
-              ? <textarea rows={2} value={f.value} onChange={(e) => setValue(e.target.value)} />
-              : <input inputMode="decimal" value={f.value} onChange={(e) => setValue(e.target.value)} />}
-          </div>
-          <div className="field"><label>Resultaat</label>
-            <div className="verdict-pick">
-              {['groen', 'rood'].map((v) => (
-                <button type="button" key={v} className={`verdict ${v} ${f.beoordeling === v ? 'picked' : ''}`} onClick={() => setF({ ...f, beoordeling: f.beoordeling === v ? '' : v })}>{RESULT_LABEL[v]}</button>
-              ))}
-            </div>
-            {suggestion && <div className="hint">Volgens de drempelwaarde: {RESULT_LABEL[suggestion].toLowerCase()}.</div>}
-          </div>
-        </div>
-        <div className="field"><label>Opmerking / analyse</label><textarea rows={2} value={f.comment} onChange={(e) => setF({ ...f, comment: e.target.value })} /></div>
-        <button className="btn btn-primary" type="submit" disabled={busy}>{busy ? 'Bezig…' : 'Meting opslaan'}</button>
-      </form>
-
-      <div className="meting-actions">
-        <div className="tree-head">
-          <h3 style={{ margin: 0 }}>Acties</h3>
-          <span className="spacer" />
-          <button className="btn btn-sm" onClick={() => setAction({ status: 'open' })}>+ Actie</button>
-        </div>
-        {actions.length === 0 ? <p className="muted">Nog geen acties voor dit meetresultaat.</p> : (
-          <ul className="action-list">
-            {actions.map((a) => (
-              <li key={a._id}>
-                <span className={`status-pill task-${a.status}`}>{TEST_ACTION_STATUSES.find((s) => s.key === a.status)?.label}</span>{' '}
-                <button className="link-btn strong" onClick={() => setAction(a)}>{a.title}</button>
-                <span className="muted">{a.owner && ` · ${a.owner}`}{a.dueDate && ` · tegen ${formatDate(a.dueDate)}`}</span>
-              </li>
-            ))}
-          </ul>
-        )}
-      </div>
-
-      {action && <ActionModal action={action} meetpunt={mp} schoolYear={schoolYear} t={t} onClose={() => setAction(null)} />}
-    </Modal>
-  );
-}
-
-// ---------------------------------------------------------------- actie
-export function ActionModal({ action, meetpunt, schoolYear, t, onClose }) {
-  const confirm = useConfirm();
-  const [f, setF] = useState({ title: '', description: '', owner: '', status: 'open', ...action, dueDate: action.dueDate ? action.dueDate.slice(0, 10) : '' });
+  const [f, setF] = useState({ title: '', description: '', domain: '', measure: '', valueType: 'percentage', startYear: currentSchoolYear(), ...signal, startValue: signal.startValue ?? '' });
   const [busy, setBusy] = useState(false);
   const set = (k) => (e) => setF({ ...f, [k]: e.target.value });
 
   async function submit(e) {
     e.preventDefault();
     setBusy(true);
-    const body = { title: f.title, description: f.description, owner: f.owner, dueDate: f.dueDate, status: f.status };
-    const ok = await t.run(() => (f._id
-      ? api.put(`/test/actions/${f._id}`, body)
-      : api.post('/test/actions', { ...body, school: t.schoolId, meetpunt: meetpunt._id, schoolYear })));
+    const body = { title: f.title, description: f.description, domain: f.domain, measure: f.measure, valueType: f.valueType, startValue: f.startValue, startYear: f.startYear };
+    const ok = await t.run(() => (f._id ? api.put(`/test/signals/${f._id}`, body) : api.post('/test/signals', { ...body, school: t.schoolId })));
     setBusy(false);
     if (ok) onClose();
   }
 
   async function remove() {
-    if (!(await confirm({ title: 'Actie verwijderen?', message: `"${f.title}" wordt definitief verwijderd.` }))) return;
+    const linked = t.allGoals.filter((g) => g.signals?.includes(f._id)).length;
+    const ok = await confirm({
+      title: 'Signaal verwijderen?',
+      message: `"${f.title}" wordt definitief verwijderd.${linked ? `\n\n${linked} ${linked === 1 ? 'operationeel doel is' : 'operationele doelen zijn'} eraan gekoppeld; die koppeling verdwijnt, de doelen blijven bestaan.` : ''}`,
+    });
+    if (ok && (await t.run(() => api.delete(`/test/signals/${f._id}`)))) onClose();
+  }
+
+  return (
+    <Modal title={f._id ? `${signalCode(f)} bewerken` : 'Nieuw signaal'} onClose={onClose} wide>
+      <ErrorBanner message={t.error} />
+      <form onSubmit={submit}>
+        <div className="field"><label>Titel</label><input required value={f.title} onChange={(e) => setF({ ...f, title: e.target.value })} /></div>
+        <div className="field"><label>Beschrijving</label><textarea rows={3} value={f.description} onChange={(e) => setF({ ...f, description: e.target.value })} /></div>
+        <div className="field"><label>Domein</label>
+          <select required value={f.domain} onChange={set('domain')}>
+            <option value="">Kies een domein…</option>
+            {TEST_CATEGORIES.map((c) => (
+              <optgroup key={c.key} label={c.label}>
+                {t.results.filter((r) => r.category === c.key).map((r) => <option key={r._id} value={r._id}>{r.name}</option>)}
+              </optgroup>
+            ))}
+          </select>
+          <div className="hint">De categorie van het domein bepaalt de code: C (context), P (proces) of R (resultaten).{f._id && ' Kies je een domein uit een andere categorie, dan krijgt het signaal een nieuwe code.'}</div>
+        </div>
+        <div className="field"><label>Wat wordt gemeten?</label><input required value={f.measure} onChange={set('measure')} placeholder="bv. aantal leerlingen met ongewettigde afwezigheid" /></div>
+        <div className="field-row">
+          <div className="field"><label>Soort waarde</label>
+            <select value={f.valueType} onChange={set('valueType')}>{TEST_VALUE_TYPES.map((v) => <option key={v.key} value={v.key}>{v.label}</option>)}</select>
+          </div>
+          <div className="field"><label>Schooljaar van de startwaarde</label>
+            <select value={f.startYear} onChange={set('startYear')}>
+              <option value="">Geen schooljaar</option>
+              {yearOptions().map((y) => <option key={y} value={y}>{y}</option>)}
+            </select>
+          </div>
+        </div>
+        <div className="field"><label>Startwaarde{f.valueType === 'percentage' ? ' (%)' : ''}</label>
+          {f.valueType === 'tekst'
+            ? <textarea rows={2} value={f.startValue} onChange={set('startValue')} />
+            : <input inputMode="decimal" value={f.startValue} onChange={set('startValue')} />}
+        </div>
+        <div className="modal-actions">
+          <button className="btn btn-primary" type="submit" disabled={busy}>{busy ? 'Bezig…' : 'Opslaan'}</button>
+          {f._id && <button type="button" className="btn btn-danger" onClick={remove}>Verwijderen</button>}
+        </div>
+      </form>
+    </Modal>
+  );
+}
+
+// ---------------------------------------------------------------- strategisch doel (consultants and admins)
+export function StrategicModal({ goal, t, onClose }) {
+  const confirm = useConfirm();
+  const [f, setF] = useState({ title: '', description: '', ...goal });
+  const [busy, setBusy] = useState(false);
+
+  async function submit(e) {
+    e.preventDefault();
+    setBusy(true);
+    const body = { title: f.title, description: f.description };
+    const ok = await t.run(() => (f._id ? api.put(`/test/strategic/${f._id}`, body) : api.post('/test/strategic', { ...body, school: t.schoolId })));
+    setBusy(false);
+    if (ok) onClose();
+  }
+
+  async function remove() {
+    const linked = t.allGoals.filter((g) => g.strategic?.includes(f._id)).length;
+    const ok = await confirm({
+      title: 'Strategisch doel verwijderen?',
+      message: `"${f.title}" wordt definitief verwijderd.${linked ? `\n\n${linked} ${linked === 1 ? 'operationeel doel is' : 'operationele doelen zijn'} eraan gekoppeld; die koppeling verdwijnt, de doelen blijven bestaan.` : ''}`,
+    });
+    if (ok && (await t.run(() => api.delete(`/test/strategic/${f._id}`)))) onClose();
+  }
+
+  return (
+    <Modal title={f._id ? `${strategicCode(f)} bewerken` : 'Nieuw strategisch doel'} onClose={onClose}>
+      <ErrorBanner message={t.error} />
+      <form onSubmit={submit}>
+        <div className="field"><label>Titel</label><input required value={f.title} onChange={(e) => setF({ ...f, title: e.target.value })} /></div>
+        <div className="field"><label>Beschrijving</label><textarea rows={4} value={f.description} onChange={(e) => setF({ ...f, description: e.target.value })} /></div>
+        <div className="modal-actions">
+          <button className="btn btn-primary" type="submit" disabled={busy}>{busy ? 'Bezig…' : 'Opslaan'}</button>
+          {f._id && <button type="button" className="btn btn-danger" onClick={remove}>Verwijderen</button>}
+        </div>
+      </form>
+    </Modal>
+  );
+}
+
+// ---------------------------------------------------------------- meetpunt (indicator or meetpunt of an action)
+const EMPTY_MEETPUNT = { title: '', uitleg: '', bron: '', month: '', valueType: 'percentage', threshold: '', thresholdDirection: 'min', thresholdText: '', value: '', beoordeling: '', comment: '' };
+const meetpuntForm = (m) => ({ ...EMPTY_MEETPUNT, ...m, threshold: m?.threshold ?? '', value: m?.value ?? '', beoordeling: m?.beoordeling || '' });
+
+// Definition and measurement fields, shared by the indicator dialog and the action dialog
+function MeetpuntFields({ f, setF, nameLabel, namePlaceholder }) {
+  const set = (k) => (e) => setF({ ...f, [k]: e.target.value });
+  const numeric = f.valueType !== 'tekst';
+  const suggestion = suggestBeoordeling(f, f.value);
+
+  function setValue(value) {
+    // Follow the threshold's suggestion until the user picks a result differently
+    const prev = suggestBeoordeling(f, f.value);
+    const next = suggestBeoordeling(f, value);
+    setF({ ...f, value, beoordeling: !f.beoordeling || f.beoordeling === prev ? next || f.beoordeling : f.beoordeling });
+  }
+
+  return (
+    <>
+      <div className="field"><label>{nameLabel}</label><input required value={f.title} onChange={set('title')} placeholder={namePlaceholder} /></div>
+      <div className="field"><label>Uitleg</label><textarea rows={2} value={f.uitleg} onChange={set('uitleg')} /></div>
+      <div className="field-row">
+        <div className="field"><label>Bron</label><input value={f.bron} onChange={set('bron')} placeholder="bv. Smartschool, leerlingvolgsysteem" /></div>
+        <div className="field"><label>Moment van de meting</label>
+          <select required value={f.month} onChange={set('month')}>
+            <option value="">Kies een maand…</option>
+            {PLAN_MONTHS.map((m) => <option key={m.key} value={m.key}>{m.label}</option>)}
+          </select>
+        </div>
+      </div>
+      <div className="field-row">
+        <div className="field"><label>Soort waarde</label>
+          <select value={f.valueType} onChange={set('valueType')}>{TEST_VALUE_TYPES.map((v) => <option key={v.key} value={v.key}>{v.label}</option>)}</select>
+        </div>
+        {numeric ? (
+          <div className="field"><label>Drempelwaarde (optioneel)</label>
+            <div style={{ display: 'flex', gap: 6 }}>
+              <select value={f.thresholdDirection} onChange={set('thresholdDirection')} style={{ width: 'auto' }} aria-label="Richting">
+                <option value="min">minstens</option>
+                <option value="max">hoogstens</option>
+              </select>
+              <input inputMode="decimal" value={f.threshold} onChange={set('threshold')} />
+            </div>
+          </div>
+        ) : (
+          <div className="field"><label>Drempelwaarde (optioneel)</label><input value={f.thresholdText} onChange={set('thresholdText')} /></div>
+        )}
+      </div>
+      <div className="field-row">
+        <div className="field"><label>Gemeten waarde{f.valueType === 'percentage' ? ' (%)' : ''}</label>
+          {numeric
+            ? <input inputMode="decimal" value={f.value} onChange={(e) => setValue(e.target.value)} />
+            : <textarea rows={2} value={f.value} onChange={(e) => setValue(e.target.value)} />}
+        </div>
+        <div className="field"><label>Resultaat</label>
+          <div className="verdict-pick">
+            {['groen', 'rood'].map((v) => (
+              <button type="button" key={v} className={`verdict ${v} ${f.beoordeling === v ? 'picked' : ''}`} onClick={() => setF({ ...f, beoordeling: f.beoordeling === v ? '' : v })}>{RESULT_LABEL[v]}</button>
+            ))}
+          </div>
+          {suggestion && <div className="hint">Volgens de drempelwaarde: {RESULT_LABEL[suggestion].toLowerCase()}.</div>}
+        </div>
+      </div>
+      <div className="field"><label>Opmerking / analyse</label><textarea rows={2} value={f.comment} onChange={set('comment')} /></div>
+    </>
+  );
+}
+
+const meetpuntBody = (f) => {
+  const { title, uitleg, bron, month, valueType, thresholdDirection, thresholdText, value, beoordeling, comment } = f;
+  return { title, uitleg, bron, month, valueType, thresholdDirection, thresholdText, value, beoordeling, comment, threshold: valueType === 'tekst' ? '' : f.threshold };
+};
+
+// ---------------------------------------------------------------- indicator of an operational goal
+export function IndicatorModal({ indicator, goal, t, onClose }) {
+  const confirm = useConfirm();
+  const [f, setF] = useState(() => meetpuntForm(indicator));
+  const [busy, setBusy] = useState(false);
+
+  async function submit(e) {
+    e.preventDefault();
+    setBusy(true);
+    const ok = await t.run(() => (f._id
+      ? api.put(`/test/meetpunten/${f._id}`, meetpuntBody(f))
+      : api.post('/test/meetpunten', { ...meetpuntBody(f), school: t.schoolId, goal: goal._id })));
+    setBusy(false);
+    if (ok) onClose();
+  }
+
+  async function remove() {
+    if (!(await confirm({ title: 'Indicator verwijderen?', message: `"${f.title}" en de meting ervan worden definitief verwijderd.` }))) return;
+    if (await t.run(() => api.delete(`/test/meetpunten/${f._id}`))) onClose();
+  }
+
+  return (
+    <Modal title={f._id ? 'Indicator bewerken' : 'Nieuwe indicator'} onClose={onClose} wide>
+      <ErrorBanner message={t.error} />
+      <p className="muted" style={{ marginTop: 0 }}>Meet het succes van "{goal.title}" ({goal.schoolYear})</p>
+      <form onSubmit={submit}>
+        <MeetpuntFields f={f} setF={setF} nameLabel="Indicator" namePlaceholder="bv. aantal leerlingen met ongewettigde afwezigheid" />
+        <div className="modal-actions">
+          <button className="btn btn-primary" type="submit" disabled={busy}>{busy ? 'Bezig…' : 'Opslaan'}</button>
+          {f._id && <button type="button" className="btn btn-danger" onClick={remove}>Verwijderen</button>}
+        </div>
+      </form>
+    </Modal>
+  );
+}
+
+// ---------------------------------------------------------------- actie of an operational goal
+export function ActionModal({ action, t, onClose }) {
+  const confirm = useConfirm();
+  const [f, setF] = useState({ title: '', description: '', owner: '', goal: '', status: 'in_te_plannen', ...action, dueDate: action.dueDate ? action.dueDate.slice(0, 10) : '' });
+  const existing = action._id ? t.meetpuntOfAction(action._id) : null;
+  const [hasMeetpunt, setHasMeetpunt] = useState(!!existing);
+  const [mp, setMp] = useState(() => meetpuntForm(existing));
+  const [busy, setBusy] = useState(false);
+  const set = (k) => (e) => setF({ ...f, [k]: e.target.value });
+  // Goals of the same school year as the action
+  const year = t.goalById[f.goal]?.schoolYear || t.year;
+  const options = t.allGoals.filter((g) => g.schoolYear === year);
+
+  async function submit(e) {
+    e.preventDefault();
+    setBusy(true);
+    const body = { goal: f.goal, title: f.title, description: f.description, owner: f.owner, dueDate: f.dueDate, status: f.status, meetpunt: hasMeetpunt ? meetpuntBody(mp) : null };
+    const ok = await t.run(() => (f._id ? api.put(`/test/actions/${f._id}`, body) : api.post('/test/actions', { ...body, school: t.schoolId })));
+    setBusy(false);
+    if (ok) onClose();
+  }
+
+  async function remove() {
+    if (!(await confirm({ title: 'Actie verwijderen?', message: `"${f.title}"${existing ? ' en het meetpunt ervan worden' : ' wordt'} definitief verwijderd.` }))) return;
     if (await t.run(() => api.delete(`/test/actions/${f._id}`))) onClose();
   }
 
   return (
-    <Modal title={f._id ? 'Actie bewerken' : 'Nieuwe actie'} onClose={onClose}>
+    <Modal title={f._id ? 'Actie bewerken' : 'Nieuwe actie'} onClose={onClose} wide>
       <ErrorBanner message={t.error} />
-      <p className="muted" style={{ marginTop: 0 }}>Bij meetpunt "{meetpunt.title}" ({f.schoolYear || schoolYear})</p>
       <form onSubmit={submit}>
-        <div className="field"><label>Actie</label><input required value={f.title} onChange={set('title')} /></div>
+        <div className="field"><label>Operationeel doel</label>
+          <select required value={f.goal} onChange={set('goal')}>
+            <option value="">Kies een operationeel doel…</option>
+            {options.map((g) => <option key={g._id} value={g._id}>{g.title}</option>)}
+          </select>
+        </div>
+        <div className="field"><label>Actie</label><input required value={f.title} onChange={set('title')} placeholder="bv. gratis maaltijden aanbieden over de middag" /></div>
         <div className="field"><label>Beschrijving</label><textarea rows={2} value={f.description} onChange={set('description')} /></div>
         <div className="field-row">
+          <div className="field"><label>Status</label>
+            <select required value={f.status} onChange={set('status')}>{TEST_ACTION_STATUSES.map((s) => <option key={s.key} value={s.key}>{s.label}</option>)}</select>
+          </div>
           <div className="field"><label>Verantwoordelijke</label><input value={f.owner} onChange={set('owner')} placeholder="persoon of team" /></div>
-          <div className="field"><label>Deadline</label><input type="date" value={f.dueDate} onChange={set('dueDate')} /></div>
         </div>
-        <div className="field"><label>Status</label>
-          <select value={f.status} onChange={set('status')}>{TEST_ACTION_STATUSES.map((s) => <option key={s.key} value={s.key}>{s.label}</option>)}</select>
-        </div>
+        <div className="field"><label>Deadline</label><input type="date" value={f.dueDate} onChange={set('dueDate')} /></div>
+        <label className="checkbox-row" style={{ marginBottom: 12 }}>
+          <input type="checkbox" checked={hasMeetpunt} onChange={(e) => setHasMeetpunt(e.target.checked)} /> Het succes van deze actie meten met een meetpunt
+        </label>
+        {hasMeetpunt && (
+          <div className="action-meetpunt">
+            <MeetpuntFields f={mp} setF={setMp} nameLabel="Meetpunt" namePlaceholder="bv. aantal leerlingen dat over de middag op school eet" />
+          </div>
+        )}
         <div className="modal-actions">
           <button className="btn btn-primary" type="submit" disabled={busy}>{busy ? 'Bezig…' : 'Opslaan'}</button>
           {f._id && <button type="button" className="btn btn-danger" onClick={remove}>Verwijderen</button>}

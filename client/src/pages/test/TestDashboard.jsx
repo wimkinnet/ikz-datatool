@@ -4,9 +4,9 @@ import { ResponsiveContainer, BarChart, Bar, XAxis, YAxis, Tooltip, Legend, Cart
 import { useApp } from '../../context/AppContext';
 import { NoSchool, ErrorBanner, ChartEmpty } from '../../components/Bits';
 import { useTest } from '../../test/useTest';
-import { GoalStatus, MetingModal, formatValue } from '../../test/TestBits';
-import { assessGoal, CHART, GOAL_STATUS, monthPhase, resultNames, resultsOf, tally } from '../../test/assess';
-import { FIRST_GOAL_YEAR, FIRST_MEASURE_YEAR, PLAN_MONTHS, TEST_CATEGORIES, yearsBetween } from '../../utils/constants';
+import { GoalStatus, IndicatorModal, formatValue } from '../../test/TestBits';
+import { assessGoal, CHART, GOAL_STATUS, goalDomains, monthPhase, tally } from '../../test/assess';
+import { FIRST_GOAL_YEAR, PLAN_MONTHS, TEST_ACTION_STATUSES, TEST_CATEGORIES, yearsBetween } from '../../utils/constants';
 import { formatDate } from '../../utils/format';
 
 const today = () => new Date().toISOString().slice(0, 10);
@@ -21,7 +21,7 @@ const MONTH_SHORT = ['sep', 'okt', 'nov', 'dec', 'jan', 'feb', 'mrt', 'apr', 'me
 // Result stacks keep op niveau and onder niveau apart (validated palette, see test/assess.js).
 const FILL_SERIES = [
   { key: 'done', label: 'Ingevuld', color: CHART.ingevuld, ink: '#fff' },
-  { key: 'late', label: 'Achterstallig', color: CHART.aandacht, ink: '#fff' },
+  { key: 'late', label: 'Te laat', color: CHART.aandacht, ink: '#fff' },
   { key: 'todo', label: 'Nog in te vullen', color: CHART.none, ink: '#1f2a24' },
 ];
 const RESULT_SERIES = [
@@ -55,61 +55,62 @@ function MonthChart({ rows, series }) {
 export default function TestDashboard() {
   const { school } = useApp();
   const t = useTest();
-  const [meting, setMeting] = useState(null);
+  const [indicator, setIndicator] = useState(null);
   const year = t.year;
 
   const data = useMemo(() => {
-    const active = t.meetpunten.filter((m) => m.active);
-    const verdictOf = (m, y) => t.metingOf(m._id, y)?.beoordeling || null;
-
-    const goals = t.goals.map((g) => ({ g, a: assessGoal(g, t, year) }));
+    const goals = t.goals.map((g) => ({ g, a: assessGoal(g, t) }));
     const goalStatusCount = Object.fromEntries(Object.keys(GOAL_STATUS).map((k) => [k, goals.filter((x) => x.a.key === k).length]));
     const goalBars = goals.map(({ g, a }) => ({ name: short(g.title), full: g.title, groen: a.groen, zonder: a.zonder, rood: a.rood, status: a.label }));
 
-    const all = tally(active, t, year);
+    // Invulstatus covers everything to measure this year; the result KPI is about the goals, so about their indicators
+    const all = tally(t.yearMeetpunten, year);
+    const indicators = t.yearMeetpunten.filter((m) => m.kind === 'indicator');
+    const ind = tally(indicators, year);
 
-    const lastYear = year > FIRST_MEASURE_YEAR ? year : FIRST_MEASURE_YEAR;
-    const trend = yearsBetween(FIRST_MEASURE_YEAR, lastYear).map((y) => {
-      const v = t.meetpunten.map((m) => verdictOf(m, y)).filter(Boolean);
-      const g = v.filter((x) => x === 'groen').length;
-      return { name: y, pct: v.length ? Math.round((g / v.length) * 100) : null, groen: g, total: v.length };
+    const lastYear = year > FIRST_GOAL_YEAR ? year : FIRST_GOAL_YEAR;
+    const trend = yearsBetween(FIRST_GOAL_YEAR, lastYear).map((y) => {
+      const n = tally(t.meetpunten.filter((m) => m.kind === 'indicator' && t.goalById[m.goal]?.schoolYear === y), y);
+      const assessed = n.groen + n.rood;
+      return { name: y, pct: assessed ? Math.round((n.groen / assessed) * 100) : null, groen: n.groen, total: assessed };
     });
 
+    // A goal's indicators count in the category of each domein its signals are based on
     const perCategory = TEST_CATEGORIES.map((c) => {
-      // A meetpunt counts once in every category one of its beoogde resultaten belongs to
-      const list = active.filter((m) => resultsOf(m).some((id) => t.resultById[id]?.category === c.key));
-      const n = tally(list, t, year);
+      const inCat = goals.filter(({ g }) => goalDomains(g, t.signals).some((id) => t.resultById[id]?.category === c.key));
+      const n = tally(inCat.flatMap(({ g }) => t.indicatorsOf(g._id)), year);
       return { ...n, name: `${c.label} (${n.done}/${n.total})`, full: c.label };
     }).filter((c) => c.total > 0);
 
-    const openActions = t.actions.filter((a) => a.status !== 'afgerond');
+    const openActions = t.yearActions.filter((a) => a.status !== 'uitgevoerd');
     const late = openActions.filter((a) => a.dueDate && a.dueDate.slice(0, 10) < today());
-    const redWithoutAction = active.filter((m) => verdictOf(m, year) === 'rood' && !t.actionsOf(m._id, year).some((a) => a.status !== 'afgerond'));
+    const actionStatus = TEST_ACTION_STATUSES.map((s) => ({ name: s.label, count: t.yearActions.filter((a) => a.status === s.key).length }));
+    // Indicators below level whose goal has no action in progress or still to do
+    const belowWithoutAction = indicators.filter((m) => m.beoordeling === 'rood' && !t.actionsOf(m.goal).some((a) => a.status !== 'uitgevoerd'));
 
-    // Meetpunten per evaluation month of the active school year
+    // Everything to measure, per month of the active school year
     const perMonth = PLAN_MONTHS.map((mo, idx) => {
-      const n = tally(active.filter((x) => x.month === mo.key), t, year);
+      const n = tally(t.yearMeetpunten.filter((x) => x.month === mo.key), year);
       return { ...n, todo: n.now + n.planned, name: MONTH_SHORT[idx], full: mo.label, phase: monthPhase(year, idx) };
     });
-    const withoutMonth = active.filter((m) => !m.month).length;
 
-    return { perMonth, withoutMonth, goals, goalStatusCount, goalBars, all, trend, perCategory, openActions, late, redWithoutAction };
+    return { perMonth, goals, goalStatusCount, goalBars, all, ind, trend, perCategory, openActions, late, actionStatus, belowWithoutAction };
   }, [t, year]);
 
   if (!t.schoolId) return <NoSchool />;
-  const { all } = data;
-  const measured = all.groen + all.rood;
-  const pctGroen = measured ? Math.round((all.groen / measured) * 100) : null;
+  const { all, ind } = data;
+  const measured = ind.groen + ind.rood;
+  const pctGroen = measured ? Math.round((ind.groen / measured) * 100) : null;
 
   return (
     <div>
       <div className="page-header">
         <div>
           <h1>Dashboard</h1>
-          <p>Hoe staan de operationele doelen, meetpunten en acties van {school?.name} ervoor in {year}?</p>
+          <p>Hoe staan de operationele doelen, indicatoren en acties van {school?.name} ervoor in {year}?</p>
         </div>
       </div>
-      <ErrorBanner message={!meting ? t.error : ''} />
+      <ErrorBanner message={!indicator ? t.error : ''} />
 
       <div className="stat-grid">
         <div className="stat">
@@ -123,16 +124,16 @@ export default function TestDashboard() {
           <div className="label">Ingevuld</div>
           <div className="value">{all.done}<small> / {all.total}</small></div>
           <div className="stat-sub">
-            {all.total === 0 ? 'nog geen meetpunten' : <><span className={all.late ? 'st-actie' : ''}>{all.late} achterstallig</span> · {all.now} deze maand</>}
+            {all.total === 0 ? 'nog niets te meten' : <><span className={all.late ? 'st-actie' : ''}>{all.late} te laat</span> · {all.now} deze maand</>}
           </div>
         </Link>
         <div className="stat">
-          <div className="label">Op niveau</div>
+          <div className="label">Indicatoren op niveau</div>
           <div className="value st-ok">{pctGroen === null ? '—' : `${pctGroen}%`}</div>
-          <div className="stat-sub">{all.groen} op niveau · {all.rood} onder niveau{all.zonder > 0 && ` · ${all.zonder} zonder beoordeling`}</div>
+          <div className="stat-sub">{ind.groen} op niveau · {ind.rood} onder niveau{ind.zonder > 0 && ` · ${ind.zonder} zonder beoordeling`}</div>
         </div>
         <Link to="/acties" className="stat stat-link">
-          <div className="label">Open acties</div>
+          <div className="label">Acties nog niet uitgevoerd</div>
           <div className="value">{data.openActions.length}</div>
           <div className={`stat-sub ${data.late.length ? 'st-actie' : ''}`}>{data.late.length} te laat</div>
         </Link>
@@ -141,17 +142,16 @@ export default function TestDashboard() {
       <div className="chart-grid">
         <div className="chart-card">
           <h3>Invulstatus per maand ({year})</h3>
-          {data.perMonth.every((r) => !r.total) ? <ChartEmpty>Nog geen meetpunten met een maand van evaluatie.</ChartEmpty> : (
+          {data.perMonth.every((r) => !r.total) ? <ChartEmpty>Nog niets te meten in {year}.</ChartEmpty> : (
             <>
               <MonthChart rows={data.perMonth} series={FILL_SERIES} />
-              {data.withoutMonth > 0 && <p className="muted" style={{ fontSize: 12.5 }}>{data.withoutMonth} meetpunt{data.withoutMonth === 1 ? '' : 'en'} zonder maand van evaluatie (niet in de grafiek).</p>}
             </>
           )}
         </div>
 
         <div className="chart-card">
           <h3>Resultaat per maand ({year})</h3>
-          {data.perMonth.every((r) => !r.done) ? <ChartEmpty>Nog geen ingevulde meetpunten in {year}.</ChartEmpty> : <MonthChart rows={data.perMonth} series={RESULT_SERIES} />}
+          {data.perMonth.every((r) => !r.done) ? <ChartEmpty>Nog niets ingevuld in {year}.</ChartEmpty> : <MonthChart rows={data.perMonth} series={RESULT_SERIES} />}
         </div>
 
         <div className="chart-card">
@@ -172,15 +172,15 @@ export default function TestDashboard() {
                   </ResponsiveContainer>
                 )}
                 <ul className="goal-status-list">
-                  {data.goals.map(({ g, a }) => <li key={g._id}><GoalStatus a={a} /> <Link to={`/doelen?goal=${g._id}`}>{g.title}</Link> <span className="muted">· {a.done} van {a.total} ingevuld</span></li>)}
+                  {data.goals.map(({ g, a }) => <li key={g._id}><GoalStatus a={a} /> <Link to={`/doelen?goal=${g._id}`}>{g.title}</Link> {a.total > 0 && <span className="muted">· {a.done} van {a.total} indicatoren ingevuld</span>}</li>)}
                 </ul>
               </>
             )}
         </div>
 
         <div className="chart-card">
-          <h3>Aandeel op niveau per schooljaar</h3>
-          {data.trend.every((d) => d.pct === null) ? <ChartEmpty>Nog geen metingen met een resultaat.</ChartEmpty> : (
+          <h3>Indicatoren op niveau per schooljaar</h3>
+          {data.trend.every((d) => d.pct === null) ? <ChartEmpty>Nog geen indicatoren met een resultaat.</ChartEmpty> : (
             <ResponsiveContainer width="100%" height={260}>
               <BarChart data={data.trend} margin={{ top: 20, right: 10, left: -20, bottom: 0 }}>
                 <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="var(--chart-grid)" />
@@ -196,8 +196,8 @@ export default function TestDashboard() {
         </div>
 
         <div className="chart-card">
-          <h3>Resultaat per categorie ({year})</h3>
-          {data.perCategory.every((c) => !c.done) ? <ChartEmpty>Nog geen ingevulde meetpunten in {year}.</ChartEmpty> : (
+          <h3>Indicatoren per categorie ({year})</h3>
+          {data.perCategory.every((c) => !c.done) ? <ChartEmpty>Nog geen ingevulde indicatoren bij doelen met een signaal in {year}.</ChartEmpty> : (
             <>
               <ResponsiveContainer width="100%" height={Math.max(180, data.perCategory.length * 50 + 60)}>
                 <BarChart data={data.perCategory} layout="vertical" margin={{ top: 5, right: 20, left: 0, bottom: 0 }} barCategoryGap={12}>
@@ -209,20 +209,37 @@ export default function TestDashboard() {
                   {stackBars(RESULT_SERIES)}
                 </BarChart>
               </ResponsiveContainer>
-              <p className="muted" style={{ fontSize: 12.5, marginBottom: 6 }}>Tussen haakjes: ingevulde meetpunten / alle meetpunten.</p>
+              <p className="muted" style={{ fontSize: 12.5, marginBottom: 6 }}>De categorie volgt uit de signalen van het doel. Tussen haakjes: ingevulde / alle indicatoren.</p>
             </>
           )}
         </div>
 
         <div className="chart-card">
+          <h3>Acties per status ({year})</h3>
+          {data.actionStatus.every((d) => !d.count) ? <ChartEmpty>Nog geen acties in {year}.</ChartEmpty> : (
+            <ResponsiveContainer width="100%" height={220}>
+              <BarChart data={data.actionStatus} layout="vertical" margin={{ top: 5, right: 30, left: 0, bottom: 0 }} barCategoryGap={12}>
+                <CartesianGrid strokeDasharray="3 3" horizontal={false} stroke="var(--chart-grid)" />
+                <XAxis type="number" allowDecimals={false} fontSize={12} tickLine={false} />
+                <YAxis type="category" dataKey="name" width={100} fontSize={12} tickLine={false} />
+                <Tooltip cursor={{ fill: 'var(--chart-hover)' }} />
+                <Bar dataKey="count" name="Acties" fill={CHART.accent} radius={[0, 4, 4, 0]} maxBarSize={32}>
+                  <LabelList dataKey="count" position="right" fontSize={12} fill="var(--ink)" formatter={countLabel} />
+                </Bar>
+              </BarChart>
+            </ResponsiveContainer>
+          )}
+        </div>
+
+        <div className="chart-card">
           <h3>Aandachtspunten</h3>
-          <h4 className="dash-sub">Onder niveau in {year}, nog zonder open actie</h4>
-          {data.redWithoutAction.length === 0 ? <p className="muted">Geen.</p> : (
+          <h4 className="dash-sub">Indicatoren onder niveau, zonder actie die nog loopt</h4>
+          {data.belowWithoutAction.length === 0 ? <p className="muted">Geen.</p> : (
             <ul className="dash-list">
-              {data.redWithoutAction.map((m) => (
+              {data.belowWithoutAction.map((m) => (
                 <li key={m._id}>
-                  <button className="link-btn strong" onClick={() => { t.setError(''); setMeting(m); }}>{m.title}</button>
-                  <span className="muted"> · {formatValue(m, t.metingOf(m._id, year)?.value)} · {resultNames(m, t.resultById)}</span>
+                  <button className="link-btn strong" onClick={() => { t.setError(''); setIndicator(m); }}>{m.title}</button>
+                  <span className="muted"> · {formatValue(m, m.value)} · {t.goalById[m.goal]?.title}</span>
                 </li>
               ))}
             </ul>
@@ -241,7 +258,7 @@ export default function TestDashboard() {
         </div>
       </div>
 
-      {meting && <MetingModal meetpunt={meting} schoolYear={year} t={t} onClose={() => setMeting(null)} />}
+      {indicator && <IndicatorModal indicator={indicator} goal={t.goalById[indicator.goal]} t={t} onClose={() => setIndicator(null)} />}
     </div>
   );
 }

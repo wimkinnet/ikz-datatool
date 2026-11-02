@@ -11,9 +11,10 @@ import Gebruikers from './pages/Gebruikers';
 import Profiel from './pages/Profiel';
 import Rok from './pages/Rok';
 import Dashboard from './pages/test/TestDashboard';
+import Signalen from './pages/test/Signalen';
+import StrategischeDoelen from './pages/test/StrategischeDoelen';
 import Doelen from './pages/test/Doelen';
 import Kalender from './pages/test/TestKalender';
-import Meetpunten from './pages/test/Meetpunten';
 import Acties from './pages/test/Taken';
 import Domeinen from './pages/test/Resultaten';
 
@@ -28,10 +29,11 @@ export default function App() {
             <Route path="/login" element={<Login />} />
             <Route path="/" element={<PrivateRoute><Layout /></PrivateRoute>}>
               <Route index element={<Dashboard />} />
+              <Route path="signalen" element={<Signalen />} />
+              <Route path="strategische-doelen" element={<StrategischeDoelen />} />
               <Route path="rok" element={<Rok />} />
               <Route path="doelen" element={<Doelen />} />
               <Route path="kalender" element={<Kalender />} />
-              <Route path="meetpunten" element={<Meetpunten />} />
               <Route path="acties" element={<Acties />} />
               <Route path="documenten" element={<Documenten />} />
               <Route path="profiel" element={<Profiel />} />
@@ -41,6 +43,7 @@ export default function App() {
               {/* Older addresses */}
               <Route path="dashboard" element={<Navigate to="/" replace />} />
               <Route path="taken" element={<Navigate to="/acties" replace />} />
+              <Route path="meetpunten" element={<Navigate to="/acties" replace />} />
               <Route path="sjablonen/resultaten" element={<Navigate to="/sjablonen/domeinen" replace />} />
             </Route>
             <Route path="*" element={<Navigate to="/" replace />} />

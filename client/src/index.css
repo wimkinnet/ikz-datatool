@@ -1034,3 +1034,26 @@ td.late { color: var(--st-actie); font-weight: 600; }
 
 .goal-card .tree-toggle h2 { font-weight: var(--subheading-weight); }
 .cal-grid .cal-month { margin-top: 0; }
+
+/* Signalen and strategische doelen */
+.signal-group { margin-bottom: 22px; }
+.signal-group > h2 { margin-bottom: 8px; }
+.signal-card { margin-bottom: 10px; padding: 14px 18px; }
+.signal-card.focus { box-shadow: 0 0 0 2px var(--accent); }
+.signal-body { margin-top: 12px; padding-left: 18px; font-size: 13.5px; }
+.signal-body p { margin: 0 0 12px; max-width: 800px; }
+.signal-body h3 { margin: 14px 0 6px; font-size: 14px; }
+.signal-facts { display: grid; grid-template-columns: 110px 1fr; gap: 6px 12px; margin: 0; }
+.signal-facts dt { color: var(--ink-soft); }
+.signal-facts dd { margin: 0; }
+
+/* Operational goal: indicators and actions */
+.goal-domains span { margin-right: 10px; }
+.goal-section { margin-top: 16px; padding-top: 10px; border-top: 1px solid var(--border); }
+.goal-section h3 { margin: 0; }
+.action-meetpunt { margin-bottom: 14px; padding: 12px 14px 2px; background: var(--paper); border-radius: var(--radius); }
+.status-pill.task-in_te_plannen, select.status-select.task-in_te_plannen { background: var(--neutral-tint); color: var(--ink); border: 1px solid var(--border); }
+.status-pill.task-gepland, select.status-select.task-gepland { background: var(--accent-tint); color: var(--accent-dark); }
+.status-pill.task-in_uitvoering, select.status-select.task-in_uitvoering { background: var(--st-monitoren-bg); color: var(--st-monitoren); }
+.status-pill.task-uitgevoerd, select.status-select.task-uitgevoerd { background: var(--st-ok-bg); color: var(--st-ok); }
+.kind-tag { display: inline-block; margin-right: 5px; padding: 0 6px; border-radius: 3px; font-size: 10.5px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.03em; background: var(--neutral-tint); color: var(--ink-soft); vertical-align: 1px; }

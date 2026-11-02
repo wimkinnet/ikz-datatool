@@ -31,7 +31,7 @@ export function yearOptions() {
   return [-4, -3, -2, -1, 0, 1].map((n) => shiftYear(cur, n));
 }
 
-// The quality model: operationele doelen -> domeinen -> meetpunten -> metingen -> acties
+// The quality model: operationele doelen with indicatoren and acties (each with an optional meetpunt)
 export const TEST_CATEGORIES = [
   { key: 'proces', label: 'Proces' },
   { key: 'resultaten', label: 'Resultaten' },
@@ -44,10 +44,12 @@ export const TEST_VALUE_TYPES = [
   { key: 'tekst', label: 'Vrije tekst' },
 ];
 export const TEST_ACTION_STATUSES = [
-  { key: 'open', label: 'Open' },
-  { key: 'bezig', label: 'Bezig' },
-  { key: 'afgerond', label: 'Afgerond' },
+  { key: 'in_te_plannen', label: 'In te plannen' },
+  { key: 'gepland', label: 'Gepland' },
+  { key: 'in_uitvoering', label: 'In uitvoering' },
+  { key: 'uitgevoerd', label: 'Uitgevoerd' },
 ];
+export const actionStatusLabel = (key) => TEST_ACTION_STATUSES.find((s) => s.key === key)?.label || key;
 export const FIRST_GOAL_YEAR = '2026-2027';
 export const FIRST_MEASURE_YEAR = '2024-2025';
 // School years from `from` up to and including `to` ('2024-2025', '2025-2026', …)

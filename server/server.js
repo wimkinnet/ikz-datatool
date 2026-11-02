@@ -63,11 +63,6 @@ const PORT = process.env.PORT || 5050;
     { $or: [{ type: { $exists: true } }, { clientCanEditPlanStructure: { $exists: true } }] },
     { $unset: { type: '', clientCanEditPlanStructure: '' } }
   );
-  // A meetpunt used to have one beoogd resultaat (`result`); it now has a list (`results`)
-  await mongoose.connection.collection('testmeetpunts').updateMany(
-    { result: { $exists: true } },
-    [{ $set: { results: { $setUnion: [{ $ifNull: ['$results', []] }, ['$result']] } } }, { $unset: 'result' }]
-  );
   if (process.env.AUTO_SEED !== 'false') {
     try { await runSeed(); } catch (err) { console.error('[seed] failed:', err.message); }
   }

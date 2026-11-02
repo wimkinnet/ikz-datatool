@@ -39,7 +39,7 @@ export default function Resultaten() {
   return (
     <div>
       <div className="page-header">
-        <div><h1>Domeinen</h1><p>De gedeelde lijst waaruit scholen kiezen bij hun operationele doelen en meetpunten. Elk domein hoort bij proces, resultaten of context.</p></div>
+        <div><h1>Domeinen</h1><p>De gedeelde lijst waaruit scholen kiezen bij hun signalen en meetpunten. Elk domein hoort bij proces, resultaten of context.</p></div>
         <button className="btn btn-primary" onClick={() => { setError(''); setEdit({ ...EMPTY }); }}>+ Nieuw domein</button>
       </div>
       <ErrorBanner message={error && !edit ? error : ''} />

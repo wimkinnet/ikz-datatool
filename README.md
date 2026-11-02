@@ -1,37 +1,31 @@
 # IKZ Datatool
 
-Web app for interne kwaliteitszorg (IKZ) in schools. A school works from **operationele doelen** that contribute to
-the ROK (referentiekader voor onderwijskwaliteit), follows them up with **meetpunten** per **domein**, and turns
-red results into **acties**. Admins, consultants and school users work in the same tool, each on their own schools.
+Web app for interne kwaliteitszorg (IKZ) in schools. A school starts from **signalen** and **strategische doelen**, works on them with **operationele doelen**, measures the success of those goals with **indicatoren**, and carries them out through **acties**. Admins, consultants and school users work in the same tool, each on their own schools.
 
 Stack: React (Vite) · Node/Express · MongoDB (Atlas) · Render. UI language: Dutch.
 
 ## The model
 
 ```
+Signalen (Sign-C1, Sign-P1, Sign-R1, …; each based on a domein, with its own measure and start value)
+and strategische doelen (Strat-1, …): per school, over the school years
+  ▲ optional links
 Operationeel doel (per school, per school year, from 2026-2027)
-  ├─ draagt bij aan → ROK-verwachtingen (R1 … BL12)
-  └─ gekoppeld aan → domeinen (shared list; each is proces, resultaten or context)
-                         └─ meetpunten (per school; one meetpunt can serve several domeinen)
-                              └─ metingen per school year (from 2024-2025): value + resultaat (op niveau / onder niveau)
-                                   └─ acties (owner, deadline, status)
+  ├─ draagt bij aan → ROK-verwachtingen (ROK-R1 … ROK-BL12), signalen, strategische doelen
+  ├─ indicatoren → measure the success of the goal, each at one month: value + resultaat (op niveau / onder niveau)
+  └─ acties → status: in te plannen, gepland, in uitvoering, uitgevoerd
+       └─ optional meetpunt → measures the success of the action, at one month: value + resultaat
 ```
 
-Menu: **Dashboard** · **ROK** · **Operationele doelen** · **Meetpunten** · **Kalender** · **Acties** · Documenten.
+Menu: **Dashboard** · **Signalen** · **Strategische doelen** · **Operationele doelen** · **Acties** · **Kalender** · **ROK** · Documenten.
 
-- **Dashboard** (start page) — KPIs, invulstatus and resultaat per month (two separate questions: is it filled in, and if so what is the result), the assessment per operational goal,
-  share op niveau per school year, results per category, meetpunten onder niveau without an open action, overdue actions.
-- **ROK** — every ROK-domein and quality expectation with its explanation, and per expectation the school's
-  operational goals that contribute to it (codes on a goal link here, and back).
-- **Operationele doelen** — per school year; each links to ROK expectations and to one or more domeinen. Its overall
-  assessment comes from the results of its meetpunten that year: ≥ 75% op niveau *op koers*, ≥ 50% *aandacht*,
-  otherwise *niet op koers*; *voorlopig* while not every meetpunt is assessed (`client/src/test/assess.js`).
-- **Kalender** — per month of the school year, the meetpunten to evaluate: done / this month / overdue / planned.
-- **Meetpunten** — per domein, with uitleg, bron, month of evaluation, value type (percentage, absolute number or
-  free text) and an optional threshold; one column per school year so history sits next to this year. The threshold
-  suggests the result, but the assessment is always the user's choice.
-- **Acties** — every action linked to a measuring result (meetpunt + school year), with owner, deadline and status
-  (open / bezig / afgerond); overdue actions are flagged.
+- **Dashboard** (start page) — KPIs, invulstatus and resultaat per month (two separate questions: is it filled in, and if so what is the result), the assessment per operational goal, indicators per school year and category, actions per status, indicators below level without a running action, overdue actions.
+- **Signalen** — defined by consultants and admins (school users read along): title, description, domein, what is measured and its start value. The code is Sign- + the domein's category letter (C, P, R) + a number per school and category; a school's Sign-P1 is unrelated to another school's Sign-P1. Shows the operational goals of every school year that contribute.
+- **Strategische doelen** — Strat-1, Strat-2, … per school, also defined by consultants and admins: title and description.
+- **Operationele doelen** — per school year, with their indicators and actions. A goal links to ROK expectations and, optionally, to signals and strategic goals; its domeinen follow from its signals. Its overall assessment comes from its indicators: ≥ 75% op niveau *op koers*, ≥ 50% *aandacht*, otherwise *niet op koers*; *voorlopig* while not every indicator is assessed (`client/src/test/assess.js`). Deleting a goal deletes its indicators and actions.
+- **Acties** — all actions of the school year, with status, owner, deadline and optional meetpunt; overdue actions are flagged.
+- **Kalender** — per month, the indicators and action meetpunten to measure: done / this month / te laat / planned.
+- **ROK** — every ROK-domein and quality expectation with its explanation, and the school's goals per expectation.
 - **Sjablonen → Domeinen** (admins) — the shared list of domeinen, initially the 19 themes of the former BO year plan.
   Their category (proces / resultaten / context) was an initial assessment; admins can change it.
 
@@ -43,8 +37,8 @@ because the model started as a "Test" tab next to the former BO and SO parts.
 | Role | Can do |
 |---|---|
 | **admin** | Everything, on every school: schools, users, the list of domeinen |
-| **consultant** | Works in the schools assigned to them: goals, meetpunten, metingen, actions, documents; manages school users of their schools |
-| **client** (school) | Works only in the school(s) linked to their account (switch top left): goals, meetpunten, metingen, actions, documents |
+| **consultant** | Works in the schools assigned to them: goals, indicators, actions, documents; manages school users of their schools |
+| **client** (school) | Works only in the school(s) linked to their account (switch top left): goals, indicators, actions, documents |
 
 Access is enforced on the server for every route, also for changes by id (`middleware/access.js`, `routes/test.js`).
 
@@ -83,8 +77,8 @@ Generate a `JWT_SECRET`: `node -e "console.log(require('crypto').randomBytes(32)
 On a network whose DNS rejects the `mongodb+srv` lookup (`querySrv EBADRESP`, e.g. a phone hotspot), set
 `DNS_SERVERS=1.1.1.1,8.8.8.8` in `server/.env`.
 
-Example data: `npm run seed:test-dummy` (in `server/`) creates *Testschool (dummy)* with goals, meetpunten,
-metingen from 2024-2025 and actions; `npm run seed:test-dummy:remove` deletes it again.
+Example data: `npm run seed:test-dummy` (in `server/`) creates *Testschool (dummy)* with signals, goals, indicators
+and actions; `npm run seed:test-dummy:remove` deletes it again.
 
 ## Deploy on Render
 
@@ -112,9 +106,8 @@ Actions → CI → *Run workflow*.
 
 1. Log in as admin → **Scholen** → *Nieuwe school*.
 2. **Gebruikers** → create consultants (assign schools) and school accounts (role *School*, one or more schools).
-3. Pick the school top left and the school year top right → **Operationele doelen** → *Nieuw operationeel doel*.
-4. Add **meetpunten** under the goal's domeinen, fill in the **metingen** (also for earlier years) and add **acties**
-   where a result is red.
+3. Pick the school top left → define **Signalen** and **Strategische doelen**; pick the school year top right → **Operationele doelen** → *Nieuw operationeel doel*.
+4. Add **indicatoren** to the goal and **acties** with their status and, where useful, a meetpunt; fill in the measurements when their month comes.
 
 ## Security notes
 
